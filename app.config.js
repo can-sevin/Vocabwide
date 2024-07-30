@@ -19,10 +19,12 @@ export default {
     },
     assetBundlePatterns: ["**/*"],
     "android": {
-      "permissions": ["android.permission.RECORD_AUDIO"]
+      "permissions": ["android.permission.RECORD_AUDIO"],
+      "package": "com.vocabwide",
     },  
     ios: {
       supportsTablet: true,
+      "bundleIdentifier": "com.anonymous.expo-vocabwide",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Vocabwide wants to microphone permission If you want to add word by voice you have to give voice permission",
         "NSSpeechRecognitionUsageDescription": "Description of why you require the use of the speech recognition"

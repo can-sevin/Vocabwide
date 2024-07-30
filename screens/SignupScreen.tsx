@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { Text, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
+import { TouchableOpacity, Dimensions } from "react-native";
 import { Formik } from "formik";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import { View, TextInput, Button, FormErrorMessage } from "../components";
-import { Colors, auth } from "../config";
+import { TextInput, FormErrorMessage } from "../components";
+import { auth } from "../config";
 import { useTogglePasswordVisibility } from "../hooks";
 import { signupValidationSchema } from "../utils";
+import { GeneralButton, GeneralButtonText, LoginBtmText, SignupHeaderText, SignupKeyboardAvoiding, SignupLayout, SignupLayoutInside } from "../styles/HomeScreen";
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height; 
@@ -24,7 +25,7 @@ export const SignupScreen = ({ navigation }) => {
     confirmPasswordVisibility,
   } = useTogglePasswordVisibility();
 
-  const handleSignup = async (values) => {
+  const handleSignup = async (values: { email: any; password: any; confirmPassword?: string; }) => {
     const { email, password } = values;
 
     createUserWithEmailAndPassword(auth, email, password).catch((error) =>
@@ -33,9 +34,9 @@ export const SignupScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container} isSafe>
-      <Text style={styles.title}>Register</Text>
-      <View style={styles.container_inside}>
+    <SignupLayout>
+      <SignupHeaderText>Register</SignupHeaderText>
+      <SignupLayoutInside>
         <Formik
           initialValues={{
             email: "",
@@ -53,7 +54,7 @@ export const SignupScreen = ({ navigation }) => {
             handleSubmit,
             handleBlur,
           }) => (
-            <KeyboardAwareScrollView style={{maxHeight: windowHeight * 0.5}} enableOnAndroid={true}>
+            <SignupKeyboardAvoiding enableOnAndroid={true}>
               {/* Input fields */}
               <TextInput
                 name="email"
@@ -109,61 +110,16 @@ export const SignupScreen = ({ navigation }) => {
                 <FormErrorMessage error={errorState} visible={true} />
               ) : null}
               {/* Signup button */}
-              <Button style={styles.button} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>Signup</Text>
-              </Button>
-            </KeyboardAwareScrollView>
+              <GeneralButton onPress={() => handleSubmit}>
+                <GeneralButtonText>Signup</GeneralButtonText>
+              </GeneralButton>
+            </SignupKeyboardAvoiding>
           )}
         </Formik>
         <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.footer_text}>Already have an account?</Text>
+          <LoginBtmText>Already have an account?</LoginBtmText>
         </TouchableOpacity>
-        </View>
-    </View>
+        </SignupLayoutInside>
+    </SignupLayout>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#6537C5',
-    justifyContent: 'flex-end'
-  },
-  container_inside: {
-    backgroundColor: Colors.whiteLight,
-    borderRadius: 16,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    alignContent: 'center',
-    width: '100%',
-    height: windowHeight * 0.6,
-    paddingHorizontal: 32,
-  },
-  button: {
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 16,
-    backgroundColor: Colors.purple,
-    padding: 10,
-    borderRadius: 8,
-  },
-  buttonText: {
-    fontSize: 20,
-    color: Colors.white,
-    fontWeight: "700",
-  },
-  title: {
-    fontSize: 28,
-    color: '#f5f5f5',
-    fontFamily: 'Circular-Bold',
-    alignSelf: 'center',
-    marginBottom: 110,
-  },
-  footer_text: {
-    fontFamily:'Circular-Medium', 
-    fontSize: 16, 
-    alignSelf: 'center', 
-    marginTop: 12
-  },
-});

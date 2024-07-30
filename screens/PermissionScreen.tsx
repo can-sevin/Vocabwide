@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, Image } from "react-native";
+import { View, StyleSheet, Text, Image, SafeAreaView } from "react-native";
 
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { checkCamPermissions, checkVoicePermissions, openApplicationSettings } from "../utils";
-import { ResizeMode, Video } from "expo-av";
 import { Colors } from "../config";
 
-export const PermissionScreen = () => {
+export const PermissionScreen = ({ navigation }) => {
   const [voicePermission, setVoicePermission] = useState('denied');
   const [camPermission, setCamPermission] = useState('denied');
 
@@ -82,7 +81,7 @@ export const PermissionScreen = () => {
         resizeMode={ResizeMode.COVER}
         isLooping
       > */}
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
       <Text style={styles.header_text}>Welcome to Vocabwide</Text>
       <VoicePermission/>
       <CamPermission/>
@@ -93,7 +92,7 @@ export const PermissionScreen = () => {
           </Text>
         </TouchableOpacity>
       )}
-      </View>
+      </SafeAreaView>
     </>
   );
 };
@@ -117,7 +116,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#fff',
     fontFamily: 'Helvetica-Bold',
-    marginTop: 128,
+    marginTop: 48,
     marginBottom: 36
   },
   small_text: {

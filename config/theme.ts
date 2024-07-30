@@ -8,5 +8,10 @@ export const Colors = {
   red: "#f72a2d",
   purple: '#6e41c0',
   lightpurple: '#9e69fd',
-  liliac: '#9155fd'
+  liliac: '#9155fd',
+  LighterGray1: '#A0A0A0',
+  LighterGray2: '#B0B0B0',
+  LighterGray3: '#C0C0C0',
+  LighterGray4: '#D0D0D0',
+  LighterGray5: '#E0E0E0',
 };

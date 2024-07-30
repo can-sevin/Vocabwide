@@ -1,16 +1,15 @@
 import React, { useState } from "react";
-import { Text, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { Formik } from "formik";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import {View, TextInput, Logo, Button, FormErrorMessage } from "../components";
-import { Colors, auth } from "../config";
+import {TextInput, FormErrorMessage } from "../components";
+import { auth } from "../config";
 import { useTogglePasswordVisibility } from "../hooks";
 import { loginValidationSchema } from "../utils";
+import { GeneralButton, GeneralButtonText, LoginBtmText, LoginHeaderText, LoginLayout, LoginLayoutInside } from "../styles/HomeScreen";
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height; 
 
 export const LoginScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
@@ -25,9 +24,9 @@ export const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container} isSafe>
-        <Text style={styles.loginTitle}>Welcome to login</Text>
-        <View style={styles.container_inside}>
+    <LoginLayout>
+        <LoginHeaderText>Welcome to login</LoginHeaderText>
+        <LoginLayoutInside>
           <Formik
             initialValues={{
               email: "",
@@ -86,67 +85,21 @@ export const LoginScreen = ({ navigation }) => {
                   <FormErrorMessage error={errorState} visible={true} />
                 ) : null}
                 {/* Login button */}
-                <Button style={styles.button} onPress={handleSubmit} children={undefined} title={undefined}>
-                  <Text style={styles.buttonText}>Login</Text>
-                </Button>
+                <GeneralButton onPress={() => handleSubmit}>
+                  <GeneralButtonText>Login</GeneralButtonText>
+                </GeneralButton>
               </KeyboardAwareScrollView>
             )}
           </Formik>
           <>
           <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-            <Text style={styles.footer_text}>Create a new account?</Text>
+            <LoginBtmText>Create a new account?</LoginBtmText>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
-            <Text style={styles.footer_text}>Forgot Password</Text>
+            <LoginBtmText>Forgot Password</LoginBtmText>
           </TouchableOpacity>
           </>
-        </View>
-    </View>
+        </LoginLayoutInside>
+    </LoginLayout>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#6537C5',
-    justifyContent: 'space-between'
-  },
-  container_inside: {
-    backgroundColor: Colors.whiteLight,
-    borderRadius: 16,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    alignContent: 'center',
-    width: '100%',
-    height: windowHeight * 0.6 ,
-    marginTop: 64,
-    padding: 32,
-  },
-  loginTitle: {
-    fontSize: 28,
-    color: '#f5f5f5',
-    fontFamily: 'Circular-Bold',
-    alignSelf: 'center',
-    marginTop: 128,
-  },
-  button: {
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 40,
-    backgroundColor: Colors.purple,
-    padding: 10,
-    borderRadius: 8,
-  },
-  buttonText: {
-    fontSize: 20,
-    color: Colors.white,
-    fontWeight: "700",
-  },
-  footer_text: {
-    fontFamily:'Circular-Medium', 
-    fontSize: 16, 
-    alignSelf: 'center', 
-    marginTop: 12
-  },
-});
