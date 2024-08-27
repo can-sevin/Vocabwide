@@ -43,7 +43,7 @@ export const RootNavigator = () => {
 
   return (
     <NavigationContainer>
-      {!user ? <AppStack /> : <AppStack />}
+      {!user ? <AuthStack /> : <AppStack />}
     </NavigationContainer>
   );
 };

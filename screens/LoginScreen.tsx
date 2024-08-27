@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { ImageBackground, TouchableOpacity } from "react-native";
 import { Formik } from "formik";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -9,6 +9,7 @@ import { auth } from "../config";
 import { useTogglePasswordVisibility } from "../hooks";
 import { loginValidationSchema } from "../utils";
 import { GeneralButton, GeneralButtonText, LoginBtmText, LoginHeaderText, LoginLayout, LoginLayoutInside } from "../styles/HomeScreen";
+import { background } from "./HomeScreen";
 
 
 export const LoginScreen = ({ navigation }) => {
@@ -24,6 +25,7 @@ export const LoginScreen = ({ navigation }) => {
   };
 
   return (
+    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover">
     <LoginLayout>
         <LoginHeaderText>Welcome to login</LoginHeaderText>
         <LoginLayoutInside>
@@ -85,7 +87,7 @@ export const LoginScreen = ({ navigation }) => {
                   <FormErrorMessage error={errorState} visible={true} />
                 ) : null}
                 {/* Login button */}
-                <GeneralButton onPress={() => handleSubmit}>
+                <GeneralButton onPress={() => handleSubmit()}>
                   <GeneralButtonText>Login</GeneralButtonText>
                 </GeneralButton>
               </KeyboardAwareScrollView>
@@ -101,5 +103,6 @@ export const LoginScreen = ({ navigation }) => {
           </>
         </LoginLayoutInside>
     </LoginLayout>
+    </ImageBackground>
   );
 };

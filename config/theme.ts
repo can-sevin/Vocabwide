@@ -7,6 +7,10 @@ export const Colors = {
   mediumGray: "#6e6869",
   red: "#f72a2d",
   purple: '#6e41c0',
+  purple_light: '#9285E4',
+  pink_light: '#C285E4',
+  blue_light: '#85A7E4',
+  second: '#6e41c0',
   lightpurple: '#9e69fd',
   liliac: '#9155fd',
   LighterGray1: '#A0A0A0',
@@ -14,4 +18,7 @@ export const Colors = {
   LighterGray3: '#C0C0C0',
   LighterGray4: '#D0D0D0',
   LighterGray5: '#E0E0E0',
+  main_yellow: '#ca9b18',
+  main_blue: '#125ec6',
+  main_light_yellow: '#dbc070'
 };

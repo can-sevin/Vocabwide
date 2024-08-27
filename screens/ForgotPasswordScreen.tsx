@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { StyleSheet, Text } from "react-native";
+import { ImageBackground, StyleSheet, Text } from "react-native";
 import { Formik } from "formik";
 import { sendPasswordResetEmail } from "firebase/auth";
 
 import { passwordResetSchema } from "../utils";
 import { Colors, auth } from "../config";
 import { View, TextInput, Button, FormErrorMessage } from "../components";
+import { background } from "./HomeScreen";
 
 export const ForgotPasswordScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
@@ -22,6 +23,7 @@ export const ForgotPasswordScreen = ({ navigation }) => {
   };
 
   return (
+    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover">
     <View isSafe style={styles.container}>
       <View style={styles.innerContainer}>
         <Text style={styles.screenTitle}>Reset your password</Text>
@@ -72,6 +74,7 @@ export const ForgotPasswordScreen = ({ navigation }) => {
         onPress={() => navigation.navigate("Login")}
       />
     </View>
+    </ImageBackground>
   );
 };
 

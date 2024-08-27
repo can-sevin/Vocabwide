@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, Image, SafeAreaView } from "react-native";
+import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, ImageBackground } from "react-native";
 
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { checkCamPermissions, checkVoicePermissions, openApplicationSettings } from "../utils";
+import { checkVoicePermissions, openApplicationSettings } from "../utils";
 import { Colors } from "../config";
+import { background } from "./HomeScreen";
 
 export const PermissionScreen = ({ navigation }) => {
   const [voicePermission, setVoicePermission] = useState('denied');
   const [camPermission, setCamPermission] = useState('denied');
 
-  const mic_icon = require('../assets/icons/mic_permission.png');
-  const cam_icon = require('../assets/icons/cam_permission.png');
+  const mic_icon = require('../assets/icons/new_mic_permission.png');
+  const cam_icon = require('../assets/icons/new_cam_permission.png');
   const succeed_icon = require('../assets/icons/succeed.png');
 
   const getVoicePermissions = async () => {
@@ -73,7 +73,7 @@ export const PermissionScreen = ({ navigation }) => {
   }
 
   return (
-    <>
+    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover">
       {/* <Video 
         style={styles.container} 
         source={require('../assets/videos/permission.mp4')}         
@@ -93,7 +93,7 @@ export const PermissionScreen = ({ navigation }) => {
         </TouchableOpacity>
       )}
       </SafeAreaView>
-    </>
+    </ImageBackground>
   );
 };
 

@@ -2,5 +2,7 @@ import { LoginScreen } from "./LoginScreen";
 import { SignupScreen } from "./SignupScreen";
 import { HomeScreen } from "./HomeScreen";
 import { ForgotPasswordScreen } from "./ForgotPasswordScreen";
+import { SpeechTextScreen } from "./SpeechTextScreen";
+import { OcrScreen } from "./OcrScreen";
 
-export { LoginScreen, SignupScreen, HomeScreen, ForgotPasswordScreen };
+export { LoginScreen, SignupScreen, HomeScreen, ForgotPasswordScreen, SpeechTextScreen, OcrScreen };

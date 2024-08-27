@@ -1,6 +1,7 @@
 import styled from 'styled-components/native'
 import { Colors } from "../config";
 import { Dimensions } from 'react-native';
+import Animated from 'react-native-reanimated';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height; 
@@ -10,7 +11,7 @@ export const GeneralButton = styled.TouchableOpacity`
     justifyContent: center;
     alignItems: center;
     marginTop: 40px;
-    backgroundColor: ${Colors.purple};
+    backgroundColor: ${Colors.white};
     padding: 10px;
     borderRadius: 8px;
 `
@@ -30,9 +31,8 @@ export const LoginLayout = styled.View`
     backgroundColor: #6537C5;
     justifyContent: space-between;
 `
-export const HomeLayout = styled.View`
+export const HomeLayout = styled(Animated.View)`
     flex: 1;
-    backgroundColor: ${Colors.purple};
     alignItems: center;
     justifyContent: space-between;
 `
@@ -64,7 +64,6 @@ export const SignupLayoutInside = styled(LoginLayoutInside)`
     marginTop: 64px;
     padding: 32px;
 `
-
 export const LoginHeaderText = styled.Text`
     fontSize: 28px;
     color: ${Colors.white};
@@ -80,10 +79,24 @@ export const HomeHeaderText = styled(LoginHeaderText)`
     fontSize: 42px;
     marginTop: 96px;
 `
+export const HomeHeaderTextAnimated = styled(Animated.Text)`
+    color: ${Colors.white};
+    fontFamily: Circular-Bold;
+    alignSelf: center;
+    fontSize: 42px;
+    marginTop: 96px;
+`
+export const HomeHeaderTextNumber = styled(Animated.Text)`
+    fontSize: 42px;
+    color: ${Colors.white};
+    fontFamily: Circular-Bold;
+    marginTop: 96px;
+    padding-right: 32px;
+`
 export const SignupKeyboardAvoiding = styled.KeyboardAvoidingView`
     maxHeight: ${windowHeight * 0.5};
 `
-export const HomeHeaderLanguageView = styled.View`
+export const HomeHeaderLanguageView = styled(Animated.View)`
     flexDirection: row;
     justifyContent: space-between;
     width: 70%;
@@ -92,9 +105,10 @@ export const HomeLanguageWordsView = styled.View`
     flexDirection: row;
     justifyContent: space-between;
     marginTop: 16px;
+    borderRadius: 16px;
+    overflow: hidden;
 `
 export const LanguageScrollView = styled.ScrollView`
-    borderRadius: 12px;
     maxHeight: 280px;
 `
 export const LanguageInsideAlphabetView = styled.View`
@@ -134,7 +148,7 @@ export const HomeHeaderLanguageViewText = styled.Text`
     textAlign: center;
 `
 export const HomeBtmView = styled.View`
-    backgroundColor: ${Colors.whiteLight};
+    backgroundColor: 'rgba(255, 255, 255, 0.5)';
     height: 180px;
     width: 100%; 
     borderRadius: 24px; 
@@ -172,8 +186,14 @@ export const HomePracticeButton = styled.TouchableOpacity`
     alignItems: center;
 `
 export const HomePracticeButtonText = styled.Text`
-    fontSize: 20;
+    fontSize: 20px;
     textAlign: center;
+    fontFamily: Circular-Medium;
+    alignSelf: center;
+`
+export const BottomTextWhite = styled.Text`
+    fontSize: 16px;
+    color: ${Colors.white};
     fontFamily: Circular-Medium;
     alignSelf: center;
 `

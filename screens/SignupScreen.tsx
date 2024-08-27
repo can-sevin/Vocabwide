@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TouchableOpacity, Dimensions } from "react-native";
+import { TouchableOpacity, Dimensions, ImageBackground } from "react-native";
 import { Formik } from "formik";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -9,6 +9,7 @@ import { auth } from "../config";
 import { useTogglePasswordVisibility } from "../hooks";
 import { signupValidationSchema } from "../utils";
 import { GeneralButton, GeneralButtonText, LoginBtmText, SignupHeaderText, SignupKeyboardAvoiding, SignupLayout, SignupLayoutInside } from "../styles/HomeScreen";
+import { background } from "./HomeScreen";
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height; 
@@ -34,6 +35,7 @@ export const SignupScreen = ({ navigation }) => {
   };
 
   return (
+    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover">
     <SignupLayout>
       <SignupHeaderText>Register</SignupHeaderText>
       <SignupLayoutInside>
@@ -110,7 +112,7 @@ export const SignupScreen = ({ navigation }) => {
                 <FormErrorMessage error={errorState} visible={true} />
               ) : null}
               {/* Signup button */}
-              <GeneralButton onPress={() => handleSubmit}>
+              <GeneralButton onPress={() => handleSubmit()}>
                 <GeneralButtonText>Signup</GeneralButtonText>
               </GeneralButton>
             </SignupKeyboardAvoiding>
@@ -121,5 +123,6 @@ export const SignupScreen = ({ navigation }) => {
         </TouchableOpacity>
         </SignupLayoutInside>
     </SignupLayout>
+    </ImageBackground>
   );
 };
