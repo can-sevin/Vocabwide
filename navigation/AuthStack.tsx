@@ -41,7 +41,6 @@ export const AuthStack = () => {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-      <Stack.Screen name="Speech" component={SpeechTextScreen} />
     </Stack.Navigator>
   );
 };

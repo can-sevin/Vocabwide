@@ -11,7 +11,7 @@ export const GeneralButton = styled.TouchableOpacity`
     justifyContent: center;
     alignItems: center;
     marginTop: 40px;
-    backgroundColor: ${Colors.white};
+    backgroundColor: ${Colors.purple};
     padding: 10px;
     borderRadius: 8px;
 `
