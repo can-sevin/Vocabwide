@@ -18,7 +18,7 @@ type Props = {
 
 export const SpeechTextScreen = ({ navigation }) => {
   const mic_icon = require("../assets/icons/new_mic_permission.png");
-  const cam_icon = require("../assets/icons/new_cam_permission.png");
+  const back_icon = require("../assets/icons/back.png");
 
   const [recognized, setRecognized] = useState("");
   const [pitch, setPitch] = useState("");
@@ -155,7 +155,7 @@ return (
   <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover">
   <Animated.View style={styles.container} entering={FadeInDown.duration(2000).delay(100)}>
   <TouchableOpacity style={{alignSelf: 'flex-start'}} onPress={() => navigation.goBack()}>
-    <Text style={styles.back_button}>&lt;</Text>  
+    <Image style={{width: 36, height: 36, marginLeft: 12}} source={back_icon} />  
   </TouchableOpacity>
   <Text style={styles.header_text}>Add words by voice</Text>
   <Text style={styles.desc_text}>
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       alignItems: "center",
-      paddingTop: 60,
+      paddingTop: 32,
       justifyContent: "space-between",
     },
     back_button: {

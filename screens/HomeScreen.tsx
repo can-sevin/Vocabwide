@@ -95,7 +95,9 @@ export const HomeScreen = ({ navigation }) => {
       <HomePracticeButton>
         <HomePracticeButtonText>Practice</HomePracticeButtonText>
       </HomePracticeButton>
-      <BottomTextWhite>Or You can add new word by input</BottomTextWhite>
+      <TouchableOpacity onPress={() => navigation.navigate("Input")}>
+        <BottomTextWhite>Or You can add new word by input</BottomTextWhite>
+      </TouchableOpacity>
       </View>
       <HomeBtmView>
         <TouchableOpacity onPress={() => navigation.navigate("Speech")}>
