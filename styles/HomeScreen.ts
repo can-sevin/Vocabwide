@@ -100,7 +100,6 @@ export const HomeHeaderTextNumber = styled(Animated.Text)`
 `
 export const SignupKeyboardAvoiding = styled.KeyboardAvoidingView`
     maxHeight: ${windowHeight * 0.5};
-    margin-horizontal: 32px;
 `
 export const HomeHeaderLanguageView = styled(Animated.View)`
     flexDirection: row;
