@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, ImageBackground} from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, ImageBackground, Image, SafeAreaView} from "react-native";
 import { signOut } from "firebase/auth";
 
-import { auth, Colors } from "../config";
+import { auth, database, Colors } from "../config";
+import { ref, get } from "firebase/database";  // Import Realtime Database functions
+
 import Animated, { FadeInDown, interpolateColor, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { BottomTextWhite, HomeBtmIcons, HomeBtmIconText, HomeBtmView, HomeHeaderLanguageView, HomeHeaderLanguageViewText, HomeHeaderText, HomeHeaderTextAnimated, HomeHeaderTextNumber, HomeLanguageWordsView, HomeLayout, HomePracticeButton, HomePracticeButtonText, HomeVerticalView, LanguageInsideAlphabetText, LanguageInsideAlphabetView, LanguageInsideHeaderAlphabetView, LanguageInsiderText, LanguageInsiderView, LanguageInsideText, LanguageInsideView, LanguageScrollView } from "../styles/HomeScreen";
+import { BottomTextWhite, HomeBtmIcons, HomeBtmIconText, HomeBtmView, HomeHeaderLanguageView, HomeHeaderLanguageViewText, HomeHeaderSmallTextNumber, HomeHeaderText, HomeHeaderTextAnimated, HomeHeaderTextNumber, HomeLanguageWordsView, HomeLayout, HomePracticeButton, HomePracticeButtonText, HomeVerticalView, LanguageInsideAlphabetText, LanguageInsideAlphabetView, LanguageInsideHeaderAlphabetView, LanguageInsiderText, LanguageInsiderView, LanguageInsideText, LanguageInsideView, LanguageScrollView } from "../styles/HomeScreen";
 
 const mic_icon = require('../assets/icons/new_mic_permission.png');
 const cam_icon = require('../assets/icons/new_cam_permission.png');
 export const background = require('../assets/background_img.jpg');
+const back_icon = require("../assets/icons/shutdown.png");
 
 const alphabetWords = {
   A: ["Apple", "Ant"],
@@ -40,12 +43,39 @@ const LanguageView = () => {
   )
 }
 
-export const HomeScreen = ({ navigation }) => {
+export const HomeScreen = ({ uid, navigation }) => {
   
   const [word_num, setWordNum] = useState(0);
-
   const button_practice_progress = useSharedValue(0);
-  
+  const [userInfo, setUserInfo] = useState(null);
+  const [error, setError] = useState("");
+  const [showText, setShowText] = useState(false);  // State to control text rendering
+
+  useEffect(() => {
+    if (uid) {
+      // Set a 3-second delay before fetching the data
+      const timer = setTimeout(() => {
+        const userRef = ref(database, `users/${uid}`);
+
+        get(userRef)
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              setUserInfo(snapshot.val());
+              console.log(snapshot.val());
+              setShowText(true);
+            } else {
+              console.log("User data not found");
+            }
+          })
+          .catch((error) => {
+            console.log("Error fetching user data: " + error.message);
+          });
+      }, 3000);  // 3000ms = 3 seconds
+    } else {
+      console.log("No user is currently logged in.");
+    }
+  }, [uid]);
+
   const animatedStyle = useAnimatedStyle(() => {
   return {
       backgroundColor: interpolateColor(
@@ -71,9 +101,29 @@ export const HomeScreen = ({ navigation }) => {
   const handleLogout = () => {
     signOut(auth).catch((error) => console.log("Error logging out: ", error));
   };
+
   return (
     <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
+    <SafeAreaView style={{ flex: 1 }}>
     <HomeLayout entering={FadeInDown.duration(2000).delay(500)}>
+    <View style={{flexDirection: "row", 
+      justifyContent:"space-between", 
+      width: "100%", 
+      alignItems: "center", 
+      alignContent: 'center', 
+      marginTop: 20, 
+      paddingHorizontal: 32,
+      }}>
+    <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => handleLogout()}>
+        <Image style={{alignSelf: 'center', width: 36, height: 36}} source={back_icon} />  
+    </TouchableOpacity>
+    {showText && (
+      <HomeHeaderSmallTextNumber 
+        entering={FadeInDown.duration(3000).delay(500)}>
+        Hello, {userInfo.username}
+      </HomeHeaderSmallTextNumber>
+    )}
+    </View>
       <View>
         <Animated.View style={{
           flexDirection: 'row', 
@@ -111,6 +161,7 @@ export const HomeScreen = ({ navigation }) => {
         </TouchableOpacity>
       </HomeBtmView>
     </HomeLayout>
+    </SafeAreaView>
     </ImageBackground>
   );
 };

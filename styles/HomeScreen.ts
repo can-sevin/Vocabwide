@@ -11,7 +11,7 @@ export const GeneralButton = styled.TouchableOpacity`
     justifyContent: center;
     alignItems: center;
     marginTop: 40px;
-    backgroundColor: ${Colors.purple};
+    backgroundColor: ${Colors.main_blue};
     padding: 10px;
     borderRadius: 8px;
 `
@@ -62,7 +62,7 @@ export const SignupLayoutInside = styled(LoginLayoutInside)`
     width: 100%;
     height: ${windowHeight * 0.6};
     marginTop: 64px;
-    padding: 32px;
+    padding: 12px;
 `
 export const LoginHeaderText = styled.Text`
     fontSize: 28px;
@@ -77,7 +77,7 @@ export const SignupHeaderText = styled(LoginHeaderText)`
 `
 export const HomeHeaderText = styled(LoginHeaderText)`
     fontSize: 42px;
-    marginTop: 96px;
+    marginTop: 32px;
 `
 export const HomeHeaderTextAnimated = styled(Animated.Text)`
     color: ${Colors.white};
@@ -86,15 +86,21 @@ export const HomeHeaderTextAnimated = styled(Animated.Text)`
     fontSize: 42px;
     marginTop: 96px;
 `
+export const HomeHeaderSmallTextNumber = styled(Animated.Text)`
+    fontSize: 24;
+    color: ${Colors.white};
+    fontFamily: Circular-Bold;
+`
 export const HomeHeaderTextNumber = styled(Animated.Text)`
     fontSize: 42px;
     color: ${Colors.white};
     fontFamily: Circular-Bold;
-    marginTop: 96px;
+    marginTop: 32px;
     padding-right: 32px;
 `
 export const SignupKeyboardAvoiding = styled.KeyboardAvoidingView`
     maxHeight: ${windowHeight * 0.5};
+    margin-horizontal: 32px;
 `
 export const HomeHeaderLanguageView = styled(Animated.View)`
     flexDirection: row;
@@ -182,7 +188,7 @@ export const HomePracticeButton = styled.TouchableOpacity`
     alignSelf: center;
     justify-content: center;
     alignContent: center;
-    marginVertical: 48px;
+    marginVertical: 36px;
     alignItems: center;
 `
 export const HomePracticeButtonText = styled.Text`

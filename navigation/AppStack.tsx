@@ -5,13 +5,15 @@ import { HomeScreen, SpeechTextScreen, OcrScreen,  ResultScreen, InputScreen} fr
 
 const Stack = createStackNavigator();
 
-export const AppStack = () => {
+export const AppStack = ({ uid }) => {
   return (
     <Stack.Navigator       
       screenOptions={{ headerShown: false }}
       initialRouteName="Home"
     >
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Home">
+        {(props) => <HomeScreen {...props} uid={uid} />} 
+      </Stack.Screen>
       <Stack.Screen name="Speech" component={SpeechTextScreen} />
       <Stack.Screen name="Ocr" component={OcrScreen} />
       <Stack.Screen name="Input" component={InputScreen} />
