@@ -11,7 +11,7 @@ export const SplashScreen = ({ navigation }) => {
   return (
       <SafeAreaView style={styles.container}>
         <LottieView
-          source={require("../assets/splash_anim_logo.json")}
+          source={require("../../assets/lotties/splash_anim_logo.json")}
           autoPlay
           loop
           style={styles.lottieAnimation}

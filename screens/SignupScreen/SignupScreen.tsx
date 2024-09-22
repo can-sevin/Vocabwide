@@ -4,16 +4,13 @@ import { Formik } from "formik";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ref, set } from "firebase/database"; // Import Firebase Realtime Database functions
 
-import { TextInput, FormErrorMessage } from "../components";
-import { auth, database } from "../config/firebase"; // Ensure your Firebase config includes Realtime Database
-import { useTogglePasswordVisibility } from "../hooks";
-import { signupValidationSchema } from "../utils";
-import { GeneralButton, GeneralButtonText, LoginBtmText, SignupHeaderText, SignupKeyboardAvoiding, SignupLayout, SignupLayoutInside } from "../styles/HomeScreen";
-import { background } from "./HomeScreen";
+import { TextInput, FormErrorMessage } from "../../components";
+import { auth, database } from "../../config/firebase"; // Ensure your Firebase config includes Realtime Database
+import { useTogglePasswordVisibility } from "../../hooks";
+import { signupValidationSchema } from "../../utils";
+import { GeneralButton, GeneralButtonText, LoginBtmText, SignupHeaderText, SignupKeyboardAvoiding, SignupLayout, SignupLayoutInside } from "../../styles/HomeScreen";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height; 
+import { Images } from "../../config";
 
 export const SignupScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
@@ -49,7 +46,7 @@ export const SignupScreen = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
+    <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
       <SignupLayout>
         <SignupHeaderText>Register</SignupHeaderText>
         <SignupLayoutInside>

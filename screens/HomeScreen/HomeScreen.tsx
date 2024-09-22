@@ -1,27 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, ImageBackground, Image, SafeAreaView } from "react-native";
+import { View, TouchableOpacity, ImageBackground, Image, SafeAreaView } from "react-native";
 import { signOut } from "firebase/auth";
-import { auth, database, Colors } from "../config";
+import { auth, database, Flags, Images } from "../../config";
 import { ref, get } from "firebase/database";
-import Animated, { FadeInDown, interpolateColor, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import {
-  BottomTextWhite, HomeBtmIcons, HomeBtmIconText, HomeBtmView, HomeHeaderLanguageView,
-  HomeHeaderLanguageViewText, HomeHeaderSmallTextNumber, HomeHeaderText, HomeHeaderTextNumber,
-  HomeLanguageWordsView, HomeLayout, HomePracticeButton, HomePracticeButtonText,
-  HomeVerticalView, LanguageInsideAlphabetText, LanguageInsideAlphabetView,
-  LanguageInsiderText, LanguageInsiderView, LanguageInsideView, LanguageScrollView
-} from "../styles/HomeScreen";
-import { Flags } from "../config/flags";
-
-const mic_icon = require('../assets/icons/new_mic_permission.png');
-const cam_icon = require('../assets/icons/new_cam_permission.png');
-export const background = require('../assets/background_img.jpg');
-const back_icon = require("../assets/icons/shutdown.png");
+  HomeLayout, HomeHeaderSmallTextNumber, HomeHeaderTextNumber, HomeHeaderText, 
+  HomeHeaderLanguageView, HomeHeaderLanguageViewText, HomeLanguageWordsView, 
+  HomePracticeButton, HomePracticeButtonText, BottomTextWhite, HomeBtmView, 
+  HomeBtmIcons, HomeBtmIconText, HomeVerticalView, LanguageScrollView, 
+  LanguageInsideAlphabetView, LanguageInsideAlphabetText, LanguageInsideView, 
+  LanguageInsiderView, LanguageInsiderText, HomeLayoutHeader,
+  HomeWordNumberView,
+  LogoutIcon
+} from "./HomeScreen.styles";
 
 export const HomeScreen = ({ uid, navigation }) => {
-  const [wordsList, setWordsList] = useState<[string, string][]>([]); // Properly initialize state as array of tuples
+  const [wordsList, setWordsList] = useState<[string, string][]>([]);
   const [word_num, setWordNum] = useState(0);
-  const button_practice_progress = useSharedValue(0);
   const [userInfo, setUserInfo] = useState(null);
   const [showText, setShowText] = useState(false);
 
@@ -42,7 +38,6 @@ export const HomeScreen = ({ uid, navigation }) => {
         console.log("Hello new user. If you want to start, you need to add words.");
       }
 
-      // Combine the words into a single array of pairs
       const combinedWords = currentOriginalWords.map((originalWord: any, index: number) => {
         const translatedWord = currentTranslatedWords[index] || "";
         return [originalWord, translatedWord];
@@ -58,7 +53,6 @@ export const HomeScreen = ({ uid, navigation }) => {
   };
 
   const LanguageView = () => {
-    // Group the words by their first letter
     const groupedWords: Record<string, [string, string][]> = {};
   
     wordsList.forEach(([originalWord, translatedWord]) => {
@@ -73,15 +67,13 @@ export const HomeScreen = ({ uid, navigation }) => {
       <LanguageScrollView showsVerticalScrollIndicator={false}>
         {Object.keys(groupedWords).map((letter) => (
           <View key={letter}>
-            {/* Display the Alphabet Header */}
             <LanguageInsideAlphabetView>
               <LanguageInsideAlphabetText>{letter}</LanguageInsideAlphabetText>
             </LanguageInsideAlphabetView>
   
-            {/* Multiple LanguageInsideView for each word under the same letter */}
             {groupedWords[letter].map(([originalWord, translatedWord], index) => (
               <LanguageInsideView key={index}>
-                <LanguageInsiderView style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 4 }}>
+                <LanguageInsiderView>
                   <LanguageInsiderText>{originalWord}</LanguageInsiderText>
                   <LanguageInsiderText>{translatedWord}</LanguageInsiderText>
                 </LanguageInsiderView>
@@ -93,7 +85,7 @@ export const HomeScreen = ({ uid, navigation }) => {
     );
   };
 
-    useEffect(() => {
+  useEffect(() => {
     if (uid) {
       const timer = setTimeout(async () => {
         await handleListingWords();
@@ -102,69 +94,42 @@ export const HomeScreen = ({ uid, navigation }) => {
           .then((snapshot) => {
             if (snapshot.exists()) {
               setUserInfo(snapshot.val());
-              console.log(snapshot.val());
               setShowText(true);
             } else {
               console.log("User data not found");
             }
           })
-          .catch((error) => {
-            console.log("Error fetching user data: " + error.message);
-          });
+          .catch((error) => console.log("Error fetching user data: " + error.message));
       }, 3000);
     } else {
       console.log("No user is currently logged in.");
     }
   }, [uid]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: interpolateColor(button_practice_progress.value, [0, 1], ['#CA9B18', '#125EC6']),
-    };
-  });
-
-  useEffect(() => {
-    if (word_num >= word_num) return;
-
-    const intervalId = setInterval(() => {
-      setWordNum(prevNumber => prevNumber + 1);
-    }, 500);
-
-    return () => clearInterval(intervalId);
-  }, [word_num]);
-
   const handleLogout = () => {
     signOut(auth).catch((error) => console.log("Error logging out: ", error));
   };
 
   return (
-    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
+    <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
       <SafeAreaView style={{ flex: 1 }}>
         <HomeLayout entering={FadeInDown.duration(2000).delay(500)}>
-          <View style={{
-            flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems: "center",
-            alignContent: 'center', marginTop: 20, paddingHorizontal: 32,
-          }}>
-            <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => handleLogout()}>
-              <Image style={{ alignSelf: 'center', width: 36, height: 36 }} source={back_icon} />
+          <HomeLayoutHeader>
+            <TouchableOpacity onPress={handleLogout}>
+              <LogoutIcon source={Images.log_out} />
             </TouchableOpacity>
             {showText && (
               <HomeHeaderSmallTextNumber entering={FadeInDown.duration(3000).delay(500)}>
                 Hello, {userInfo.username}
               </HomeHeaderSmallTextNumber>
             )}
-          </View>
+          </HomeLayoutHeader>
+
           <View>
-            <Animated.View style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '70%'
-            }}>
-              <HomeHeaderTextNumber entering={FadeInDown.duration(3000).delay(500)}>
-                {word_num}
-              </HomeHeaderTextNumber>
+            <HomeWordNumberView>
+              <HomeHeaderTextNumber entering={FadeInDown.duration(3000).delay(500)}>{word_num}</HomeHeaderTextNumber>
               <HomeHeaderText>Words</HomeHeaderText>
-            </Animated.View>
+            </HomeWordNumberView>
             <HomeHeaderLanguageView>
               <HomeHeaderLanguageViewText>ENG {Flags.eng}</HomeHeaderLanguageViewText>
               <HomeHeaderLanguageViewText>TUR {Flags.tur}</HomeHeaderLanguageViewText>
@@ -179,14 +144,15 @@ export const HomeScreen = ({ uid, navigation }) => {
               <BottomTextWhite>Or You can add new word by input</BottomTextWhite>
             </TouchableOpacity>
           </View>
+
           <HomeBtmView>
             <TouchableOpacity onPress={() => navigation.navigate("Speech")}>
-              <HomeBtmIcons source={mic_icon} />
+              <HomeBtmIcons source={Images.mic_icon} />
               <HomeBtmIconText>Voice</HomeBtmIconText>
             </TouchableOpacity>
             <HomeVerticalView />
             <TouchableOpacity onPress={() => navigation.navigate("Ocr")}>
-              <HomeBtmIcons source={cam_icon} />
+              <HomeBtmIcons source={Images.cam_icon} />
               <HomeBtmIconText>Camera</HomeBtmIconText>
             </TouchableOpacity>
           </HomeBtmView>
@@ -195,82 +161,3 @@ export const HomeScreen = ({ uid, navigation }) => {
     </ImageBackground>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.blue_light,
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  },
-  header_text: {
-    fontFamily:'Helvetica-Bold', 
-    fontSize: 42, 
-    color: Colors.white,
-    alignSelf: 'center', 
-    marginTop: 96,
-    marginVertical: 16
-  },
-  header_language_text: {
-    fontFamily:'Helvetica-Bold', 
-    fontSize: 24, 
-    color: Colors.white,
-    alignSelf: 'center', 
-    marginVertical: 12,
-    textAlign: 'center'
-  },
-  header_line: {
-    height: 1, 
-    width: '80%', 
-    backgroundColor: Colors.white,
-  },
-  header_line_vertical: {
-    width: 1, 
-    height: 160, 
-    backgroundColor: Colors.black,
-  },
-  card_view: {
-    height: 42,
-    width: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    borderRadius: 16,
-    backgroundColor: Colors.whiteLight,
-  },
-  card_view_text: {
-    color: Colors.black,
-    fontSize: 16,
-    fontFamily:'Helvetica-Medium',
-    textAlign: 'center'
-  },
-  icons: {
-    height: 64,
-    width: 64,
-    marginBottom: 12,
-  },
-  icon_text: {
-    fontSize: 16,
-    color: Colors.black,
-    fontFamily: 'Helvetica-Bold',
-    textAlign: 'center',
-  },
-  btm_view: {
-    backgroundColor: Colors.whiteLight,
-    height: 180, 
-    width: '100%', 
-    borderRadius: 24, 
-    alignItems: 'center', 
-    justifyContent: 'space-evenly', 
-    flexDirection: 'row',
-  },
-  numberContainer: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  numberText: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-});

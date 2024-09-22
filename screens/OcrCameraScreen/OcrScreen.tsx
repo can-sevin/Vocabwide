@@ -6,14 +6,11 @@ import { useRef, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import textRecognition, { TextRecognitionScript } from '@react-native-ml-kit/text-recognition';
-import { HomeBtmView } from '../styles/HomeScreen';
+import { HomeBtmView } from '../../styles/HomeScreen';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { Colors, auth, database } from "../config";
+import { Colors, auth, database, Images } from "../../config";
 import { ref, get, set } from 'firebase/database'; // Import Firebase functions
 import translate from 'translate-google-api'; // Import the translation API
-
-const gallery_btn = require('../assets/icons/photo-gallery.png');
-const back_icon = require("../assets/icons/back.png");
 
 export const OcrScreen = ({ navigation }) => {
   const [permission, requestPermission] = useCameraPermissions();
@@ -192,20 +189,20 @@ export const OcrScreen = ({ navigation }) => {
         ref={ref => setCamera(ref as any)}
       >
         <TouchableOpacity style={{ alignSelf: 'flex-start' }} onPress={() => navigation.goBack()}>
-          <Image style={{ width: 36, height: 36, marginLeft: 16, marginTop: 20 }} source={back_icon} />  
+          <Image style={{ width: 36, height: 36, marginLeft: 16, marginTop: 20 }} source={Images.back_icon} />  
         </TouchableOpacity>
         <View style={{ width: '100%', alignItems: 'flex-end' }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '60%', alignItems: 'center', marginRight: 24 }}>
             <TouchableOpacity onPress={takePhotoHandler}>
               <LottieView
                 ref={cameraAnimationRef}
-                source={require('../assets/capture.json')}
+                source={Images.lottie_capture}
                 loop={false}
                 style={styles.lottieAnimation}
               />
             </TouchableOpacity>
             <TouchableOpacity onPress={pickImageHandler}>
-              <Image source={gallery_btn} style={{ width: 42, height: 42 }} />
+              <Image source={Images.gallery_btn} style={{ width: 42, height: 42 }} />
             </TouchableOpacity>
           </View>
 

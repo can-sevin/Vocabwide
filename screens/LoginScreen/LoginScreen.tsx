@@ -4,20 +4,18 @@ import { Formik } from "formik";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import {TextInput, FormErrorMessage } from "../components";
-import { auth } from "../config";
-import { useTogglePasswordVisibility } from "../hooks";
-import { loginValidationSchema } from "../utils";
-import { GeneralButton, GeneralButtonText, LoginBtmText, LoginHeaderText, LoginLayout, LoginLayoutInside } from "../styles/HomeScreen";
-import { background } from "./HomeScreen";
+import {TextInput, FormErrorMessage } from "../../components";
+import { auth, Images } from "../../config";
+import { useTogglePasswordVisibility } from "../../hooks";
+import { loginValidationSchema } from "../../utils";
+import { GeneralButton, GeneralButtonText, LoginBtmText, LoginHeaderText, LoginLayout, LoginLayoutInside } from "../../styles/HomeScreen";
 
 
 export const LoginScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
-  const { passwordVisibility, handlePasswordVisibility, rightIcon } =
-    useTogglePasswordVisibility();
+  const { passwordVisibility, handlePasswordVisibility, rightIcon } = useTogglePasswordVisibility();
 
-  const handleLogin = (values) => {
+  const handleLogin = (values: { email: any; password: any; }) => {
     const { email, password } = values;
     signInWithEmailAndPassword(auth, email, password).catch((error) =>
       setErrorState(error.message)
@@ -25,7 +23,7 @@ export const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
+    <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
     <LoginLayout>
         <LoginHeaderText>Welcome to login</LoginHeaderText>
         <LoginLayoutInside>

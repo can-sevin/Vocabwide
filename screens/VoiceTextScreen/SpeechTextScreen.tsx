@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, Image, Text, View, ScrollView, Platform, TouchableOpacity, ImageBackground, Pressable, Modal } from "react-native";
-import { Colors, auth, database } from "../config";
+import { Colors, Images, auth, database } from "../../config";
 import { ref, get, set } from 'firebase/database'; // Import Firebase functions
 import Voice, {
   SpeechRecognizedEvent,
@@ -9,20 +9,11 @@ import Voice, {
   SpeechVolumeChangeEvent,
 } from "@react-native-voice/voice";
 import LottieView from 'lottie-react-native';
-import { HomeBtmView } from "../styles/HomeScreen";
-import { background } from "./HomeScreen";
+import { HomeBtmView } from "../../styles/HomeScreen";
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import {  } from "react-native";
 import translate from 'translate-google-api'; // Import the translation API
 
-type Props = {
-  navigation: any;
-};
-
 export const SpeechTextScreen = ({ navigation }) => {
-  const mic_icon = require("../assets/icons/new_mic_permission.png");
-  const back_icon = require("../assets/icons/back.png");
-
   const [recognized, setRecognized] = useState("");
   const [pitch, setPitch] = useState("");
   const [error, setError] = useState("");
@@ -246,10 +237,10 @@ export const SpeechTextScreen = ({ navigation }) => {
   )}
     
   return (
-    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover">
+    <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover">
     <Animated.View style={styles.container} entering={FadeInDown.duration(2000).delay(100)}>
     <TouchableOpacity style={{alignSelf: 'flex-start'}} onPress={() => navigation.goBack()}>
-      <Image style={{width: 36, height: 36, marginLeft: 12}} source={back_icon} />  
+      <Image style={{width: 36, height: 36, marginLeft: 12}} source={Images.back_icon} />  
     </TouchableOpacity>
     <Text style={styles.header_text}>Add words by voice</Text>
     <ModalSpeech/>
@@ -263,7 +254,7 @@ export const SpeechTextScreen = ({ navigation }) => {
       style={styles.mic_button}
       onPress={started ? _destroyRecognizer : _startRecognizing}
     >
-      <Image style={styles.mic_icon} source={mic_icon} />
+      <Image style={styles.mic_icon} source={Images.mic_icon} />
     </TouchableOpacity>
 
     <HomeBtmView
@@ -273,7 +264,7 @@ export const SpeechTextScreen = ({ navigation }) => {
     >
     {started && !end && (
       <LottieView
-        source={require("../assets/recognition_new.json")}
+        source={Images.lottie_recognition}
         autoPlay
         loop
         style={styles.lottieAnimation}

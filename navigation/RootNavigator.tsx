@@ -8,18 +8,10 @@ import { AuthenticatedUserContext } from "../providers";
 import { LoadingIndicator } from "../components";
 import { auth } from "../config";
 
-import { useFonts } from 'expo-font';
-
 export const RootNavigator = () => {
   const { user, setUser } = useContext(AuthenticatedUserContext);
   const [isLoading, setIsLoading] = useState(true);
   
-  const [fontsLoaded, fontError] = useFonts({
-    'Helvetica-Medium': require('../assets/fonts/helvetica-neue-medium.ttf'),
-    'Helvetica-Bold': require('../assets/fonts/helvetica-neue-bold.ttf'),
-    'Helvetica-Light': require('../assets/fonts/helvetica-neue-light.ttf'),
-  });    
-
   useEffect(() => {
     // onAuthStateChanged returns an unsubscriber
     const unsubscribeAuthStateChanged = onAuthStateChanged(

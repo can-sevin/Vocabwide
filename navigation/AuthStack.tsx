@@ -1,16 +1,20 @@
 import * as React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { LoginScreen, SignupScreen, ForgotPasswordScreen } from "../screens";
-import { PermissionScreen } from "../screens/PermissionScreen";
+import { PermissionScreen } from "../screens/PermissionScreen/PermissionScreen";
 import { Camera } from "expo-camera";
 import { Audio } from "expo-av";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, View, StyleSheet } from "react-native";
+import { ActivityIndicator } from "react-native";
+import { Colors } from "../config";
+import { useCustomFonts } from "../providers/Fonts";
+import { LoadingContainer } from "./style";
 
 const Stack = createStackNavigator();
 
 export const AuthStack = () => {
   const [route, setRoute] = useState("");
+  const fontsLoaded = useCustomFonts();
 
   useEffect(() => {
     const checkPermissions = async () => {
@@ -22,11 +26,11 @@ export const AuthStack = () => {
     checkPermissions();
   }, []);
 
-  if (!route) {
+  if (!route && !fontsLoaded) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+      <LoadingContainer>
+        <ActivityIndicator size="large" color={Colors.main_yellow} />
+      </LoadingContainer>
     );
   }
 
@@ -42,13 +46,5 @@ export const AuthStack = () => {
     </Stack.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default AuthStack;

@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, ImageBackground } from "react-native";
 
-import { checkVoicePermissions, openApplicationSettings } from "../utils";
-import { Colors } from "../config";
-import { background } from "./HomeScreen";
+import { checkCamPermissions, checkVoicePermissions, openApplicationSettings } from "../../utils";
+import { Colors, Images } from "../../config";
 
 export const PermissionScreen = ({ navigation }) => {
   const [voicePermission, setVoicePermission] = useState('denied');
   const [camPermission, setCamPermission] = useState('denied');
-
-  const mic_icon = require('../assets/icons/new_mic_permission.png');
-  const cam_icon = require('../assets/icons/new_cam_permission.png');
-  const succeed_icon = require('../assets/icons/succeed.png');
 
   const getVoicePermissions = async () => {
     const voice = await checkVoicePermissions();
@@ -35,13 +30,13 @@ export const PermissionScreen = ({ navigation }) => {
         {voicePermission !== 'granted' ? (
           <>
             <TouchableOpacity onPress={() => openApplicationSettings()}>
-              <Image style={styles.icons} source={mic_icon}/>
+              <Image style={styles.icons} source={Images.mic_icon}/>
             </TouchableOpacity>
             <Text style={styles.small_text}>Give Voice Permission into application permission settings</Text>
           </>
           ):(
             <>
-              <Image style={styles.icons} source={succeed_icon}/>
+              <Image style={styles.icons} source={Images.succeed_icon}/>
               <Text style={styles.small_text}>You had gave Voice Permission</Text>
             </>
           )}
@@ -57,13 +52,13 @@ export const PermissionScreen = ({ navigation }) => {
         {camPermission !== 'granted' ? (
           <>
             <TouchableOpacity onPress={() => openApplicationSettings()}>
-              <Image style={styles.icons} source={cam_icon}/>
+              <Image style={styles.icons} source={Images.cam_icon}/>
             </TouchableOpacity>
             <Text style={styles.small_text}>Give Camera Permission into application permission settings</Text>
           </>
           ):(
             <>
-              <Image style={styles.icons} source={succeed_icon}/>
+              <Image style={styles.icons} source={Images.succeed_icon}/>
               <Text style={styles.small_text}>You had gave Camera Permission</Text>
             </>
           )}
@@ -73,14 +68,7 @@ export const PermissionScreen = ({ navigation }) => {
   }
 
   return (
-    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover">
-      {/* <Video 
-        style={styles.container} 
-        source={require('../assets/videos/permission.mp4')}         
-        isMuted
-        resizeMode={ResizeMode.COVER}
-        isLooping
-      > */}
+    <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover">
       <SafeAreaView style={styles.container}>
       <Text style={styles.header_text}>Welcome to Vocabwide</Text>
       <VoicePermission/>

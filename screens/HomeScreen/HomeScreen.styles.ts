@@ -1,0 +1,166 @@
+import styled from 'styled-components/native';
+import { Colors } from "../../config";
+import Animated from 'react-native-reanimated';
+import { View } from 'react-native';
+
+export const HomeLayout = styled(Animated.View)`
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const HomeLayoutHeader = styled(View)`
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  margin-top: 20px;
+  padding-horizontal: 32px;
+`;
+
+export const HomeWordNumberView = styled(Animated.View)`
+  flex-direction: row;
+  justify-content: space-between;
+  width: 70%;
+`;
+
+export const HomeHeaderTextNumber = styled(Animated.Text)`
+  font-size: 42px;
+  color: ${Colors.white};
+  font-family: Helvetica-Bold;
+  margin-top: 32px;
+  padding-right: 32px;
+`;
+
+export const HomeHeaderText = styled.Text`
+  font-size: 42px;
+  color: ${Colors.white};
+  font-family: Helvetica-Bold;
+  margin-top: 32px;
+`;
+
+export const HomeHeaderSmallTextNumber = styled(Animated.Text)`
+  font-size: 24px;
+  color: ${Colors.white};
+  font-family: Helvetica-Bold;
+`;
+
+export const HomeHeaderLanguageView = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  width: 70%;
+`;
+
+export const HomeHeaderLanguageViewText = styled.Text`
+  font-family: Helvetica-Bold;
+  font-size: 24px;
+  color: ${Colors.white};
+  align-self: center;
+  margin-vertical: 12px;
+  text-align: center;
+`;
+
+export const HomeLanguageWordsView = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 16px;
+  border-radius: 16px;
+  overflow: hidden;
+`;
+
+export const LanguageScrollView = styled.ScrollView`
+  max-height: 280px;
+`;
+
+export const LanguageInsideAlphabetView = styled.View`
+  background-color: ${Colors.LighterGray2};
+  padding: 4px;
+`;
+
+export const LanguageInsideView = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: ${Colors.LighterGray5};
+  padding-horizontal: 16px;
+`;
+
+export const LanguageInsiderView = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  flex: 1;
+  margin-vertical: 2px;
+  margin-horizontal: 12px;
+`;
+
+export const LanguageInsiderText = styled.Text`
+  color: ${Colors.black};
+  font-size: 16px;
+  font-family: Helvetica-Medium;
+  text-align: center;
+`;
+
+export const LanguageInsideAlphabetText = styled.Text`
+  color: ${Colors.white};
+  font-size: 24px;
+  font-family: Helvetica-Bold;
+  margin-horizontal: 8px;
+`;
+
+export const HomePracticeButton = styled.TouchableOpacity`
+  background-color: ${Colors.whiteLight};
+  border-radius: 8px;
+  height: 42px;
+  width: 180px;
+  align-self: center;
+  justify-content: center;
+  align-items: center;
+  margin-vertical: 36px;
+`;
+
+export const HomePracticeButtonText = styled.Text`
+  font-size: 20px;
+  text-align: center;
+  font-family: Helvetica-Medium;
+`;
+
+export const BottomTextWhite = styled.Text`
+  font-size: 16px;
+  color: ${Colors.white};
+  font-family: Helvetica-Medium;
+  align-self: center;
+`;
+
+export const HomeBtmView = styled.View`
+  background-color: rgba(255, 255, 255, 0.5);
+  height: 180px;
+  width: 100%;
+  border-radius: 24px;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-direction: row;
+`;
+
+export const HomeBtmIcons = styled.Image`
+  height: 48px;
+  width: 48px;
+  margin-bottom: 12px;
+  align-self: center;
+`;
+
+export const HomeBtmIconText = styled.Text`
+  font-size: 12px;
+  color: ${Colors.black};
+  font-family: Helvetica-Bold;
+  text-align: center;
+`;
+
+export const HomeVerticalView = styled.View`
+  width: 1px;
+  height: 160px;
+  background-color: ${Colors.black};
+`;
+
+export const LogoutIcon = styled.Image`
+  width: 36px;
+  height: 36px;
+`;
