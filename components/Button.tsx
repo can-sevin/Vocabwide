@@ -35,6 +35,6 @@ const styles = StyleSheet.create({
   borderlessButtonText: {
     fontSize: 18,
     color: Colors.whiteLight,
-    fontFamily: 'Circular-Medium',
+    fontFamily: 'Helvetica-Medium',
   }
 });

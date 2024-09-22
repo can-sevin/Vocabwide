@@ -10,8 +10,9 @@ export const GeneralButton = styled.TouchableOpacity`
     width: 100%;
     justifyContent: center;
     alignItems: center;
+    alignSelf: flex-end;
     marginTop: 40px;
-    backgroundColor: ${Colors.main_blue};
+    backgroundColor: ${Colors.LighterGray2};
     padding: 10px;
     borderRadius: 8px;
 `
@@ -21,14 +22,13 @@ export const GeneralButtonText = styled.Text`
     fontWeight: 700;
 `
 export const LoginBtmText = styled.Text`
-    fontFamily: Circular-Medium; 
+    fontFamily: Helvetica-Medium; 
     fontSize: 16px; 
     alignSelf: center; 
     marginTop: 12px;
 `
 export const LoginLayout = styled.View`
     flex: 1;
-    backgroundColor: #6537C5;
     justifyContent: space-between;
 `
 export const HomeLayout = styled(Animated.View)`
@@ -48,7 +48,7 @@ export const LoginLayoutInside = styled.View`
     justifyContent: center;
     alignContent: center;
     width: 100%;
-    height: ${windowHeight * 0.6};
+    height: ${windowHeight * 0.55};
     marginTop: 64px;
     padding: 32px;
 `
@@ -57,17 +57,16 @@ export const SignupLayoutInside = styled(LoginLayoutInside)`
     backgroundColor: ${Colors.whiteLight};
     borderRadius: 16px;
     alignSelf: center;
-    justifyContent: center;
-    alignContent: center;
+    justifyContent: flex-start;
+    alignContent: flex-start;
     width: 100%;
-    height: ${windowHeight * 0.6};
-    marginTop: 64px;
-    padding: 12px;
+    height: ${windowHeight * 0.55};
+    padding: 32px;
 `
 export const LoginHeaderText = styled.Text`
     fontSize: 28px;
     color: ${Colors.white};
-    fontFamily: Circular-Bold;
+    fontFamily: Helvetica-Bold;
     alignSelf: center;
     marginTop: 128px;
 `
@@ -81,7 +80,7 @@ export const HomeHeaderText = styled(LoginHeaderText)`
 `
 export const HomeHeaderTextAnimated = styled(Animated.Text)`
     color: ${Colors.white};
-    fontFamily: Circular-Bold;
+    fontFamily: Helvetica-Bold;
     alignSelf: center;
     fontSize: 42px;
     marginTop: 96px;
@@ -89,17 +88,17 @@ export const HomeHeaderTextAnimated = styled(Animated.Text)`
 export const HomeHeaderSmallTextNumber = styled(Animated.Text)`
     fontSize: 24;
     color: ${Colors.white};
-    fontFamily: Circular-Bold;
+    fontFamily: Helvetica-Bold;
 `
 export const HomeHeaderTextNumber = styled(Animated.Text)`
     fontSize: 42px;
     color: ${Colors.white};
-    fontFamily: Circular-Bold;
+    fontFamily: Helvetica-Bold;
     marginTop: 32px;
     padding-right: 32px;
 `
 export const SignupKeyboardAvoiding = styled.KeyboardAvoidingView`
-    maxHeight: ${windowHeight * 0.5};
+    maxHeight: ${windowHeight * 0.4};
 `
 export const HomeHeaderLanguageView = styled(Animated.View)`
     flexDirection: row;
@@ -135,17 +134,17 @@ export const LanguageInsiderView = styled.View`
 export const LanguageInsiderText = styled.Text`
     color: ${Colors.black};
     fontSize: 16px;
-    fontFamily: Circular-Medium;
+    fontFamily: Helvetica-Medium;
     textAlign: center;
 `
 export const LanguageInsideAlphabetText = styled.Text`
     color: ${Colors.white};
     fontSize: 24px;
-    fontFamily: Circular-Bold;
+    fontFamily: Helvetica-Bold;
     marginHorizontal: 8px;
 `
 export const HomeHeaderLanguageViewText = styled.Text`
-    fontFamily: Circular-Bold; 
+    fontFamily: Helvetica-Bold; 
     fontSize: 24px;
     color: ${Colors.white};
     alignSelf: center; 
@@ -171,7 +170,7 @@ export const HomeBtmIcons = styled.Image`
 export const HomeBtmIconText = styled.Text`
     fontSize: 12px;
     color: ${Colors.black};
-    fontFamily: Circular-Bold;
+    fontFamily: Helvetica-Bold;
     textAlign: center;
 `
 export const HomeVerticalView = styled.View`
@@ -193,12 +192,12 @@ export const HomePracticeButton = styled.TouchableOpacity`
 export const HomePracticeButtonText = styled.Text`
     fontSize: 20px;
     textAlign: center;
-    fontFamily: Circular-Medium;
+    fontFamily: Helvetica-Medium;
     alignSelf: center;
 `
 export const BottomTextWhite = styled.Text`
     fontSize: 16px;
     color: ${Colors.white};
-    fontFamily: Circular-Medium;
+    fontFamily: Helvetica-Medium;
     alignSelf: center;
 `

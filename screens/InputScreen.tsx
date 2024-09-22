@@ -7,6 +7,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup'; // Import Yup for validation
 import { ref, get, set } from 'firebase/database'; // Import Firebase database functions
 import { ScrollView } from 'react-native-gesture-handler';
+import translate from 'translate-google-api'; // Import the translation package
 
 export const background = require('../assets/background_img.jpg');
 const back_icon = require("../assets/icons/back.png");
@@ -19,8 +20,8 @@ const wordValidationSchema = Yup.object().shape({
 });
 
 export const InputScreen = ({ navigation }) => {
-  const [text, setText] = useState<string>('If you want to add multiple words, please separate each word with a space.')
-  const [wordsList, setWordsList] = useState<string[]>(['loading']);
+  const [text, setText] = useState<string>('If you want to add multiple words, please separate each word with a space.');
+  const [wordsList, setWordsList] = useState<string[]>(['']);
   
   const handleAddingWords = async (values: { words: string }) => {
     const { words } = values;
@@ -30,38 +31,75 @@ export const InputScreen = ({ navigation }) => {
       console.log("No user is currently logged in.");
       return;
     }
-
+  
     const userId = currentUser.uid;
-    const userWordsRef = ref(database, `users/${userId}/words`);
+    const originalWordsRef = ref(database, `users/${userId}/originalWords`);
+    const translatedWordsRef = ref(database, `users/${userId}/translatedWords`);
   
     try {
-      const snapshot = await get(userWordsRef);
-      let currentWords = snapshot.exists() ? snapshot.val() : [];
-
-      if (!Array.isArray(currentWords)) {
-        currentWords = [];
+      // Fetch existing original words from Firebase
+      const originalSnapshot = await get(originalWordsRef);
+      let currentOriginalWords = originalSnapshot.exists() ? originalSnapshot.val() : [];
+  
+      if (!Array.isArray(currentOriginalWords)) {
+        currentOriginalWords = [];
       }
-            
+  
+      // Process the new words
       const newWords = words.trim().split(/\s+/).map(word => word.toLowerCase());
-      const uniqueNewWords = newWords.filter(word => !currentWords.includes(word.toLowerCase()));
-        
+      const uniqueNewWords = newWords.filter(word => !currentOriginalWords.includes(word));
+  
       if (uniqueNewWords.length === 0) {
-        setText("No new unique words to add.")
+        setText("No new unique words to add.");
         return;
       }
   
-      const updatedWords = [...currentWords, ...uniqueNewWords];
+      // Attempt to translate the unique new words using translate-google-api
+      try {
+        const translatedWords = await translate(uniqueNewWords, {
+          tld: "com",  // Adjust domain if necessary
+          to: "tr"     // Target language for translation (Turkish in this case)
+        });
   
-      await set(userWordsRef, updatedWords);
-
-      setText(`Words successfully added: ${uniqueNewWords.join(", ")}`);
-      setWordsList(uniqueNewWords);
+        // Check if translation returned correctly
+        if (!translatedWords || translatedWords.length !== uniqueNewWords.length) {
+          console.log("Translation failed or mismatched length.");
+          setText("Error translating words.");
+          return;
+        }
+  
+        // Fetch existing translated words from Firebase
+        const translatedSnapshot = await get(translatedWordsRef);
+        let currentTranslatedWords = translatedSnapshot.exists() ? translatedSnapshot.val() : [];
+  
+        if (!Array.isArray(currentTranslatedWords)) {
+          currentTranslatedWords = [];
+        }
+  
+        // Combine the existing and new translated words
+        const updatedOriginalWords = [...currentOriginalWords, ...uniqueNewWords];
+        const updatedTranslatedWords = [...currentTranslatedWords, ...translatedWords];
+  
+        // Update Firebase with separate original and translated words
+        await set(originalWordsRef, updatedOriginalWords);
+        await set(translatedWordsRef, updatedTranslatedWords);
+  
+        // Format the words for display as "original -> translated"
+        const formattedWordsList = updatedOriginalWords.map((word, index) => `${word} -> ${updatedTranslatedWords[index]}`);
+  
+        // Update the local state to reflect the added words
+        setWordsList(formattedWordsList.reverse());
+        setText(`Words successfully added: ${uniqueNewWords.join(", ")}`);
+      } catch (translateError) {
+        console.error("Error during translation:", translateError);
+        setText("Error translating words. Please check your internet connection or try again later.");
+      }
     } catch (error) {
-      setText("Error adding words to the database")
-      console.log("Error adding words to the database", error)
+      setText("Error adding words to the database.");
+      console.error("Error adding words to the database", error);
     }
   };
-      
+          
   return (
     <ImageBackground source={background} style={styles.container} resizeMode="cover" blurRadius={6}>
       <TouchableOpacity style={{ alignSelf: 'flex-start' }} onPress={() => navigation.goBack()}>
@@ -107,11 +145,8 @@ export const InputScreen = ({ navigation }) => {
         </Formik>
         <Text style={styles.header_text}>Last Added Words</Text>
         <ScrollView style={{ paddingVertical: 8 }}>
-        {wordsList.map((word, index) => (
-          <>
-            {console.log('infos', word, index)}
-            <BottomTextWhite style={{ marginVertical: 8 }} key={index}>{word}</BottomTextWhite>
-          </>
+          {wordsList.map((word, index) => (
+          <BottomTextWhite style={{ marginVertical: 8 }} key={index}>{word}</BottomTextWhite>
         ))}
         </ScrollView>
       </View>

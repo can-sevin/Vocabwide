@@ -15,9 +15,6 @@ export const RootNavigator = () => {
   const [isLoading, setIsLoading] = useState(true);
   
   const [fontsLoaded, fontError] = useFonts({
-    'Circular-Black': require('../assets/fonts/circular-std-black.ttf'),
-    'Circular-Bold': require('../assets/fonts/circular-std-bold.ttf'),
-    'Circular-Medium': require('../assets/fonts/circular-std-medium.ttf'),
     'Helvetica-Medium': require('../assets/fonts/helvetica-neue-medium.ttf'),
     'Helvetica-Bold': require('../assets/fonts/helvetica-neue-bold.ttf'),
     'Helvetica-Light': require('../assets/fonts/helvetica-neue-light.ttf'),

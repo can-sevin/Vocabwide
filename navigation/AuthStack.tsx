@@ -6,7 +6,6 @@ import { Camera } from "expo-camera";
 import { Audio } from "expo-av";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View, StyleSheet } from "react-native";
-import { SpeechTextScreen } from "../screens/SpeechTextScreen";
 
 const Stack = createStackNavigator();
 
@@ -20,7 +19,6 @@ export const AuthStack = () => {
       const result = cam.granted && mic.granted;
       setRoute(result ? 'Login' : 'Permission');
     };
-
     checkPermissions();
   }, []);
 

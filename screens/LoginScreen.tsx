@@ -25,7 +25,7 @@ export const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover">
+    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
     <LoginLayout>
         <LoginHeaderText>Welcome to login</LoginHeaderText>
         <LoginLayoutInside>
@@ -46,7 +46,6 @@ export const LoginScreen = ({ navigation }) => {
               handleBlur,
             }) => (
               <KeyboardAwareScrollView>
-                {/* Input fields */}
                 <TextInput
                 name="email"
                 leftIconName="email"
@@ -58,7 +57,8 @@ export const LoginScreen = ({ navigation }) => {
                 value={values.email}
                 onChangeText={handleChange("email")}
                 onBlur={handleBlur("email")}
-                errorState={errorState} rightIcon={undefined} handlePasswordVisibility={undefined}                />
+                errorState={errorState} rightIcon={undefined} handlePasswordVisibility={undefined}                
+                />
                 <FormErrorMessage
                   error={errors.email}
                   visible={touched.email}

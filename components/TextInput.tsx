@@ -20,7 +20,7 @@ export const TextInput = ({
         borderRadius: 12,
         flexDirection: 'row',
         padding: 12,
-        marginVertical: 12,
+        marginBottom: 16,
         width,
         borderWidth: 1,
         borderColor: Colors.mediumGray
@@ -32,7 +32,7 @@ export const TextInput = ({
           width: '100%',
           fontSize: 16,
           color: Colors.black,
-          fontFamily: 'Circular-Medium'
+          fontFamily: 'Helvetica-Medium'
         }}
         placeholderTextColor={Colors.mediumGray}
         {...otherProps}

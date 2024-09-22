@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, Image, SafeAreaView, Text, View, ScrollView, Platform, TouchableOpacity, ImageBackground, Pressable } from "react-native";
-import { Colors } from "../config";
+import { StyleSheet, Image, Text, View, ScrollView, Platform, TouchableOpacity, ImageBackground, Pressable, Modal } from "react-native";
+import { Colors, auth, database } from "../config";
+import { ref, get, set } from 'firebase/database'; // Import Firebase functions
 import Voice, {
   SpeechRecognizedEvent,
   SpeechResultsEvent,
@@ -10,7 +11,9 @@ import Voice, {
 import LottieView from 'lottie-react-native';
 import { HomeBtmView } from "../styles/HomeScreen";
 import { background } from "./HomeScreen";
-import Animated, { FadeInDown, interpolateColor, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import {  } from "react-native";
+import translate from 'translate-google-api'; // Import the translation API
 
 type Props = {
   navigation: any;
@@ -29,6 +32,9 @@ export const SpeechTextScreen = ({ navigation }) => {
   const [partialResults, setPartialResults] = useState<string[]>([]);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
   const [end, setEnd] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedWord, setSelectedWord] = useState<string | null>(null);
+  const [translatedWord, setTranslatedWord] = useState<string | null>(null);
   const animationRef = useRef<LottieView>(null);
 
   useEffect(() => {
@@ -138,60 +144,160 @@ export const SpeechTextScreen = ({ navigation }) => {
     setEnd("");
   };
 
-  const selectedWords = (result:string, index:number) => {
+  const selectedWords = async (result: string, index: number) => {
     setSelectedIndices((prevIndices) => {
       if (prevIndices.includes(index)) {
-        // Remove index if it's already selected
         return prevIndices.filter((i) => i !== index);
       } else {
-        // Add index if it's not selected
         return [...prevIndices, index];
       }
     });
-      setSelected((prevWords) => [...prevWords, result]);
-  }
+  
+    try {
+      const translation = await translate(result, { to: 'tr' }); // Translate to Turkish
+      setSelectedWord(result);
+      setTranslatedWord(translation[0]); // Store the translation
+      setModalVisible(true); // Show the modal
+    } catch (error) {
+      console.error("Translation Error:", error);
+    }
+  };
 
-return (
-  <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover">
-  <Animated.View style={styles.container} entering={FadeInDown.duration(2000).delay(100)}>
-  <TouchableOpacity style={{alignSelf: 'flex-start'}} onPress={() => navigation.goBack()}>
-    <Image style={{width: 36, height: 36, marginLeft: 12}} source={back_icon} />  
-  </TouchableOpacity>
-  <Text style={styles.header_text}>Add words by voice</Text>
-  <Text style={styles.desc_text}>
-    {end
-      ? "Voice recognition is over, please press the icon"
-      : "Press the button to start or stop speaking."}
-  </Text>
+  const saveWordPair = async () => {
 
-  <TouchableOpacity
-    style={styles.mic_button}
-    onPress={started ? _destroyRecognizer : _startRecognizing}
-  >
-    <Image style={styles.mic_icon} source={mic_icon} />
-  </TouchableOpacity>
+    if (!selectedWord || !translatedWord) {
+      console.log("No word selected or translation is missing.");
+      return;
+    }
+  
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      console.log("No user is currently logged in.");
+      return;
+    }
+  
+    const userId = currentUser.uid;
+    const originalWordsRef = ref(database, `users/${userId}/originalWords`);
+    const translatedWordsRef = ref(database, `users/${userId}/translatedWords`);
+  
+    try {
+      // Fetch existing words from Firebase
+      const originalSnapshot = await get(originalWordsRef);
+      const translatedSnapshot = await get(translatedWordsRef);
+  
+      let currentOriginalWords = originalSnapshot.exists() ? originalSnapshot.val() : [];
+      let currentTranslatedWords = translatedSnapshot.exists() ? translatedSnapshot.val() : [];
+  
+      // Ensure the words are arrays
+      if (!Array.isArray(currentOriginalWords)) currentOriginalWords = [];
+      if (!Array.isArray(currentTranslatedWords)) currentTranslatedWords = [];
+  
+      // Check if the word already exists to avoid duplication
+      if (currentOriginalWords.includes(selectedWord)) {
+        console.log("The word already exists in the originalWords list.");
+        setModalVisible(false);
+        return;
+      }
+  
+      // Add the new words to the arrays
+      const updatedOriginalWords = [...currentOriginalWords, selectedWord];
+      const updatedTranslatedWords = [...currentTranslatedWords, translatedWord];
+  
+      // Save to Firebase
+      await set(originalWordsRef, updatedOriginalWords);
+      await set(translatedWordsRef, updatedTranslatedWords);
+  
+      console.log("Saved successfully:", selectedWord, "->", translatedWord);
+  
+      // Close the modal and reset states
+      setModalVisible(false);
+      setSelectedWord(null);
+      setTranslatedWord(null);
+    } catch (error) {
+      console.error("Error saving words to Firebase:", error);
+    }
+  };
 
-  <HomeBtmView
-    style={[
-      styles.resultsContainer,
-    ]}
-  >
-  {started && !end && (
-    <LottieView
-      source={require("../assets/recognition_new.json")}
-      autoPlay
-      loop
-      style={styles.lottieAnimation}
-    />
+  const ModalSpeech = () => {
+    return(
+        <Modal
+          visible={modalVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setModalVisible(false)}
+        >
+      <View style={styles.modalContainer}>
+      <View style={styles.modalContent}>
+        {/* Display the selected word and its translation */}
+        <Text style={styles.modalText}>{`${selectedWord} -> ${translatedWord}`}</Text>
+        <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '80%'}}>
+        <TouchableOpacity style={styles.saveButton} onPress={saveWordPair}>
+          <Text style={styles.saveButtonText}>Save</Text>
+        </TouchableOpacity>
+      
+        {/* Cancel button to close the modal */}
+        <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+          <Text style={styles.cancelButtonText}>Cancel</Text>
+        </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  </Modal>
   )}
+    
+  return (
+    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover">
+    <Animated.View style={styles.container} entering={FadeInDown.duration(2000).delay(100)}>
+    <TouchableOpacity style={{alignSelf: 'flex-start'}} onPress={() => navigation.goBack()}>
+      <Image style={{width: 36, height: 36, marginLeft: 12}} source={back_icon} />  
+    </TouchableOpacity>
+    <Text style={styles.header_text}>Add words by voice</Text>
+    <ModalSpeech/>
+    <Text style={styles.desc_text}>
+      {end
+        ? "Voice recognition is over, please press the icon"
+        : "Press the button to start or stop speaking."}
+    </Text>
 
-  {!started && !end && (
-    <Text style={styles.desc_text}>Your Words came here you can add words into your vocabulary list by press.</Text>
-  )}
+    <TouchableOpacity
+      style={styles.mic_button}
+      onPress={started ? _destroyRecognizer : _startRecognizing}
+    >
+      <Image style={styles.mic_icon} source={mic_icon} />
+    </TouchableOpacity>
 
-  {results.length > 9 ? (
-    <ScrollView style={styles.scrollView}>
-      {results.map((result, index) => (
+    <HomeBtmView
+      style={[
+        styles.resultsContainer,
+      ]}
+    >
+    {started && !end && (
+      <LottieView
+        source={require("../assets/recognition_new.json")}
+        autoPlay
+        loop
+        style={styles.lottieAnimation}
+      />
+    )}
+
+    {!started && !end && (
+      <Text style={styles.desc_text}>Your Words came here you can add words into your vocabulary list by press.</Text>
+    )}
+
+    {results.length > 9 ? (
+      <ScrollView style={styles.scrollView}>
+        {results.map((result, index) => (
+          end && (
+          <Animated.View style={[styles.word_view, selectedIndices.includes(index) && styles.selected_word_view]} entering={FadeInDown.duration(1000).delay(0)}>
+            <Pressable key={`result-${index}`} onPress={() => selectedWords(result, index)}>
+            <Text style={styles.word_text}>{result}</Text>
+            </Pressable>
+          </Animated.View>
+          )
+        ))}
+      </ScrollView>
+    ) : (
+      results.map((result, index) => (
         end && (
         <Animated.View style={[styles.word_view, selectedIndices.includes(index) && styles.selected_word_view]} entering={FadeInDown.duration(1000).delay(0)}>
           <Pressable key={`result-${index}`} onPress={() => selectedWords(result, index)}>
@@ -199,26 +305,15 @@ return (
           </Pressable>
         </Animated.View>
         )
-      ))}
-    </ScrollView>
-  ) : (
-    results.map((result, index) => (
-      end && (
-      <Animated.View style={[styles.word_view, selectedIndices.includes(index) && styles.selected_word_view]} entering={FadeInDown.duration(1000).delay(0)}>
-        <Pressable key={`result-${index}`} onPress={() => selectedWords(result, index)}>
-        <Text style={styles.word_text}>{result}</Text>
-        </Pressable>
-      </Animated.View>
-      )
-    ))
-  )}
-  </HomeBtmView>
-  </Animated.View>
-  </ImageBackground>
-  );
-};
+      ))
+    )}
+    </HomeBtmView>
+    </Animated.View>
+    </ImageBackground>
+    );
+  };
   
-const styles = StyleSheet.create({
+  const styles = StyleSheet.create({
     container: {
       flex: 1,
       alignItems: "center",
@@ -270,6 +365,7 @@ const styles = StyleSheet.create({
       color: "#fff",
       fontSize: 12,
       textAlign: "center",
+      fontFamily: "Helvetica-Medium",
     },
     mic_button: {
       justifyContent: "center",
@@ -308,6 +404,42 @@ const styles = StyleSheet.create({
     selected_word_view: {
       backgroundColor: Colors.main_light_yellow,
     },
-});
+    modalContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContent: {
+      width: 300,
+      padding: 20,
+      backgroundColor: "white",
+      borderRadius: 12,
+      alignItems: "center",
+    },
+    modalText: {
+      fontSize: 20,
+      marginBottom: 20,
+      fontFamily: 'Helvetica-Medium',
+    },
+    saveButton: {
+      backgroundColor: Colors.main_yellow,
+      padding: 12,
+      borderRadius: 8,
+    },
+    saveButtonText: {
+      color: "white",
+      fontFamily: 'Helvetica-Medium',
+    },
+    cancelButton: {
+      backgroundColor: "red",
+      padding: 12,
+      borderRadius: 8,
+    },
+    cancelButtonText: {
+      color: "white",
+      fontFamily: 'Helvetica-Medium',
+    },    
+  });
   
 export default SpeechTextScreen;

@@ -10,6 +10,7 @@ import { useTogglePasswordVisibility } from "../hooks";
 import { signupValidationSchema } from "../utils";
 import { GeneralButton, GeneralButtonText, LoginBtmText, SignupHeaderText, SignupKeyboardAvoiding, SignupLayout, SignupLayoutInside } from "../styles/HomeScreen";
 import { background } from "./HomeScreen";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height; 
@@ -48,7 +49,7 @@ export const SignupScreen = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover">
+    <ImageBackground source={background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
       <SignupLayout>
         <SignupHeaderText>Register</SignupHeaderText>
         <SignupLayoutInside>
@@ -70,7 +71,7 @@ export const SignupScreen = ({ navigation }) => {
               handleSubmit,
               handleBlur,
             }) => (
-              <SignupKeyboardAvoiding enableOnAndroid={true}>
+              <KeyboardAwareScrollView>
                 <TextInput
                   name="username"
                   leftIconName="username"
@@ -133,7 +134,7 @@ export const SignupScreen = ({ navigation }) => {
                 <GeneralButton onPress={() => handleSubmit()}>
                   <GeneralButtonText>Signup</GeneralButtonText>
                 </GeneralButton>
-              </SignupKeyboardAvoiding>
+              </KeyboardAwareScrollView>
             )}
           </Formik>
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>

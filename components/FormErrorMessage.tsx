@@ -17,6 +17,6 @@ const styles = StyleSheet.create({
     color: Colors.whiteLight,
     fontSize: 12,
     marginVertical: 4,
-    fontFamily: 'Circular-Medium'
+    fontFamily: 'Helvetica-Medium'
   }
 });
