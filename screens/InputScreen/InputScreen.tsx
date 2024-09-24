@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ImageBackground, Text, TouchableOpacity, View, ScrollView } from 'react-native';
+import { ImageBackground } from 'react-native';
 import { TextInput } from '../../components';
 import { 
   BottomTextWhite, 

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, ImageBackground } from "react-native";
+import { TouchableOpacity, ImageBackground } from "react-native";
 
 import { checkCamPermissions, checkVoicePermissions, openApplicationSettings } from "../../utils";
-import { Colors, Images } from "../../config";
+import { Images } from "../../config";
+import { BtnNext, Container, ContainerPermission, HeaderText, Icons, SmallText } from "./PermissionScreen.style";
 
 export const PermissionScreen = ({ navigation }) => {
   const [voicePermission, setVoicePermission] = useState('denied');
@@ -25,107 +26,62 @@ export const PermissionScreen = ({ navigation }) => {
 
   const VoicePermission = () => {
     return(
-      <View style={styles.container_permission}>
+      <ContainerPermission>
         <>
         {voicePermission !== 'granted' ? (
           <>
             <TouchableOpacity onPress={() => openApplicationSettings()}>
-              <Image style={styles.icons} source={Images.mic_icon}/>
+              <Icons source={Images.mic_icon}/>
             </TouchableOpacity>
-            <Text style={styles.small_text}>Give Voice Permission into application permission settings</Text>
+            <SmallText>Give Voice Permission into application permission settings</SmallText>
           </>
           ):(
             <>
-              <Image style={styles.icons} source={Images.succeed_icon}/>
-              <Text style={styles.small_text}>You had gave Voice Permission</Text>
+              <Icons source={Images.succeed_icon}/>
+              <SmallText>You had gave Voice Permission</SmallText>
             </>
           )}
         </>  
-      </View>    
+      </ContainerPermission>    
     )
   }
 
   const CamPermission = () => {
     return(
-      <View style={styles.container_permission}>
+      <ContainerPermission>
         <>
         {camPermission !== 'granted' ? (
           <>
             <TouchableOpacity onPress={() => openApplicationSettings()}>
-              <Image style={styles.icons} source={Images.cam_icon}/>
+              <Icons source={Images.cam_icon}/>
             </TouchableOpacity>
-            <Text style={styles.small_text}>Give Camera Permission into application permission settings</Text>
+            <SmallText>Give Camera Permission into application permission settings</SmallText>
           </>
           ):(
             <>
-              <Image style={styles.icons} source={Images.succeed_icon}/>
-              <Text style={styles.small_text}>You had gave Camera Permission</Text>
+              <Icons source={Images.succeed_icon}/>
+              <SmallText>You had gave Camera Permission</SmallText>
             </>
           )}
         </>  
-      </View>    
+      </ContainerPermission>    
     )
   }
 
   return (
     <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover">
-      <SafeAreaView style={styles.container}>
-      <Text style={styles.header_text}>Welcome to Vocabwide</Text>
+      <Container>
+      <HeaderText>Welcome to Vocabwide</HeaderText>
       <VoicePermission/>
       <CamPermission/>
       {(voicePermission === 'granted' && camPermission === 'granted') && (
-        <TouchableOpacity style={styles.btn_next} onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.small_text}>
+        <BtnNext onPress={() => navigation.navigate("Login")}>
+          <SmallText>
             Press for Login
-          </Text>
-        </TouchableOpacity>
+          </SmallText>
+        </BtnNext>
       )}
-      </SafeAreaView>
+      </Container>
     </ImageBackground>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    backgroundColor: Colors.purple
-  },
-  container_permission: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: 140,
-    marginTop: 36,
-  },
-  header_text: {
-    fontSize: 48,
-    alignSelf: 'center',
-    textAlign: 'center',
-    color: '#fff',
-    fontFamily: 'Helvetica-Bold',
-    marginTop: 48,
-    marginBottom: 36
-  },
-  small_text: {
-    fontSize: 18,
-    alignSelf: 'center',
-    textAlign: 'center',
-    color: '#fff',
-    fontFamily: 'Helvetica-Medium',
-  },
-  icons: {
-    height: 64,
-    width: 64,
-  },
-  btn_next: {
-    height: 48,
-    width: 160,
-    backgroundColor: Colors.liliac,
-    borderRadius: 12,
-    marginTop: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center'
-  }
-});

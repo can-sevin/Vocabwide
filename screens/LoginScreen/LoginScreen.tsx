@@ -8,7 +8,7 @@ import {TextInput, FormErrorMessage } from "../../components";
 import { auth, Images } from "../../config";
 import { useTogglePasswordVisibility } from "../../hooks";
 import { loginValidationSchema } from "../../utils";
-import { GeneralButton, GeneralButtonText, LoginBtmText, LoginHeaderText, LoginLayout, LoginLayoutInside } from "../../styles/HomeScreen";
+import { GeneralButton, GeneralButtonText, LoginBtmText, LoginHeaderText, LoginLayout, LoginLayoutInside } from "./LoginScreen.styles";
 
 
 export const LoginScreen = ({ navigation }) => {

@@ -8,9 +8,9 @@ import { TextInput, FormErrorMessage } from "../../components";
 import { auth, database } from "../../config/firebase"; // Ensure your Firebase config includes Realtime Database
 import { useTogglePasswordVisibility } from "../../hooks";
 import { signupValidationSchema } from "../../utils";
-import { GeneralButton, GeneralButtonText, LoginBtmText, SignupHeaderText, SignupKeyboardAvoiding, SignupLayout, SignupLayoutInside } from "../../styles/HomeScreen";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Images } from "../../config";
+import { GeneralButton, GeneralButtonText, LoginBtmText, SignupHeaderText, SignupLayout, SignupLayoutInside } from "./SignupScreen.style";
 
 export const SignupScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");

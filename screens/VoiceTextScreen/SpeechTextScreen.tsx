@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, Image, Text, View, ScrollView, Platform, TouchableOpacity, ImageBackground, Pressable, Modal } from "react-native";
-import { Colors, Images, auth, database } from "../../config";
+import { Platform, TouchableOpacity, ImageBackground, Pressable, Modal } from "react-native";
+import { Images, auth, database } from "../../config";
 import { ref, get, set } from 'firebase/database'; // Import Firebase functions
 import Voice, {
   SpeechRecognizedEvent,
@@ -9,9 +9,9 @@ import Voice, {
   SpeechVolumeChangeEvent,
 } from "@react-native-voice/voice";
 import LottieView from 'lottie-react-native';
-import { HomeBtmView } from "../../styles/HomeScreen";
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import { FadeInDown } from 'react-native-reanimated';
 import translate from 'translate-google-api'; // Import the translation API
+import { BackIcon, CancelButton, CancelButtonText, Container, DescriptionText, HeaderText, LottieAnimation, MicButton, MicIcon, ModalContainer, ModalContent, ModalInnerView, ModalText, ResultsContainer, SaveButton, SaveButtonText, ScrollViewContainer, WordText, WordView } from "./SpeechTextScreen.style";
 
 export const SpeechTextScreen = ({ navigation }) => {
   const [recognized, setRecognized] = useState("");
@@ -217,220 +217,91 @@ export const SpeechTextScreen = ({ navigation }) => {
           animationType="slide"
           onRequestClose={() => setModalVisible(false)}
         >
-      <View style={styles.modalContainer}>
-      <View style={styles.modalContent}>
-        {/* Display the selected word and its translation */}
-        <Text style={styles.modalText}>{`${selectedWord} -> ${translatedWord}`}</Text>
-        <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '80%'}}>
-        <TouchableOpacity style={styles.saveButton} onPress={saveWordPair}>
-          <Text style={styles.saveButtonText}>Save</Text>
-        </TouchableOpacity>
+      <ModalContainer>
+      <ModalContent>
+        <ModalText>{`${selectedWord} -> ${translatedWord}`}</ModalText>
+        <ModalInnerView>
+        <SaveButton onPress={saveWordPair}>
+          <SaveButtonText>Save</SaveButtonText>
+        </SaveButton>
       
-        {/* Cancel button to close the modal */}
-        <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-          <Text style={styles.cancelButtonText}>Cancel</Text>
-        </TouchableOpacity>
-        </View>
-      </View>
-    </View>
+        <CancelButton onPress={() => setModalVisible(false)}>
+          <CancelButtonText>Cancel</CancelButtonText>
+        </CancelButton>
+        </ModalInnerView>
+      </ModalContent>
+    </ModalContainer>
   </Modal>
   )}
     
   return (
     <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover">
-    <Animated.View style={styles.container} entering={FadeInDown.duration(2000).delay(100)}>
+    <Container entering={FadeInDown.duration(2000).delay(100)}>
     <TouchableOpacity style={{alignSelf: 'flex-start'}} onPress={() => navigation.goBack()}>
-      <Image style={{width: 36, height: 36, marginLeft: 12}} source={Images.back_icon} />  
+      <BackIcon source={Images.back_icon} />  
     </TouchableOpacity>
-    <Text style={styles.header_text}>Add words by voice</Text>
+    <HeaderText>Add words by voice</HeaderText>
     <ModalSpeech/>
-    <Text style={styles.desc_text}>
+    <DescriptionText>
       {end
         ? "Voice recognition is over, please press the icon"
         : "Press the button to start or stop speaking."}
-    </Text>
+    </DescriptionText>
 
-    <TouchableOpacity
-      style={styles.mic_button}
+    <MicButton
       onPress={started ? _destroyRecognizer : _startRecognizing}
     >
-      <Image style={styles.mic_icon} source={Images.mic_icon} />
-    </TouchableOpacity>
+      <MicIcon source={Images.mic_icon} />
+    </MicButton>
 
-    <HomeBtmView
-      style={[
-        styles.resultsContainer,
-      ]}
-    >
+    <ResultsContainer>
     {started && !end && (
-      <LottieView
+      <LottieAnimation
         source={Images.lottie_recognition}
         autoPlay
         loop
-        style={styles.lottieAnimation}
       />
     )}
 
     {!started && !end && (
-      <Text style={styles.desc_text}>Your Words came here you can add words into your vocabulary list by press.</Text>
+      <DescriptionText>Your Words came here you can add words into your vocabulary list by press.</DescriptionText>
     )}
 
     {results.length > 9 ? (
-      <ScrollView style={styles.scrollView}>
+      <ScrollViewContainer>
         {results.map((result, index) => (
           end && (
-          <Animated.View style={[styles.word_view, selectedIndices.includes(index) && styles.selected_word_view]} entering={FadeInDown.duration(1000).delay(0)}>
-            <Pressable key={`result-${index}`} onPress={() => selectedWords(result, index)}>
-            <Text style={styles.word_text}>{result}</Text>
+          <WordView
+            key={index}
+            selected={selectedIndices.includes(index)} // Pass the isSelected prop
+            entering={FadeInDown.duration(1000).delay(0)}
+          >
+                  <Pressable key={`result-${index}`} onPress={() => selectedWords(result, index)}>
+            <WordText>{result}</WordText>
             </Pressable>
-          </Animated.View>
+          </WordView>
           )
         ))}
-      </ScrollView>
+      </ScrollViewContainer>
     ) : (
       results.map((result, index) => (
         end && (
-        <Animated.View style={[styles.word_view, selectedIndices.includes(index) && styles.selected_word_view]} entering={FadeInDown.duration(1000).delay(0)}>
+          <WordView
+            key={index}
+            selected={selectedIndices.includes(index)} // Pass the isSelected prop
+            entering={FadeInDown.duration(1000).delay(0)}
+          >
           <Pressable key={`result-${index}`} onPress={() => selectedWords(result, index)}>
-          <Text style={styles.word_text}>{result}</Text>
+          <WordText>{result}</WordText>
           </Pressable>
-        </Animated.View>
+        </WordView>
         )
       ))
     )}
-    </HomeBtmView>
-    </Animated.View>
+    </ResultsContainer>
+    </Container>
     </ImageBackground>
     );
   };
-  
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: "center",
-      paddingTop: 32,
-      justifyContent: "space-between",
-    },
-    back_button: {
-      fontSize: 32,
-      marginHorizontal: 24,
-      alignSelf: "flex-start",
-      textAlign: "center",
-      color: "#fff",
-      fontFamily: "Helvetica-Bold",
-    },
-    header_text: {
-      fontSize: 32,
-      alignSelf: "center",
-      textAlign: "center",
-      color: "#fff",
-      fontFamily: "Helvetica-Bold",
-    },
-    resultsContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',  
-      height: 280,
-      justifyContent: 'space-evenly',
-      width: '100%',
-    },  
-    desc_text: {
-      fontSize: 18,
-      alignSelf: "center",
-      textAlign: "center",
-      color: "#fff",
-      fontFamily: "Helvetica-Medium",
-      marginVertical: 5,
-      marginTop: 52,
-      marginHorizontal: 28,
-    },
-    word_view: {
-      width: '20%',
-      height: 48,
-      borderRadius: 20,
-      backgroundColor: Colors.LighterGray3,
-      justifyContent: "center",
-      marginVertical: 12,
-      marginHorizontal: 8
-    },
-    word_text: {
-      color: "#fff",
-      fontSize: 12,
-      textAlign: "center",
-      fontFamily: "Helvetica-Medium",
-    },
-    mic_button: {
-      justifyContent: "center",
-      alignItems: "center",
-      marginTop: 80,
-    },
-    lottieAnimation: {
-      width: 160,
-      height: 320,
-      alignSelf: "center",
-    },  
-    mic_icon: {
-      width: 80,
-      height: 80,
-    },
-    btn_next: {
-      height: 48,
-      width: 160,
-      backgroundColor: Colors.liliac,
-      borderRadius: 12,
-      marginTop: 16,
-      alignItems: "center",
-      justifyContent: "center",
-      alignSelf: "center",
-      color: "#fff",
-      fontSize: 16,
-      textAlign: "center",
-    },
-    scrollView: {
-      flex: 1,
-      width: '100%',
-      backgroundColor: Colors.whiteLight,
-      height: 280,
-      borderRadius: 24,
-    },
-    selected_word_view: {
-      backgroundColor: Colors.main_light_yellow,
-    },
-    modalContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-    },
-    modalContent: {
-      width: 300,
-      padding: 20,
-      backgroundColor: "white",
-      borderRadius: 12,
-      alignItems: "center",
-    },
-    modalText: {
-      fontSize: 20,
-      marginBottom: 20,
-      fontFamily: 'Helvetica-Medium',
-    },
-    saveButton: {
-      backgroundColor: Colors.main_yellow,
-      padding: 12,
-      borderRadius: 8,
-    },
-    saveButtonText: {
-      color: "white",
-      fontFamily: 'Helvetica-Medium',
-    },
-    cancelButton: {
-      backgroundColor: "red",
-      padding: 12,
-      borderRadius: 8,
-    },
-    cancelButtonText: {
-      color: "white",
-      fontFamily: 'Helvetica-Medium',
-    },    
-  });
-  
+   
 export default SpeechTextScreen;
