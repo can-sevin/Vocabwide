@@ -4,7 +4,7 @@ import { Formik } from "formik";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ref, set } from "firebase/database"; // Import Firebase Realtime Database functions
 
-import { TextInput, FormErrorMessage } from "../../components";
+import { TextInput, FormErrorMessage, LoadingIndicator } from "../../components";
 import { auth, database } from "../../config/firebase"; // Ensure your Firebase config includes Realtime Database
 import { useTogglePasswordVisibility } from "../../hooks";
 import { signupValidationSchema } from "../../utils";
@@ -14,6 +14,7 @@ import { GeneralButton, GeneralButtonText, LoginBtmText, SignupHeaderText, Signu
 
 export const SignupScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const {
     passwordVisibility,
@@ -26,6 +27,7 @@ export const SignupScreen = ({ navigation }) => {
 
   const handleSignup = async (values: { username: string, email: string; password: string; confirmPassword?: string; }) => {
     const { username, email, password } = values;
+    setLoading(true);
 
     try {
       // Create user with email and password in Firebase Auth
@@ -40,8 +42,11 @@ export const SignupScreen = ({ navigation }) => {
         words: null,
         // You can store additional fields like username, profile picture, etc. here
       });
+
+      setLoading(false);
     } catch (error) {
       setErrorState(error);
+      setLoading(false);
     }
   };
 
@@ -128,9 +133,13 @@ export const SignupScreen = ({ navigation }) => {
                 {errorState !== "" ? (
                   <FormErrorMessage error={errorState} visible={true} />
                 ) : null}
-                <GeneralButton onPress={() => handleSubmit()}>
-                  <GeneralButtonText>Signup</GeneralButtonText>
-                </GeneralButton>
+                {loading ? (
+                  <LoadingIndicator />
+                ) : (
+                  <GeneralButton onPress={() => handleSubmit()}>
+                    <GeneralButtonText>Login</GeneralButtonText>
+                  </GeneralButton>
+                )}
               </KeyboardAwareScrollView>
             )}
           </Formik>

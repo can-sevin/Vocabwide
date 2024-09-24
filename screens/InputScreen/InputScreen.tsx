@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ImageBackground } from 'react-native';
-import { TextInput } from '../../components';
+import { LoadingIndicator, TextInput } from '../../components';
 import { 
   BottomTextWhite, 
   GeneralButton, 
@@ -28,9 +28,11 @@ const wordValidationSchema = Yup.object().shape({
 export const InputScreen = ({ navigation }) => {
   const [text, setText] = useState<string>('If you want to add multiple words, please separate each word with a space.');
   const [wordsList, setWordsList] = useState<string[]>(['']);
-  
+  const [loading, setLoading] = useState(false);
+
   const handleAddingWords = async (values: { words: string }) => {
     const { words } = values;
+    setLoading(true);
     const currentUser = auth.currentUser;
   
     if (!currentUser) {
@@ -86,13 +88,16 @@ export const InputScreen = ({ navigation }) => {
         const formattedWordsList = updatedOriginalWords.map((word, index) => `${word} -> ${updatedTranslatedWords[index]}`);
         setWordsList(formattedWordsList.reverse());
         setText(`Words successfully added: ${uniqueNewWords.join(", ")}`);
+        setLoading(false);
       } catch (translateError) {
         console.error("Error during translation:", translateError);
         setText("Error translating words. Please check your internet connection or try again later.");
+        setLoading(false);
       }
     } catch (error) {
       setText("Error adding words to the database.");
       console.error("Error adding words to the database", error);
+      setLoading(false);
     }
   };
           
@@ -126,9 +131,13 @@ export const InputScreen = ({ navigation }) => {
                 <BottomTextWhite>
                   {text}
                 </BottomTextWhite>
-                <GeneralButton onPress={() => handleSubmit()}>
-                  <GeneralButtonText>Add Words</GeneralButtonText>
-                </GeneralButton>
+                {loading ? (
+                  <LoadingIndicator />
+                ) : (
+                  <GeneralButton onPress={() => handleSubmit()}>
+                    <GeneralButtonText>Login</GeneralButtonText>
+                  </GeneralButton>
+                )}
               </SignupKeyboardAvoiding>
             )}
           </Formik>

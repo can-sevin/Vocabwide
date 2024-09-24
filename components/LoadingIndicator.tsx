@@ -7,7 +7,7 @@ import { View } from './View';
 export const LoadingIndicator = () => {
   return (
     <View style={styles.container}>
-      <ActivityIndicator size='large' color={Colors.purple_light} />
+      <ActivityIndicator size='large' color={Colors.main_yellow} />
     </View>
   );
 };

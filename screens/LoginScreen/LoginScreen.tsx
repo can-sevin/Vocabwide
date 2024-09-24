@@ -4,7 +4,7 @@ import { Formik } from "formik";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import {TextInput, FormErrorMessage } from "../../components";
+import {TextInput, FormErrorMessage, LoadingIndicator } from "../../components";
 import { auth, Images } from "../../config";
 import { useTogglePasswordVisibility } from "../../hooks";
 import { loginValidationSchema } from "../../utils";
@@ -13,13 +13,20 @@ import { GeneralButton, GeneralButtonText, LoginBtmText, LoginHeaderText, LoginL
 
 export const LoginScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
+  const [loading, setLoading] = useState(false);
   const { passwordVisibility, handlePasswordVisibility, rightIcon } = useTogglePasswordVisibility();
 
-  const handleLogin = (values: { email: any; password: any; }) => {
+  const handleLogin = async (values: { email: string; password: string }) => {
     const { email, password } = values;
-    signInWithEmailAndPassword(auth, email, password).catch((error) =>
-      setErrorState(error.message)
-    );
+    setLoading(true);
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      setLoading(false);
+    } catch (error) {
+      setErrorState(error.message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -80,14 +87,16 @@ export const LoginScreen = ({ navigation }) => {
                   error={errors.password}
                   visible={touched.password}
                 />
-                {/* Display Screen Error Messages */}
                 {errorState !== "" ? (
                   <FormErrorMessage error={errorState} visible={true} />
                 ) : null}
-                {/* Login button */}
-                <GeneralButton onPress={() => handleSubmit()}>
-                  <GeneralButtonText>Login</GeneralButtonText>
-                </GeneralButton>
+                {loading ? (
+                  <LoadingIndicator />
+                ) : (
+                  <GeneralButton onPress={() => handleSubmit()}>
+                    <GeneralButtonText>Login</GeneralButtonText>
+                  </GeneralButton>
+                )}
               </KeyboardAwareScrollView>
             )}
           </Formik>
