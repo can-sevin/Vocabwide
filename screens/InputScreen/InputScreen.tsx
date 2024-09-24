@@ -135,7 +135,7 @@ export const InputScreen = ({ navigation }) => {
                   <LoadingIndicator />
                 ) : (
                   <GeneralButton onPress={() => handleSubmit()}>
-                    <GeneralButtonText>Login</GeneralButtonText>
+                    <GeneralButtonText>Add Words</GeneralButtonText>
                   </GeneralButton>
                 )}
               </SignupKeyboardAvoiding>

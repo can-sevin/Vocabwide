@@ -137,7 +137,7 @@ export const SignupScreen = ({ navigation }) => {
                   <LoadingIndicator />
                 ) : (
                   <GeneralButton onPress={() => handleSubmit()}>
-                    <GeneralButtonText>Login</GeneralButtonText>
+                    <GeneralButtonText>Signup</GeneralButtonText>
                   </GeneralButton>
                 )}
               </KeyboardAwareScrollView>
