@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ImageBackground, TouchableOpacity } from "react-native";
+import { ImageBackground, TouchableOpacity, View } from "react-native";
 import { Formik } from "formik";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -51,6 +51,10 @@ export const LoginScreen = ({ navigation }) => {
               handleBlur,
             }) => (
               <KeyboardAwareScrollView>
+                <FormErrorMessage
+                  error={errors.email}
+                  visible={touched.email}
+                />
                 <TextInput
                 name="email"
                 leftIconName="email"
@@ -65,9 +69,12 @@ export const LoginScreen = ({ navigation }) => {
                 errorState={errorState} rightIcon={undefined} handlePasswordVisibility={undefined}                
                 />
                 <FormErrorMessage
-                  error={errors.email}
-                  visible={touched.email}
+                  error={errors.password}
+                  visible={touched.password}
                 />
+                {errorState !== "" ? (
+                  <FormErrorMessage error={errorState} visible={true} />
+                ) : null}
                 <TextInput
                   name="password"
                   leftIconName="key-variant"
@@ -83,13 +90,6 @@ export const LoginScreen = ({ navigation }) => {
                   onBlur={handleBlur("password")}
                   errorState={errorState}
                 />
-                <FormErrorMessage
-                  error={errors.password}
-                  visible={touched.password}
-                />
-                {errorState !== "" ? (
-                  <FormErrorMessage error={errorState} visible={true} />
-                ) : null}
                 {loading ? (
                   <LoadingIndicator />
                 ) : (

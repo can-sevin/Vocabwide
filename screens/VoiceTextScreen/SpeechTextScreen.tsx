@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Platform, TouchableOpacity, ImageBackground, Pressable, Modal } from "react-native";
 import { Images, auth, database } from "../../config";
-import { ref, get, set } from 'firebase/database'; // Import Firebase functions
+import { ref, get, set } from 'firebase/database';
 import Voice, {
   SpeechRecognizedEvent,
   SpeechResultsEvent,
@@ -10,7 +10,7 @@ import Voice, {
 } from "@react-native-voice/voice";
 import LottieView from 'lottie-react-native';
 import { FadeInDown } from 'react-native-reanimated';
-import translate from 'translate-google-api'; // Import the translation API
+import translate from 'translate-google-api';
 import { BackIcon, CancelButton, CancelButtonText, Container, DescriptionText, HeaderText, LottieAnimation, MicButton, MicIcon, ModalContainer, ModalContent, ModalInnerView, ModalText, ResultsContainer, SaveButton, SaveButtonText, ScrollViewContainer, WordText, WordView } from "./SpeechTextScreen.style";
 
 export const SpeechTextScreen = ({ navigation }) => {
@@ -19,7 +19,6 @@ export const SpeechTextScreen = ({ navigation }) => {
   const [error, setError] = useState("");
   const [started, setStarted] = useState("");
   const [results, setResults] = useState<string[]>([]);
-  const [selected, setSelected] = useState<string[]>([]);
   const [partialResults, setPartialResults] = useState<string[]>([]);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
   const [end, setEnd] = useState("");
@@ -27,6 +26,7 @@ export const SpeechTextScreen = ({ navigation }) => {
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const [translatedWord, setTranslatedWord] = useState<string | null>(null);
   const animationRef = useRef<LottieView>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const onSpeechStart = (e: any) => {
@@ -145,12 +145,15 @@ export const SpeechTextScreen = ({ navigation }) => {
     });
   
     try {
-      const translation = await translate(result, { to: 'tr' }); // Translate to Turkish
+      setLoading(true);
+      const translation = await translate(result, { to: 'tr' });
       setSelectedWord(result);
-      setTranslatedWord(translation[0]); // Store the translation
-      setModalVisible(true); // Show the modal
+      setTranslatedWord(translation[0]);
+      setLoading(false);
+      setModalVisible(true);
     } catch (error) {
       console.error("Translation Error:", error);
+      setLoading(false);
     }
   };
 
@@ -166,57 +169,55 @@ export const SpeechTextScreen = ({ navigation }) => {
       console.log("No user is currently logged in.");
       return;
     }
-  
+    
     const userId = currentUser.uid;
+    setLoading(true);
     const originalWordsRef = ref(database, `users/${userId}/originalWords`);
     const translatedWordsRef = ref(database, `users/${userId}/translatedWords`);
   
     try {
-      // Fetch existing words from Firebase
       const originalSnapshot = await get(originalWordsRef);
       const translatedSnapshot = await get(translatedWordsRef);
   
       let currentOriginalWords = originalSnapshot.exists() ? originalSnapshot.val() : [];
       let currentTranslatedWords = translatedSnapshot.exists() ? translatedSnapshot.val() : [];
   
-      // Ensure the words are arrays
       if (!Array.isArray(currentOriginalWords)) currentOriginalWords = [];
       if (!Array.isArray(currentTranslatedWords)) currentTranslatedWords = [];
   
-      // Check if the word already exists to avoid duplication
       if (currentOriginalWords.includes(selectedWord)) {
         console.log("The word already exists in the originalWords list.");
         setModalVisible(false);
         return;
       }
   
-      // Add the new words to the arrays
       const updatedOriginalWords = [...currentOriginalWords, selectedWord];
       const updatedTranslatedWords = [...currentTranslatedWords, translatedWord];
   
-      // Save to Firebase
       await set(originalWordsRef, updatedOriginalWords);
       await set(translatedWordsRef, updatedTranslatedWords);
   
       console.log("Saved successfully:", selectedWord, "->", translatedWord);
-  
-      // Close the modal and reset states
+      
+      setLoading(false);
       setModalVisible(false);
       setSelectedWord(null);
       setTranslatedWord(null);
     } catch (error) {
       console.error("Error saving words to Firebase:", error);
+      setLoading(false);
     }
   };
 
   const ModalSpeech = () => {
     return(
-        <Modal
+    <>
+      <Modal
           visible={modalVisible}
           transparent={true}
           animationType="slide"
           onRequestClose={() => setModalVisible(false)}
-        >
+      >
       <ModalContainer>
       <ModalContent>
         <ModalText>{`${selectedWord} -> ${translatedWord}`}</ModalText>
@@ -232,6 +233,7 @@ export const SpeechTextScreen = ({ navigation }) => {
       </ModalContent>
     </ModalContainer>
   </Modal>
+  </>
   )}
     
   return (
@@ -273,11 +275,11 @@ export const SpeechTextScreen = ({ navigation }) => {
           end && (
           <WordView
             key={index}
-            selected={selectedIndices.includes(index)} // Pass the isSelected prop
+            selected={selectedIndices.includes(index)}
             entering={FadeInDown.duration(1000).delay(0)}
           >
-                  <Pressable key={`result-${index}`} onPress={() => selectedWords(result, index)}>
-            <WordText>{result}</WordText>
+            <Pressable key={`result-${index}`} onPress={() => selectedWords(result, index)}>
+              <WordText>{result}</WordText>
             </Pressable>
           </WordView>
           )
@@ -288,7 +290,7 @@ export const SpeechTextScreen = ({ navigation }) => {
         end && (
           <WordView
             key={index}
-            selected={selectedIndices.includes(index)} // Pass the isSelected prop
+            selected={selectedIndices.includes(index)}
             entering={FadeInDown.duration(1000).delay(0)}
           >
           <Pressable key={`result-${index}`} onPress={() => selectedWords(result, index)}>

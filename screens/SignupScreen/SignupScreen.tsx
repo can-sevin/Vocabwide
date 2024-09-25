@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { TouchableOpacity, Dimensions, ImageBackground } from "react-native";
 import { Formik } from "formik";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { ref, set } from "firebase/database"; // Import Firebase Realtime Database functions
+import { ref, set } from "firebase/database";
 
 import { TextInput, FormErrorMessage, LoadingIndicator } from "../../components";
-import { auth, database } from "../../config/firebase"; // Ensure your Firebase config includes Realtime Database
+import { auth, database } from "../../config/firebase";
 import { useTogglePasswordVisibility } from "../../hooks";
 import { signupValidationSchema } from "../../utils";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -30,17 +30,14 @@ export const SignupScreen = ({ navigation }) => {
     setLoading(true);
 
     try {
-      // Create user with email and password in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Store user data in Firebase Realtime Database
       await set(ref(database, `users/${user.uid}`), {
         username: username,
         email: user.email,
         uid: user.uid,
         words: null,
-        // You can store additional fields like username, profile picture, etc. here
       });
 
       setLoading(false);

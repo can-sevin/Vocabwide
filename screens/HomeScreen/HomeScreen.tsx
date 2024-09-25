@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, TouchableOpacity, ImageBackground, Image, SafeAreaView } from "react-native";
 import { signOut } from "firebase/auth";
 import { auth, database, Flags, Images } from "../../config";
 import { ref, get } from "firebase/database";
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import { FadeInDown } from 'react-native-reanimated';
 import {
   HomeLayout, HomeHeaderSmallTextNumber, HomeHeaderTextNumber, HomeHeaderText, 
   HomeHeaderLanguageView, HomeHeaderLanguageViewText, HomeLanguageWordsView, 
@@ -14,14 +14,18 @@ import {
   HomeWordNumberView,
   LogoutIcon
 } from "./HomeScreen.styles";
+import { useFocusEffect } from "@react-navigation/native";
+import { LoadingIndicator } from "../../components";
 
 export const HomeScreen = ({ uid, navigation }) => {
   const [wordsList, setWordsList] = useState<[string, string][]>([]);
   const [word_num, setWordNum] = useState(0);
   const [userInfo, setUserInfo] = useState(null);
   const [showText, setShowText] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleListingWords = async () => {
+    setLoading(true);
     const originalWordsRef = ref(database, `users/${uid}/originalWords`);
     const translatedWordsRef = ref(database, `users/${uid}/translatedWords`);
 
@@ -46,9 +50,11 @@ export const HomeScreen = ({ uid, navigation }) => {
       setWordNum(currentOriginalWords.length)
       combinedWords.sort((a: string[], b: string[]) => a[0].toLowerCase().localeCompare(b[0].toLowerCase()));
       setWordsList(combinedWords);
-      
+      setLoading(false);
+
     } catch (error) {
       console.error("Error fetching the word service. Please try again", error);
+      setLoading(false);
     }
   };
 
@@ -64,7 +70,11 @@ export const HomeScreen = ({ uid, navigation }) => {
     });
   
     return (
-      <LanguageScrollView showsVerticalScrollIndicator={false}>
+      <>
+      {loading ? (
+        <LoadingIndicator />
+      ) : (
+        <LanguageScrollView showsVerticalScrollIndicator={false}>
         {Object.keys(groupedWords).map((letter) => (
           <View key={letter}>
             <LanguageInsideAlphabetView>
@@ -82,29 +92,40 @@ export const HomeScreen = ({ uid, navigation }) => {
           </View>
         ))}
       </LanguageScrollView>
-    );
-  };
+      )}
+    </>
+  )};
 
   useEffect(() => {
     if (uid) {
-      const timer = setTimeout(async () => {
-        await handleListingWords();
-        const userRef = ref(database, `users/${uid}`);
-        get(userRef)
-          .then((snapshot) => {
-            if (snapshot.exists()) {
-              setUserInfo(snapshot.val());
-              setShowText(true);
-            } else {
-              console.log("User data not found");
-            }
-          })
-          .catch((error) => console.log("Error fetching user data: " + error.message));
-      }, 3000);
+      handleListingWords();
     } else {
       console.log("No user is currently logged in.");
     }
   }, [uid]);
+
+  useFocusEffect(
+    useCallback(() => {
+      handleListingWords();
+
+      const fetchUserInfo = async () => {
+        const userRef = ref(database, `users/${uid}`);
+        try {
+          const snapshot = await get(userRef);
+          if (snapshot.exists()) {
+            setUserInfo(snapshot.val());
+            setShowText(true);
+          } else {
+            console.log("User data not found");
+          }
+        } catch (error) {
+          console.log("Error fetching user data: " + error.message);
+        }
+      };
+
+      fetchUserInfo();
+    }, [uid])
+  );
 
   const handleLogout = () => {
     signOut(auth).catch((error) => console.log("Error logging out: ", error));

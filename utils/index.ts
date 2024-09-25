@@ -4,20 +4,52 @@ import { Camera } from 'expo-camera';
 import * as Linking from 'expo-linking';
 
 export const loginValidationSchema = Yup.object().shape({
-  email: Yup.string().required().email().label('Email'),
-  password: Yup.string().required().min(6).label('Password')
+  email: Yup.string()
+    .trim()
+    .required('Email is required')
+    .email('Please enter a valid email address')
+    .max(255, 'Email must be at most 255 characters')
+    .label('Email'),
+
+  password: Yup.string()
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters long')
+    .max(24, 'Password must be at most 24 characters')
+    .matches(
+      // /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
+      /^(?=.*[a-z])(?=.*[A-Z])/,
+      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+    )
+    .label('Password'),
 });
 
 export const signupValidationSchema = Yup.object().shape({
-  email: Yup.string().required().email().label('Email'),
-  password: Yup.string().required().min(6).label('Password'),
+  email: Yup.string()
+    .trim()
+    .required('Email is required')
+    .email('Please enter a valid email address')
+    .max(255, 'Email must be at most 255 characters')
+    .label('Email'),
+
+  password: Yup.string()
+    .required('Password is required')
+    .min(8, 'Password must be at least 8 characters long')
+    .max(128, 'Password must be at most 128 characters')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
+      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+    )
+    .label('Password'),
+
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password')], 'Confirm Password must match password.')
-    .required('Confirm Password is required.')
+    .required('Confirm Password is required')
+    .oneOf([Yup.ref('password')], 'Confirm Password must match Password')
+    .label('Confirm Password'),
 });
 
 export const passwordResetSchema = Yup.object().shape({
   email: Yup.string()
+    .trim()
     .required('Please enter a registered email')
     .label('Email')
     .email('Enter a valid email')

@@ -9,18 +9,19 @@ import textRecognition, { TextRecognitionScript } from '@react-native-ml-kit/tex
 import { HomeBtmView } from '../../styles/HomeScreen';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Colors, auth, database, Images } from "../../config";
-import { ref, get, set } from 'firebase/database'; // Import Firebase functions
-import translate from 'translate-google-api'; // Import the translation API
+import { ref, get, set } from 'firebase/database';
+import translate from 'translate-google-api';
 
 export const OcrScreen = ({ navigation }) => {
   const [permission, requestPermission] = useCameraPermissions();
   const [camera, setCamera] = useState<null>(null);
-  const [resultText, setResultText] = useState<string | null>(null); // Ensure resultText is of type string or null
+  const [resultText, setResultText] = useState<string | null>(null);
   const [languageFamily, setLanguageFamily] = useState(TextRecognitionScript.LATIN);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const [translatedWord, setTranslatedWord] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const cameraAnimationRef = useRef<LottieView>(null);
 
@@ -34,10 +35,10 @@ export const OcrScreen = ({ navigation }) => {
     });
   
     try {
-      const translation = await translate(word, { to: 'tr' }); // Translate to Turkish
+      const translation = await translate(word, { to: 'tr' });
       setSelectedWord(word);
-      setTranslatedWord(translation[0]); // Store the translation
-      setModalVisible(true); // Show the modal
+      setTranslatedWord(translation[0]);
+      setModalVisible(true);
     } catch (error) {
       console.error("Translation Error:", error);
     }
@@ -97,7 +98,7 @@ export const OcrScreen = ({ navigation }) => {
       cameraAnimationRef.current.play();
 
       if (imageUri) {
-        await processImage(imageUri); // Process image when Lottie animation is playing
+        await processImage(imageUri);
       }
     }
   };
@@ -137,7 +138,7 @@ export const OcrScreen = ({ navigation }) => {
       );
 
       const result = await textRecognition.recognize(manipulatedImage.uri, languageFamily);
-      setResultText(result.text); // Set the recognized text
+      setResultText(result.text);
     } catch (error) {
       console.error('Text recognition failed:', error);
     }
@@ -225,7 +226,6 @@ export const OcrScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  // Your existing styles (preserved and not changed)
   container: {
     flex: 1,
     justifyContent: 'flex-start',
