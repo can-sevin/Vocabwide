@@ -13,7 +13,7 @@ import {
   ScrollContainer, 
   FormView
 } from './InputScreen.styles'; 
-import { auth, database, Images } from '../../config'; 
+import { auth, database, Images, Flags } from '../../config'; 
 import { Formik } from 'formik';
 import * as Yup from 'yup'; 
 import { ref, get, set } from 'firebase/database'; 
@@ -25,11 +25,13 @@ const wordValidationSchema = Yup.object().shape({
     .required('Words input is required'),
 });
 
-export const InputScreen = ({ navigation }) => {
+export const InputScreen = ({ navigation, route }) => {
+  const mainFlag = route.params.main;
+  const targetFlag = route.params.target;
   const [text, setText] = useState<string>('If you want to add multiple words, please separate each word with a space.');
   const [wordsList, setWordsList] = useState<string[]>(['']);
   const [loading, setLoading] = useState(false);
-
+  
   const handleAddingWords = async (values: { words: string }) => {
     const { words } = values;
     setLoading(true);
@@ -41,8 +43,8 @@ export const InputScreen = ({ navigation }) => {
     }
   
     const userId = currentUser.uid;
-    const originalWordsRef = ref(database, `users/${userId}/originalWords`);
-    const translatedWordsRef = ref(database, `users/${userId}/translatedWords`);
+    const originalWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}originalWords`);
+    const translatedWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}translatedWords`);
   
     try {
       const originalSnapshot = await get(originalWordsRef);
@@ -63,7 +65,7 @@ export const InputScreen = ({ navigation }) => {
       try {
         const translatedWords = await translate(uniqueNewWords, {
           tld: "com",
-          to: "tr"
+          to: targetFlag
         });
   
         if (!translatedWords || translatedWords.length !== uniqueNewWords.length) {

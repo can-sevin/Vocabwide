@@ -25,7 +25,7 @@ export const HomeWordNumberView = styled(Animated.View)`
 `;
 
 export const HomeHeaderTextNumber = styled(Animated.Text)`
-  font-size: 42px;
+  font-size: 36px;
   color: ${Colors.white};
   font-family: Helvetica-Bold;
   margin-top: 32px;
@@ -33,7 +33,7 @@ export const HomeHeaderTextNumber = styled(Animated.Text)`
 `;
 
 export const HomeHeaderText = styled.Text`
-  font-size: 42px;
+  font-size: 36px;
   color: ${Colors.white};
   font-family: Helvetica-Bold;
   margin-top: 32px;
@@ -53,7 +53,7 @@ export const HomeHeaderLanguageView = styled.View`
 
 export const HomeHeaderLanguageViewText = styled.Text`
   font-family: Helvetica-Bold;
-  font-size: 24px;
+  font-size: 16px;
   color: ${Colors.white};
   align-self: center;
   margin-vertical: 12px;
@@ -68,44 +68,6 @@ export const HomeLanguageWordsView = styled.View`
   overflow: hidden;
 `;
 
-export const LanguageScrollView = styled.ScrollView`
-  max-height: 280px;
-`;
-
-export const LanguageInsideAlphabetView = styled.View`
-  background-color: ${Colors.LighterGray2};
-  padding: 4px;
-`;
-
-export const LanguageInsideView = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  background-color: ${Colors.LighterGray5};
-  padding-horizontal: 16px;
-`;
-
-export const LanguageInsiderView = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  flex: 1;
-  margin-vertical: 2px;
-  margin-horizontal: 12px;
-`;
-
-export const LanguageInsiderText = styled.Text`
-  color: ${Colors.black};
-  font-size: 16px;
-  font-family: Helvetica-Medium;
-  text-align: center;
-`;
-
-export const LanguageInsideAlphabetText = styled.Text`
-  color: ${Colors.white};
-  font-size: 24px;
-  font-family: Helvetica-Bold;
-  margin-horizontal: 8px;
-`;
-
 export const HomePracticeButton = styled.TouchableOpacity`
   background-color: ${Colors.whiteLight};
   border-radius: 8px;
@@ -118,13 +80,13 @@ export const HomePracticeButton = styled.TouchableOpacity`
 `;
 
 export const HomePracticeButtonText = styled.Text`
-  font-size: 20px;
+  font-size: 18px;
   text-align: center;
   font-family: Helvetica-Medium;
 `;
 
 export const BottomTextWhite = styled.Text`
-  font-size: 16px;
+  font-size: 14px;
   color: ${Colors.white};
   font-family: Helvetica-Medium;
   align-self: center;

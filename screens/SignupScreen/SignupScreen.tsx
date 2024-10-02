@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TouchableOpacity, Dimensions, ImageBackground } from "react-native";
+import { TouchableOpacity, Dimensions, ImageBackground, Keyboard, View } from "react-native";
 import { Formik } from "formik";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ref, set } from "firebase/database";
@@ -10,7 +10,7 @@ import { useTogglePasswordVisibility } from "../../hooks";
 import { signupValidationSchema } from "../../utils";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Images } from "../../config";
-import { GeneralButton, GeneralButtonText, LoginBtmText, SignupHeaderText, SignupLayout, SignupLayoutInside } from "./SignupScreen.style";
+import { GeneralButton, GeneralButtonText, HeaderTextSignupLayout, LoginBtmText, SignupHeaderText, SignupLayout, SignupLayoutInside } from "./SignupScreen.style";
 
 export const SignupScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
@@ -28,6 +28,7 @@ export const SignupScreen = ({ navigation }) => {
   const handleSignup = async (values: { username: string, email: string; password: string; confirmPassword?: string; }) => {
     const { username, email, password } = values;
     setLoading(true);
+    Keyboard.dismiss();
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -50,7 +51,9 @@ export const SignupScreen = ({ navigation }) => {
   return (
     <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
       <SignupLayout>
-        <SignupHeaderText>Register</SignupHeaderText>
+        <HeaderTextSignupLayout>
+          <SignupHeaderText>Register</SignupHeaderText>
+        </HeaderTextSignupLayout>
         <SignupLayoutInside>
           <Formik
             initialValues={{
@@ -83,7 +86,7 @@ export const SignupScreen = ({ navigation }) => {
                   onChangeText={handleChange("username")}
                   onBlur={handleBlur("username")}
                 />
-                <FormErrorMessage error={errors.username} visible={touched.username} />
+                <FormErrorMessage error={values.username !== '' && errors.username} visible={touched.username} />
                 <TextInput
                   name="email"
                   leftIconName="email"
@@ -96,7 +99,7 @@ export const SignupScreen = ({ navigation }) => {
                   onChangeText={handleChange("email")}
                   onBlur={handleBlur("email")}
                 />
-                <FormErrorMessage error={errors.email} visible={touched.email} />
+                <FormErrorMessage error={values.email !== '' && errors.email} visible={touched.email} />
                 <TextInput
                   name="password"
                   leftIconName="key-variant"
@@ -111,7 +114,7 @@ export const SignupScreen = ({ navigation }) => {
                   onChangeText={handleChange("password")}
                   onBlur={handleBlur("password")}
                 />
-                <FormErrorMessage error={errors.password} visible={touched.password} />
+                <FormErrorMessage error={values.password !== '' && errors.password} visible={touched.password} />
                 <TextInput
                   name="confirmPassword"
                   leftIconName="key-variant"
@@ -126,7 +129,7 @@ export const SignupScreen = ({ navigation }) => {
                   onChangeText={handleChange("confirmPassword")}
                   onBlur={handleBlur("confirmPassword")}
                 />
-                <FormErrorMessage error={errors.confirmPassword} visible={touched.confirmPassword} />
+                <FormErrorMessage error={values.confirmPassword !== '' && errors.confirmPassword} visible={touched.confirmPassword} />
                 {errorState !== "" ? (
                   <FormErrorMessage error={errorState} visible={true} />
                 ) : null}

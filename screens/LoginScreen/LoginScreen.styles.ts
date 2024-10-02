@@ -9,12 +9,16 @@ export const LoginLayout = styled.View`
     justifyContent: space-between;
 `;
 
+export const HeaderTextLoginLayout = styled.View`
+    flex: 1;
+    justifyContent: center;
+`;
+
 export const LoginHeaderText = styled.Text`
     fontSize: 28px;
     color: ${Colors.white};
     fontFamily: Helvetica-Bold;
     alignSelf: center;
-    marginTop: 128px;
 `;
 
 export const LoginLayoutInside = styled.View`
@@ -24,8 +28,7 @@ export const LoginLayoutInside = styled.View`
     justifyContent: center;
     alignContent: center;
     width: 100%;
-    height: ${windowHeight * 0.55};
-    marginTop: 64px;
+    height: ${windowHeight * 0.5};
     padding: 32px;
 `;
 

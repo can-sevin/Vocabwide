@@ -1,55 +1,34 @@
-import styled from "styled-components/native"
-import { Colors } from "../../config";
+import styled from 'styled-components/native';
 import { Dimensions } from "react-native";
+import { Colors } from "../../config";
 
 const windowHeight = Dimensions.get('window').height; 
 
-export const LoginLayout = styled.View`
+export const ForgotPasswordLayout = styled.View`
     flex: 1;
     justifyContent: space-between;
 `;
 
-export const HeaderTextSignupLayout = styled.View`
+export const HeaderTextForgotPasswordLayout = styled.View`
     flex: 1;
     justifyContent: center;
 `;
 
-export const SignupLayout = styled(LoginLayout)`
-    justifyContent: flex-end;
-`;
-
-export const LoginHeaderText = styled.Text`
+export const ForgotPasswordHeaderText = styled.Text`
     fontSize: 28px;
     color: ${Colors.white};
     fontFamily: Helvetica-Bold;
     alignSelf: center;
-    marginTop: 128px;
 `;
 
-export const SignupHeaderText = styled(LoginHeaderText)`
-    marginTop: 0px;
-`;
-
-export const LoginLayoutInside = styled.View`
+export const ForgotPasswordLayoutInside = styled.View`
     backgroundColor: ${Colors.whiteLight};
     borderRadius: 16px;
     alignSelf: center;
-    justifyContent: center;
+    justifyContent: space-around;
     alignContent: center;
     width: 100%;
-    height: ${windowHeight * 0.55};
-    marginTop: 64px;
-    padding: 32px;
-`;
-
-export const SignupLayoutInside = styled(LoginLayoutInside)`
-    backgroundColor: ${Colors.whiteLight};
-    borderRadius: 16px;
-    alignSelf: center;
-    justifyContent: flex-start;
-    alignContent: flex-start;
-    width: 100%;
-    height: ${windowHeight * 0.6};
+    height: ${windowHeight * 0.38};
     padding: 32px;
 `;
 
@@ -70,10 +49,9 @@ export const GeneralButtonText = styled.Text`
     fontWeight: 700;
 `;
 
-export const LoginBtmText = styled.Text`
+export const ForgotPasswordBtmText = styled.Text`
     fontFamily: Helvetica-Medium; 
     fontSize: 16px; 
     alignSelf: center; 
     marginTop: 12px;
 `;
-

@@ -1,15 +1,22 @@
 import React, { useState } from "react";
-import { ImageBackground, TouchableOpacity, View } from "react-native";
+import { ImageBackground, TouchableOpacity, View, Keyboard } from "react-native";
 import { Formik } from "formik";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import {TextInput, FormErrorMessage, LoadingIndicator } from "../../components";
+import { TextInput, FormErrorMessage, LoadingIndicator } from "../../components";
 import { auth, Images } from "../../config";
 import { useTogglePasswordVisibility } from "../../hooks";
 import { loginValidationSchema } from "../../utils";
-import { GeneralButton, GeneralButtonText, LoginBtmText, LoginHeaderText, LoginLayout, LoginLayoutInside } from "./LoginScreen.styles";
-
+import { 
+  GeneralButton, 
+  GeneralButtonText, 
+  HeaderTextLoginLayout, 
+  LoginBtmText, 
+  LoginHeaderText, 
+  LoginLayout, 
+  LoginLayoutInside 
+} from "./LoginScreen.styles";
 
 export const LoginScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
@@ -17,6 +24,8 @@ export const LoginScreen = ({ navigation }) => {
   const { passwordVisibility, handlePasswordVisibility, rightIcon } = useTogglePasswordVisibility();
 
   const handleLogin = async (values: { email: string; password: string }) => {
+    Keyboard.dismiss();
+
     const { email, password } = values;
     setLoading(true);
 
@@ -31,8 +40,10 @@ export const LoginScreen = ({ navigation }) => {
 
   return (
     <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
-    <LoginLayout>
-        <LoginHeaderText>Welcome to login</LoginHeaderText>
+      <LoginLayout>
+        <HeaderTextLoginLayout>
+          <LoginHeaderText>Welcome to login</LoginHeaderText>
+        </HeaderTextLoginLayout>
         <LoginLayoutInside>
           <Formik
             initialValues={{
@@ -40,6 +51,8 @@ export const LoginScreen = ({ navigation }) => {
               password: "",
             }}
             validationSchema={loginValidationSchema}
+            validateOnBlur={true}
+            validateOnChange={false}
             onSubmit={(values) => handleLogin(values)}
           >
             {({
@@ -52,24 +65,26 @@ export const LoginScreen = ({ navigation }) => {
             }) => (
               <KeyboardAwareScrollView>
                 <FormErrorMessage
-                  error={errors.email}
+                  error={values.email !== '' && errors.email}
                   visible={touched.email}
                 />
                 <TextInput
-                name="email"
-                leftIconName="email"
-                placeholder="Enter email"
-                autoCapitalize="none"
-                keyboardType="email-address"
-                textContentType="emailAddress"
-                autoFocus={true}
-                value={values.email}
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-                errorState={errorState} rightIcon={undefined} handlePasswordVisibility={undefined}                
+                  name="email"
+                  leftIconName="email"
+                  placeholder="Enter email"
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  textContentType="emailAddress"
+                  autoFocus={true}
+                  value={values.email}
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
+                  errorState={errorState} 
+                  rightIcon={undefined} 
+                  handlePasswordVisibility={undefined}                
                 />
                 <FormErrorMessage
-                  error={errors.password}
+                  error={values.password !== '' && errors.password}
                   visible={touched.password}
                 />
                 {errorState !== "" ? (
@@ -101,15 +116,15 @@ export const LoginScreen = ({ navigation }) => {
             )}
           </Formik>
           <>
-          <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-            <LoginBtmText>Create a new account?</LoginBtmText>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
-            <LoginBtmText>Forgot Password</LoginBtmText>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+              <LoginBtmText>Create a new account?</LoginBtmText>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
+              <LoginBtmText>Forgot Password</LoginBtmText>
+            </TouchableOpacity>
           </>
         </LoginLayoutInside>
-    </LoginLayout>
+      </LoginLayout>
     </ImageBackground>
   );
 };

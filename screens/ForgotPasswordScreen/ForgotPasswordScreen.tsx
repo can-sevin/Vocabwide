@@ -1,114 +1,96 @@
 import React, { useState } from "react";
-import { ImageBackground, StyleSheet, Text } from "react-native";
+import { ImageBackground, Keyboard, TouchableOpacity, View } from "react-native";
 import { Formik } from "formik";
 import { sendPasswordResetEmail } from "firebase/auth";
 
 import { passwordResetSchema } from "../../utils";
-import { Colors, auth, Images } from "../../config";
-import { View, TextInput, Button, FormErrorMessage } from "../../components";
+import { auth, Images } from "../../config";
+import { TextInput, FormErrorMessage, LoadingIndicator } from "../../components";
+import {
+  GeneralButton,
+  GeneralButtonText,
+  ForgotPasswordHeaderText,
+  ForgotPasswordLayout,
+  ForgotPasswordLayoutInside,
+  ForgotPasswordBtmText,
+  HeaderTextForgotPasswordLayout
+} from "./ForgotPasswordScreen.styles";
 
 export const ForgotPasswordScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSendPasswordResetEmail = (values: { email: any; }) => {
+  const handleSendPasswordResetEmail = async (values: { email: string }) => {
     const { email } = values;
+    setLoading(true);
+    Keyboard.dismiss();
 
-    sendPasswordResetEmail(auth, email)
-      .then(() => {
-        console.log("Success: Password Reset Email sent.");
-        navigation.navigate("Login");
-      })
-      .catch((error) => setErrorState(error.message));
+    try {
+      await sendPasswordResetEmail(auth, email);
+      console.log("Success: Password Reset Email sent.");
+      navigation.navigate("Login");
+      setLoading(false);
+    } catch (error) {
+      setErrorState(error.message);
+      setLoading(false);
+    }
   };
 
   return (
-    <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover">
-    <View isSafe style={styles.container}>
-      <View style={styles.innerContainer}>
-        <Text style={styles.screenTitle}>Reset your password</Text>
-      </View>
-      <Formik
-        initialValues={{ email: "" }}
-        validationSchema={passwordResetSchema}
-        onSubmit={(values) => handleSendPasswordResetEmail(values)}
-      >
-        {({
-          values,
-          touched,
-          errors,
-          handleChange,
-          handleSubmit,
-          handleBlur,
-        }) => (
-          <>
-            {/* Email input field */}
-            <TextInput
-              name="email"
-              leftIconName="email"
-              placeholder="Enter email"
-              autoCapitalize="none"
-              keyboardType="email-address"
-              textContentType="emailAddress"
-              value={values.email}
-              onChangeText={handleChange("email")}
-              onBlur={handleBlur("email")}
-            />
-            <FormErrorMessage error={errors.email} visible={touched.email} />
-            {/* Display Screen Error Mesages */}
-            {errorState !== "" ? (
-              <FormErrorMessage error={errorState} visible={true} />
-            ) : null}
-            {/* Password Reset Send Email  button */}
-            <Button style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Send Reset Email</Text>
-            </Button>
-          </>
-        )}
-      </Formik>
-      {/* Button to navigate to Login screen */}
-      <Button
-        style={styles.borderlessButtonContainer}
-        borderless
-        title={"Go back to Login"}
-        onPress={() => navigation.navigate("Login")}
-      />
-    </View>
+    <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
+      <ForgotPasswordLayout>
+        <HeaderTextForgotPasswordLayout>
+          <ForgotPasswordHeaderText>Reset your password</ForgotPasswordHeaderText>
+        </HeaderTextForgotPasswordLayout>
+        <ForgotPasswordLayoutInside>
+          <Formik
+            initialValues={{ email: "" }}
+            validationSchema={passwordResetSchema}
+            onSubmit={(values) => handleSendPasswordResetEmail(values)}
+          >
+            {({
+              values,
+              touched,
+              errors,
+              handleChange,
+              handleSubmit,
+              handleBlur,
+            }) => (
+              <>
+                <TextInput
+                  name="email"
+                  leftIconName="email"
+                  placeholder="Enter email"
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  textContentType="emailAddress"
+                  value={values.email}
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
+                />
+                <FormErrorMessage error={errors.email} visible={touched.email} />
+                
+                {errorState !== "" ? (
+                  <FormErrorMessage error={errorState} visible={true} />
+                ) : null}
+                
+                {loading ? (
+                  <LoadingIndicator />
+                ) : (
+                  <View>
+                  <GeneralButton onPress={() => handleSubmit()}>
+                    <GeneralButtonText>Send Reset Email</GeneralButtonText>
+                  </GeneralButton>
+                  <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                    <ForgotPasswordBtmText>Go back to Login</ForgotPasswordBtmText>
+                  </TouchableOpacity>
+                  </View>                
+                )}
+              </>
+            )}
+          </Formik>
+        </ForgotPasswordLayoutInside>
+      </ForgotPasswordLayout>
     </ImageBackground>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.white,
-    paddingHorizontal: 12,
-  },
-  innerContainer: {
-    alignItems: "center",
-  },
-  screenTitle: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: Colors.black,
-    paddingTop: 20,
-  },
-  button: {
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 8,
-    backgroundColor: Colors.orange,
-    padding: 10,
-    borderRadius: 8,
-  },
-  buttonText: {
-    fontSize: 20,
-    color: Colors.white,
-    fontWeight: "700",
-  },
-  borderlessButtonContainer: {
-    marginTop: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
