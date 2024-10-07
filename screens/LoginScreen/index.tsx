@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { ImageBackground, TouchableOpacity, View, Keyboard } from "react-native";
 import { Formik } from "formik";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import { TextInput, FormErrorMessage, LoadingIndicator } from "../../components";
-import { auth, Images } from "../../config";
-import { useTogglePasswordVisibility } from "../../hooks";
-import { loginValidationSchema } from "../../utils";
+import { Images } from "../../config";
+import { useTogglePasswordVisibility } from "../../hooks/useTogglePasswordVisibility";
+import { loginUser } from "../../firebase/auth";
+import { loginValidationSchema } from "../../utils/index";
 import { 
   GeneralButton, 
   GeneralButtonText, 
@@ -16,7 +16,7 @@ import {
   LoginHeaderText, 
   LoginLayout, 
   LoginLayoutInside 
-} from "./LoginScreen.styles";
+} from "./styles";
 
 export const LoginScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
@@ -25,17 +25,8 @@ export const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async (values: { email: string; password: string }) => {
     Keyboard.dismiss();
-
     const { email, password } = values;
-    setLoading(true);
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      setLoading(false);
-    } catch (error) {
-      setErrorState(error.message);
-      setLoading(false);
-    }
+    await loginUser(email, password, setErrorState, setLoading);
   };
 
   return (
@@ -46,28 +37,16 @@ export const LoginScreen = ({ navigation }) => {
         </HeaderTextLoginLayout>
         <LoginLayoutInside>
           <Formik
-            initialValues={{
-              email: "",
-              password: "",
-            }}
+            initialValues={{ email: "", password: "" }}
             validationSchema={loginValidationSchema}
             validateOnBlur={true}
             validateOnChange={false}
             onSubmit={(values) => handleLogin(values)}
           >
-            {({
-              values,
-              touched,
-              errors,
-              handleChange,
-              handleSubmit,
-              handleBlur,
-            }) => (
+            {({ values, touched, errors, handleChange, handleSubmit, handleBlur }) => (
               <KeyboardAwareScrollView>
-                <FormErrorMessage
-                  error={values.email !== '' && errors.email}
-                  visible={touched.email}
-                />
+                {/* Email Input */}
+                <FormErrorMessage error={values.email !== '' && errors.email} visible={touched.email} />
                 <TextInput
                   name="email"
                   leftIconName="email"
@@ -81,15 +60,10 @@ export const LoginScreen = ({ navigation }) => {
                   onBlur={handleBlur("email")}
                   errorState={errorState} 
                   rightIcon={undefined} 
-                  handlePasswordVisibility={undefined}                
+                  handlePasswordVisibility={undefined}
                 />
-                <FormErrorMessage
-                  error={values.password !== '' && errors.password}
-                  visible={touched.password}
-                />
-                {errorState !== "" ? (
-                  <FormErrorMessage error={errorState} visible={true} />
-                ) : null}
+                {/* Password Input */}
+                <FormErrorMessage error={values.password !== '' && errors.password} visible={touched.password} />
                 <TextInput
                   name="password"
                   leftIconName="key-variant"
@@ -105,6 +79,7 @@ export const LoginScreen = ({ navigation }) => {
                   onBlur={handleBlur("password")}
                   errorState={errorState}
                 />
+                {/* Loading Indicator or Button */}
                 {loading ? (
                   <LoadingIndicator />
                 ) : (

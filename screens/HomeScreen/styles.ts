@@ -18,10 +18,23 @@ export const HomeLayoutHeader = styled(View)`
   padding-horizontal: 32px;
 `;
 
+export const HomeTopView = styled(Animated.View)`
+  justify-content: flex-start;
+  align-items: center;
+  flex: 1;
+  margin: 32px;
+  width: 80%;
+`;
+
+export const HomeBottomView = styled(Animated.View)`
+  justify-content: flex-end;
+  width: 100%;
+`;
+
 export const HomeWordNumberView = styled(Animated.View)`
   flex-direction: row;
   justify-content: space-between;
-  width: 70%;
+  width: 94%;
 `;
 
 export const HomeHeaderTextNumber = styled(Animated.Text)`
@@ -46,8 +59,9 @@ export const HomeHeaderSmallTextNumber = styled(Animated.Text)`
 `;
 
 export const HomeHeaderLanguageView = styled.View`
+  margin-top: 16px;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   width: 70%;
 `;
 
@@ -86,7 +100,7 @@ export const HomePracticeButtonText = styled.Text`
 `;
 
 export const BottomTextWhite = styled.Text`
-  font-size: 14px;
+  font-size: 16px;
   color: ${Colors.white};
   font-family: Helvetica-Medium;
   align-self: center;

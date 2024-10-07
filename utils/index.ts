@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { Audio } from 'expo-av';
-import { Camera } from 'expo-camera';
+import { Camera, PermissionStatus } from 'expo-camera';
 import * as Linking from 'expo-linking';
 
 export const loginValidationSchema = Yup.object().shape({
@@ -95,6 +95,33 @@ export const checkCamPermissions = async () => {
   }
 };
 
+export const getPermissions = async (type: 'camera' | 'voice'): Promise<'granted' | 'denied'> => {
+  let permission: PermissionStatus | undefined;
+  
+  if (type === 'camera') {
+    permission = await checkCamPermissions();
+  } else {
+    permission = await checkVoicePermissions();
+  }
+
+  // Handle undefined or unexpected PermissionStatus cases
+  if (permission === 'granted') {
+    return 'granted';
+  } else {
+    return 'denied'; // Map undefined or unexpected values to 'denied'
+  }
+};
+
+export const handleOpenAppSettings = () => {
+  openApplicationSettings();
+};
+
 export const openApplicationSettings = () => {
   Linking.openSettings()
 };
+
+export const wordValidationSchema = Yup.object().shape({
+  words: Yup.string()
+    .matches(/^[A-Za-z\s]+$/, "Please enter a valid word or words")
+    .required('Words input is required'),
+});

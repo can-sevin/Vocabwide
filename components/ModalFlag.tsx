@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { ButtonContainer, CancelButton, CancelButtonText, ModalContainer, ModalContent, ModalText } from './styles/ModalFlag.style';
 import { Flags } from '../config';
+import { LoadingIndicator } from './LoadingIndicator';
 
 type FlagKey = keyof typeof Flags;
 
@@ -10,13 +11,15 @@ type ModalFlagProps = {
   onSave: (selectedFlag: FlagKey) => void;
   onCancel: () => void;
   excludeFlag: FlagKey;
+  loading: boolean;
 };
 
 export const ModalFlag: React.FC<ModalFlagProps> = ({ 
   modalVisible, 
   onSave, 
   onCancel, 
-  excludeFlag
+  excludeFlag,
+  loading
 }) => {
   return (
     <Modal
@@ -27,6 +30,10 @@ export const ModalFlag: React.FC<ModalFlagProps> = ({
     >
       <ModalContainer>
         <ModalContent>
+        {loading ? (
+            <LoadingIndicator/>
+          ) : (
+          <>
           <ModalText>Select a Flag</ModalText>
           <ScrollView style={{ maxHeight: 200 }}>
             {Object.entries(Flags)
@@ -46,7 +53,8 @@ export const ModalFlag: React.FC<ModalFlagProps> = ({
               <CancelButtonText>Cancel</CancelButtonText>
             </CancelButton>
           </ButtonContainer>
-        </ModalContent>
+          </>
+          )}</ModalContent>
       </ModalContainer>
     </Modal>
   );

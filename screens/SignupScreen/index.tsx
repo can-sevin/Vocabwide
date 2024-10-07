@@ -1,16 +1,22 @@
 import React, { useState } from "react";
-import { TouchableOpacity, Dimensions, ImageBackground, Keyboard, View } from "react-native";
+import { TouchableOpacity, ImageBackground, Keyboard } from "react-native";
 import { Formik } from "formik";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { ref, set } from "firebase/database";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import { TextInput, FormErrorMessage, LoadingIndicator } from "../../components";
-import { auth, database } from "../../config/firebase";
-import { useTogglePasswordVisibility } from "../../hooks";
-import { signupValidationSchema } from "../../utils";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Images } from "../../config";
-import { GeneralButton, GeneralButtonText, HeaderTextSignupLayout, LoginBtmText, SignupHeaderText, SignupLayout, SignupLayoutInside } from "./SignupScreen.style";
+import { useTogglePasswordVisibility } from "../../hooks/useTogglePasswordVisibility";
+import { signupValidationSchema } from "../../utils/index";
+import { registerUser } from "../../firebase/auth";
+import {
+  GeneralButton,
+  GeneralButtonText,
+  HeaderTextSignupLayout,
+  LoginBtmText,
+  SignupHeaderText,
+  SignupLayout,
+  SignupLayoutInside,
+} from "./style";
 
 export const SignupScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
@@ -20,32 +26,16 @@ export const SignupScreen = ({ navigation }) => {
     passwordVisibility,
     handlePasswordVisibility,
     rightIcon,
-    handleConfirmPasswordVisibility,
-    confirmPasswordIcon,
     confirmPasswordVisibility,
+    confirmPasswordIcon,
+    handleConfirmPasswordVisibility,
   } = useTogglePasswordVisibility();
 
-  const handleSignup = async (values: { username: string, email: string; password: string; confirmPassword?: string; }) => {
+  const handleSignup = async (values: { username: string; email: string; password: string }) => {
     const { username, email, password } = values;
-    setLoading(true);
     Keyboard.dismiss();
 
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      await set(ref(database, `users/${user.uid}`), {
-        username: username,
-        email: user.email,
-        uid: user.uid,
-        words: null,
-      });
-
-      setLoading(false);
-    } catch (error) {
-      setErrorState(error);
-      setLoading(false);
-    }
+    await registerUser(username, email, password, setLoading, setErrorState);
   };
 
   return (
@@ -56,23 +46,11 @@ export const SignupScreen = ({ navigation }) => {
         </HeaderTextSignupLayout>
         <SignupLayoutInside>
           <Formik
-            initialValues={{
-              username: "",
-              email: "",
-              password: "",
-              confirmPassword: "",
-            }}
+            initialValues={{ username: "", email: "", password: "", confirmPassword: "" }}
             validationSchema={signupValidationSchema}
             onSubmit={(values) => handleSignup(values)}
           >
-            {({
-              values,
-              touched,
-              errors,
-              handleChange,
-              handleSubmit,
-              handleBlur,
-            }) => (
+            {({ values, touched, errors, handleChange, handleSubmit, handleBlur }) => (
               <KeyboardAwareScrollView>
                 <TextInput
                   name="username"
@@ -81,12 +59,12 @@ export const SignupScreen = ({ navigation }) => {
                   autoCapitalize="none"
                   keyboardType="default"
                   textContentType="username"
-                  autoFocus={true}
                   value={values.username}
                   onChangeText={handleChange("username")}
                   onBlur={handleBlur("username")}
                 />
-                <FormErrorMessage error={values.username !== '' && errors.username} visible={touched.username} />
+                <FormErrorMessage error={values.username !== "" && errors.username} visible={touched.username} />
+
                 <TextInput
                   name="email"
                   leftIconName="email"
@@ -94,12 +72,12 @@ export const SignupScreen = ({ navigation }) => {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   textContentType="emailAddress"
-                  autoFocus={true}
                   value={values.email}
                   onChangeText={handleChange("email")}
                   onBlur={handleBlur("email")}
                 />
-                <FormErrorMessage error={values.email !== '' && errors.email} visible={touched.email} />
+                <FormErrorMessage error={values.email !== "" && errors.email} visible={touched.email} />
+
                 <TextInput
                   name="password"
                   leftIconName="key-variant"
@@ -114,7 +92,8 @@ export const SignupScreen = ({ navigation }) => {
                   onChangeText={handleChange("password")}
                   onBlur={handleBlur("password")}
                 />
-                <FormErrorMessage error={values.password !== '' && errors.password} visible={touched.password} />
+                <FormErrorMessage error={values.password !== "" && errors.password} visible={touched.password} />
+
                 <TextInput
                   name="confirmPassword"
                   leftIconName="key-variant"
@@ -129,10 +108,13 @@ export const SignupScreen = ({ navigation }) => {
                   onChangeText={handleChange("confirmPassword")}
                   onBlur={handleBlur("confirmPassword")}
                 />
-                <FormErrorMessage error={values.confirmPassword !== '' && errors.confirmPassword} visible={touched.confirmPassword} />
-                {errorState !== "" ? (
-                  <FormErrorMessage error={errorState} visible={true} />
-                ) : null}
+                <FormErrorMessage
+                  error={values.confirmPassword !== "" && errors.confirmPassword}
+                  visible={touched.confirmPassword}
+                />
+
+                {errorState !== "" ? <FormErrorMessage error={errorState} visible={true} /> : null}
+
                 {loading ? (
                   <LoadingIndicator />
                 ) : (

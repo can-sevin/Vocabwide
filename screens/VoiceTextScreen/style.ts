@@ -35,6 +35,7 @@ export const HeaderText = styled.Text`
   font-size: 32px;
   align-self: center;
   text-align: center;
+  margin-top: 32px;
   color: #fff;
   font-family: Helvetica-Bold;
 `;
@@ -93,6 +94,34 @@ export const ScrollViewContainer = styled.ScrollView`
   background-color: ${Colors.whiteLight};
   height: 280px;
   border-radius: 24px;
+  padding-horizontal: 8px;
+`;
+
+export const WordContainer = styled.View`
+  flex-direction: row;
+  flex-wrap: wrap;  /* Enable wrapping of elements */
+  justify-content: flex-start;
+`;
+
+export const LoadingOverlay = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+`;
+
+export const TransparentOverlay = styled.View`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
 `;
 
 export const LottieAnimation = styled(LottieView)`

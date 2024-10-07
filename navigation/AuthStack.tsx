@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { LoginScreen, SignupScreen, ForgotPasswordScreen } from "../screens";
-import { PermissionScreen } from "../screens/PermissionScreen/PermissionScreen";
+import { PermissionScreen } from "../screens/PermissionScreen";
 import { Camera } from "expo-camera";
 import { Audio } from "expo-av";
 import { useEffect, useState } from "react";
