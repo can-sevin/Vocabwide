@@ -4,13 +4,13 @@ import { Colors } from "../../config";
 import LottieView from "lottie-react-native";
 
 export const HomeBtmView = styled.View`
-    backgroundColor: 'rgba(255, 255, 255, 0.5)';
-    height: 180px;
-    width: 100%; 
-    borderRadius: 24px; 
-    alignItems: center; 
-    justifyContent: space-evenly;
-    flexDirection: row;
+  backgroundcolor: "rgba(255, 255, 255, 0.5)";
+  height: 180px;
+  width: 100%;
+  borderradius: 24px;
+  alignitems: center;
+  justifycontent: space-evenly;
+  flexdirection: row;
 `;
 
 export const Container = styled(Animated.View)`
@@ -99,7 +99,7 @@ export const ScrollViewContainer = styled.ScrollView`
 
 export const WordContainer = styled.View`
   flex-direction: row;
-  flex-wrap: wrap;  /* Enable wrapping of elements */
+  flex-wrap: wrap; /* Enable wrapping of elements */
   justify-content: flex-start;
 `;
 
@@ -174,7 +174,7 @@ export const CancelButtonText = styled.Text`
 `;
 
 export const ModalInnerView = styled.View`
-  flexDirection: row;
+  flexdirection: row;
   justify-content: space-around;
   width: 80%;
 `;

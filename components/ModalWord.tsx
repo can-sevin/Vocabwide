@@ -1,7 +1,16 @@
-import React from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Colors } from '../config';
-import { ButtonContainer, CancelButton, CancelButtonText, ModalContainer, ModalContent, ModalText, SaveButton, SaveButtonText } from './styles/ModalWord.style';
+import React from "react";
+import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Colors } from "../config";
+import {
+  ButtonContainer,
+  CancelButton,
+  CancelButtonText,
+  ModalContainer,
+  ModalContent,
+  ModalText,
+  SaveButton,
+  SaveButtonText,
+} from "./styles/ModalWord.style";
 
 type ModalWordProps = {
   modalVisible: boolean;
@@ -11,12 +20,12 @@ type ModalWordProps = {
   onCancel: () => void;
 };
 
-export const ModalWord: React.FC<ModalWordProps> = ({ 
-  modalVisible, 
-  selectedWord, 
-  translatedWord, 
-  onSave, 
-  onCancel 
+export const ModalWord: React.FC<ModalWordProps> = ({
+  modalVisible,
+  selectedWord,
+  translatedWord,
+  onSave,
+  onCancel,
 }) => {
   return (
     <Modal
@@ -28,7 +37,7 @@ export const ModalWord: React.FC<ModalWordProps> = ({
       <ModalContainer>
         <ModalContent>
           <ModalText>
-            {`${selectedWord ?? ''} -> ${translatedWord ?? ''}`}
+            {`${selectedWord ?? ""} -> ${translatedWord ?? ""}`}
           </ModalText>
           <ButtonContainer>
             <SaveButton onPress={onSave}>

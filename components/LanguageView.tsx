@@ -1,14 +1,14 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import { 
-  LanguageScrollView, 
-  LanguageInsideAlphabetView, 
-  LanguageInsideAlphabetText, 
-  LanguageInsideView, 
-  LanguageInsiderView, 
-  LanguageInsiderText 
-} from './styles/LanguageView.style';
-import { LoadingIndicator } from './LoadingIndicator';
+import React from "react";
+import { View, Text } from "react-native";
+import {
+  LanguageScrollView,
+  LanguageInsideAlphabetView,
+  LanguageInsideAlphabetText,
+  LanguageInsideView,
+  LanguageInsiderView,
+  LanguageInsiderText,
+} from "./styles/LanguageView.style";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 type LanguageViewProps = {
   wordsList: [string, string][];
@@ -41,19 +41,21 @@ const LanguageView: React.FC<LanguageViewProps> = ({ wordsList, loading }) => {
                 </LanguageInsideAlphabetText>
               </LanguageInsideAlphabetView>
 
-              {groupedWords[letter].map(([originalWord, translatedWord], index) => (
-                <LanguageInsideView key={index}>
-                  <LanguageInsiderView>
-                    {/* Wrap text in Text components */}
-                    <LanguageInsiderText>
-                      <Text>{originalWord}</Text>
-                    </LanguageInsiderText>
-                    <LanguageInsiderText>
-                      <Text>{translatedWord}</Text>
-                    </LanguageInsiderText>
-                  </LanguageInsiderView>
-                </LanguageInsideView>
-              ))}
+              {groupedWords[letter].map(
+                ([originalWord, translatedWord], index) => (
+                  <LanguageInsideView key={index}>
+                    <LanguageInsiderView>
+                      {/* Wrap text in Text components */}
+                      <LanguageInsiderText>
+                        <Text>{originalWord}</Text>
+                      </LanguageInsiderText>
+                      <LanguageInsiderText>
+                        <Text>{translatedWord}</Text>
+                      </LanguageInsiderText>
+                    </LanguageInsiderView>
+                  </LanguageInsideView>
+                )
+              )}
             </View>
           ))}
         </LanguageScrollView>

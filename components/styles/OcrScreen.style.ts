@@ -17,8 +17,8 @@ export const ModalContent = styled.View`
 `;
 
 export const ModalContentInner = styled.View`
-  flexDirection: row;
-  justifyContent: space-around;
+  flexdirection: row;
+  justifycontent: space-around;
   width: 80%;
 `;
 

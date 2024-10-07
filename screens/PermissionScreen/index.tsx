@@ -8,13 +8,17 @@ import { PermissionComponent } from "../../components/PermissionComponent";
 import { BtnNext, Container, HeaderText, SmallText } from "./style";
 
 export const PermissionScreen = ({ navigation }) => {
-  const [voicePermission, setVoicePermission] = useState<'granted' | 'denied'>('denied');
-  const [camPermission, setCamPermission] = useState<'granted' | 'denied'>('denied');
+  const [voicePermission, setVoicePermission] = useState<"granted" | "denied">(
+    "denied"
+  );
+  const [camPermission, setCamPermission] = useState<"granted" | "denied">(
+    "denied"
+  );
 
   useEffect(() => {
     const fetchPermissions = async () => {
-      const voice = await getPermissions('voice');
-      const cam = await getPermissions('camera');
+      const voice = await getPermissions("voice");
+      const cam = await getPermissions("camera");
       setVoicePermission(voice);
       setCamPermission(cam);
     };
@@ -23,10 +27,14 @@ export const PermissionScreen = ({ navigation }) => {
   }, []);
 
   return (
-    <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover">
+    <ImageBackground
+      source={Images.background}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+    >
       <Container>
         <HeaderText>Welcome to Vocabwide</HeaderText>
-        
+
         <PermissionComponent
           permissionType="voice"
           permissionStatus={voicePermission}
@@ -39,7 +47,7 @@ export const PermissionScreen = ({ navigation }) => {
           onPress={handleOpenAppSettings}
         />
 
-        {voicePermission === 'granted' && camPermission === 'granted' && (
+        {voicePermission === "granted" && camPermission === "granted" && (
           <BtnNext onPress={() => navigation.navigate("Login")}>
             <SmallText>Press for Login</SmallText>
           </BtnNext>

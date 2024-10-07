@@ -1,8 +1,12 @@
-import { ref, get, set } from 'firebase/database';
-import { auth, database } from '../config';
-import translate from 'translate-google-api'; 
+import { ref, get, set } from "firebase/database";
+import { auth, database } from "../config";
+import translate from "translate-google-api";
 
-export const saveFlagsToFirebase = async (uid: string, mainFlag: string, targetFlag: string) => {
+export const saveFlagsToFirebase = async (
+  uid: string,
+  mainFlag: string,
+  targetFlag: string
+) => {
   const userFlagsRef = ref(database, `users/${uid}/flags`);
   try {
     await set(userFlagsRef, { mainFlag, targetFlag });
@@ -11,7 +15,10 @@ export const saveFlagsToFirebase = async (uid: string, mainFlag: string, targetF
   }
 };
 
-export const fetchFlagsFromFirebase = async (uid: string, setFlags: (mainFlag: string, targetFlag: string) => void) => {
+export const fetchFlagsFromFirebase = async (
+  uid: string,
+  setFlags: (mainFlag: string, targetFlag: string) => void
+) => {
   const userFlagsRef = ref(database, `users/${uid}/flags`);
   try {
     const snapshot = await get(userFlagsRef);
@@ -33,25 +40,41 @@ export const handleListingWords = async (
   setWordNum: (num: number) => void
 ) => {
   setLoading(true);
-  
-  const originalWordsRef = ref(database, `users/${uid}/${mainFlag}${targetFlag}originalWords`);
-  const translatedWordsRef = ref(database, `users/${uid}/${mainFlag}${targetFlag}translatedWords`);
+
+  const originalWordsRef = ref(
+    database,
+    `users/${uid}/${mainFlag}${targetFlag}originalWords`
+  );
+  const translatedWordsRef = ref(
+    database,
+    `users/${uid}/${mainFlag}${targetFlag}translatedWords`
+  );
 
   try {
     const [originalSnapshot, translatedSnapshot] = await Promise.all([
-      get(originalWordsRef), 
-      get(translatedWordsRef)
+      get(originalWordsRef),
+      get(translatedWordsRef),
     ]);
 
-    const originalWords = originalSnapshot.exists() ? originalSnapshot.val() : [];
-    const translatedWords = translatedSnapshot.exists() ? translatedSnapshot.val() : [];
+    const originalWords = originalSnapshot.exists()
+      ? originalSnapshot.val()
+      : [];
+    const translatedWords = translatedSnapshot.exists()
+      ? translatedSnapshot.val()
+      : [];
 
-    const combinedWords = originalWords.map((originalWord: any, index: number) => {
-      const translatedWord = translatedWords[index] || "";
-      return [originalWord, translatedWord];
-    });
+    const combinedWords = originalWords.map(
+      (originalWord: any, index: number) => {
+        const translatedWord = translatedWords[index] || "";
+        return [originalWord, translatedWord];
+      }
+    );
     setWordNum(originalWords.length);
-    setWordsList(combinedWords.sort((a: string[], b: string[]) => a[0].toLowerCase().localeCompare(b[0].toLowerCase())));
+    setWordsList(
+      combinedWords.sort((a: string[], b: string[]) =>
+        a[0].toLowerCase().localeCompare(b[0].toLowerCase())
+      )
+    );
     setLoading(false);
   } catch (error) {
     console.error("Error fetching the word service. Please try again", error);
@@ -59,7 +82,11 @@ export const handleListingWords = async (
   }
 };
 
-export const fetchUserInfo = async (uid: string, setUserInfo: (userInfo: any) => void, setShowText: (show: boolean) => void) => {
+export const fetchUserInfo = async (
+  uid: string,
+  setUserInfo: (userInfo: any) => void,
+  setShowText: (show: boolean) => void
+) => {
   const userRef = ref(database, `users/${uid}`);
   try {
     const snapshot = await get(userRef);
@@ -75,29 +102,42 @@ export const fetchUserInfo = async (uid: string, setUserInfo: (userInfo: any) =>
 };
 
 export const handleAddingWords = async (
-  userId: string, 
-  mainFlag: string, 
-  targetFlag: string, 
-  words: string, 
-  setText: (message: string) => void, 
-  setWordsList: (list: string[]) => void, 
+  userId: string,
+  mainFlag: string,
+  targetFlag: string,
+  words: string,
+  setText: (message: string) => void,
+  setWordsList: (list: string[]) => void,
   setLoading: (loading: boolean) => void
 ) => {
   setLoading(true);
 
-  const originalWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}originalWords`);
-  const translatedWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}translatedWords`);
+  const originalWordsRef = ref(
+    database,
+    `users/${userId}/${mainFlag}${targetFlag}originalWords`
+  );
+  const translatedWordsRef = ref(
+    database,
+    `users/${userId}/${mainFlag}${targetFlag}translatedWords`
+  );
 
   try {
     const originalSnapshot = await get(originalWordsRef);
-    let currentOriginalWords = originalSnapshot.exists() ? originalSnapshot.val() : [];
+    let currentOriginalWords = originalSnapshot.exists()
+      ? originalSnapshot.val()
+      : [];
 
     if (!Array.isArray(currentOriginalWords)) {
       currentOriginalWords = [];
     }
 
-    const newWords = words.trim().split(/\s+/).map(word => word.toLowerCase());
-    const uniqueNewWords = newWords.filter(word => !currentOriginalWords.includes(word));
+    const newWords = words
+      .trim()
+      .split(/\s+/)
+      .map((word) => word.toLowerCase());
+    const uniqueNewWords = newWords.filter(
+      (word) => !currentOriginalWords.includes(word)
+    );
 
     if (uniqueNewWords.length === 0) {
       setText("No new unique words to add.");
@@ -110,25 +150,35 @@ export const handleAddingWords = async (
         to: targetFlag,
       });
 
-      if (!translatedWords || translatedWords.length !== uniqueNewWords.length) {
+      if (
+        !translatedWords ||
+        translatedWords.length !== uniqueNewWords.length
+      ) {
         setText("Error translating words.");
         return;
       }
 
       const translatedSnapshot = await get(translatedWordsRef);
-      let currentTranslatedWords = translatedSnapshot.exists() ? translatedSnapshot.val() : [];
+      let currentTranslatedWords = translatedSnapshot.exists()
+        ? translatedSnapshot.val()
+        : [];
 
       if (!Array.isArray(currentTranslatedWords)) {
         currentTranslatedWords = [];
       }
 
       const updatedOriginalWords = [...currentOriginalWords, ...uniqueNewWords];
-      const updatedTranslatedWords = [...currentTranslatedWords, ...translatedWords];
+      const updatedTranslatedWords = [
+        ...currentTranslatedWords,
+        ...translatedWords,
+      ];
 
       await set(originalWordsRef, updatedOriginalWords);
       await set(translatedWordsRef, updatedTranslatedWords);
 
-      const formattedWordsList = updatedOriginalWords.map((word, index) => `${word} -> ${updatedTranslatedWords[index]}`);
+      const formattedWordsList = updatedOriginalWords.map(
+        (word, index) => `${word} -> ${updatedTranslatedWords[index]}`
+      );
       setWordsList(formattedWordsList.reverse());
       setText(`Words successfully added: ${uniqueNewWords.join(", ")}`);
       setLoading(false);
@@ -144,11 +194,11 @@ export const handleAddingWords = async (
 
 export const useSaveWord = () => {
   const saveWordPair = async (
-    selectedWord: string | null, 
-    translatedWord: string | null, 
-    mainFlag: string, 
-    targetFlag: string, 
-    setLoading: (loading: boolean) => void, 
+    selectedWord: string | null,
+    translatedWord: string | null,
+    mainFlag: string,
+    targetFlag: string,
+    setLoading: (loading: boolean) => void,
     setModalVisible: (visible: boolean) => void
   ) => {
     if (!selectedWord || !translatedWord) {
@@ -181,8 +231,12 @@ export const useSaveWord = () => {
       const originalSnapshot = await get(originalWordsRef);
       const translatedSnapshot = await get(translatedWordsRef);
 
-      let currentOriginalWords = originalSnapshot.exists() ? originalSnapshot.val() : [];
-      let currentTranslatedWords = translatedSnapshot.exists() ? translatedSnapshot.val() : [];
+      let currentOriginalWords = originalSnapshot.exists()
+        ? originalSnapshot.val()
+        : [];
+      let currentTranslatedWords = translatedSnapshot.exists()
+        ? translatedSnapshot.val()
+        : [];
 
       if (!Array.isArray(currentOriginalWords)) currentOriginalWords = [];
       if (!Array.isArray(currentTranslatedWords)) currentTranslatedWords = [];
@@ -195,7 +249,10 @@ export const useSaveWord = () => {
       }
 
       const updatedOriginalWords = [...currentOriginalWords, selectedWord];
-      const updatedTranslatedWords = [...currentTranslatedWords, translatedWord];
+      const updatedTranslatedWords = [
+        ...currentTranslatedWords,
+        translatedWord,
+      ];
 
       console.log("Saving updated words to Firebase...");
 

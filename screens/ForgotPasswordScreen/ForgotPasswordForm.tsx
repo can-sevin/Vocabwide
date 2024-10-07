@@ -2,8 +2,16 @@ import React from "react";
 import { View, TouchableOpacity } from "react-native";
 import { Formik } from "formik";
 import { passwordResetSchema } from "../../utils/index";
-import { TextInput, FormErrorMessage, LoadingIndicator } from "../../components";
-import { GeneralButton, GeneralButtonText, ForgotPasswordBtmText } from "./styles";
+import {
+  TextInput,
+  FormErrorMessage,
+  LoadingIndicator,
+} from "../../components";
+import {
+  GeneralButton,
+  GeneralButtonText,
+  ForgotPasswordBtmText,
+} from "./styles";
 
 type ForgotPasswordFormProps = {
   onSubmit: (values: { email: string }) => void;
@@ -23,14 +31,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
     validationSchema={passwordResetSchema}
     onSubmit={onSubmit}
   >
-    {({
-      values,
-      touched,
-      errors,
-      handleChange,
-      handleSubmit,
-      handleBlur,
-    }) => (
+    {({ values, touched, errors, handleChange, handleSubmit, handleBlur }) => (
       <>
         <TextInput
           name="email"
@@ -44,9 +45,11 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
           onBlur={handleBlur("email")}
         />
         <FormErrorMessage error={errors.email} visible={touched.email} />
-        
-        {errorState !== "" && <FormErrorMessage error={errorState} visible={true} />}
-        
+
+        {errorState !== "" && (
+          <FormErrorMessage error={errorState} visible={true} />
+        )}
+
         {loading ? (
           <LoadingIndicator />
         ) : (

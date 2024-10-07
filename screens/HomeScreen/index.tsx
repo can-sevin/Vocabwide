@@ -1,21 +1,44 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, TouchableOpacity, ImageBackground, SafeAreaView, Text } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  ImageBackground,
+  SafeAreaView,
+  Text,
+} from "react-native";
 import { signOut } from "firebase/auth";
 import { auth, Flags, Images } from "../../config";
-import { FadeInDown } from 'react-native-reanimated';
+import { FadeInDown } from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
 import {
-  HomeLayout, HomeHeaderSmallTextNumber, HomeHeaderTextNumber, HomeHeaderText, 
-  HomeHeaderLanguageView, HomeHeaderLanguageViewText, HomePracticeButton, 
-  HomePracticeButtonText, BottomTextWhite, HomeBtmView, HomeBtmIcons, 
-  HomeBtmIconText, HomeVerticalView, HomeLayoutHeader, HomeWordNumberView, LogoutIcon,
+  HomeLayout,
+  HomeHeaderSmallTextNumber,
+  HomeHeaderTextNumber,
+  HomeHeaderText,
+  HomeHeaderLanguageView,
+  HomeHeaderLanguageViewText,
+  HomePracticeButton,
+  HomePracticeButtonText,
+  BottomTextWhite,
+  HomeBtmView,
+  HomeBtmIcons,
+  HomeBtmIconText,
+  HomeVerticalView,
+  HomeLayoutHeader,
+  HomeWordNumberView,
+  LogoutIcon,
   HomeLanguageWordsView,
   HomeTopView,
-  HomeBottomView
+  HomeBottomView,
 } from "./styles";
 import { ModalFlag } from "../../components/ModalFlag";
 import LanguageView from "../../components/LanguageView";
-import { saveFlagsToFirebase, fetchFlagsFromFirebase, handleListingWords, fetchUserInfo } from "../../firebase/index";
+import {
+  saveFlagsToFirebase,
+  fetchFlagsFromFirebase,
+  handleListingWords,
+  fetchUserInfo,
+} from "../../firebase/index";
 
 export const HomeScreen = ({ uid, navigation }) => {
   const [wordsList, setWordsList] = useState<[string, string][]>([]);
@@ -31,7 +54,7 @@ export const HomeScreen = ({ uid, navigation }) => {
 
   type FlagKey = keyof typeof Flags;
 
-  const handleOpenModal = (flagType:string) => {
+  const handleOpenModal = (flagType: string) => {
     setFlag(flagType);
 
     setModalVisible(true);
@@ -45,24 +68,31 @@ export const HomeScreen = ({ uid, navigation }) => {
   const saveFlagState = (flagName: FlagKey, isMain: boolean) => {
     const newMainFlag = isMain ? flagName : mainFlag;
     const newTargetFlag = isMain ? targetFlag : flagName;
-  
+
     if (isMain) {
       setMainFlag(flagName);
     } else {
       setTargetFlag(flagName);
     }
-  
+
     saveFlagsToFirebase(uid, newMainFlag, newTargetFlag);
     setModalVisible(false);
   };
-  
+
   useEffect(() => {
     if (uid) {
       fetchFlagsFromFirebase(uid, (mainFlag, targetFlag) => {
         saveFlagState(mainFlag as FlagKey, true);
         saveFlagState(targetFlag as FlagKey, false);
       });
-      handleListingWords(uid, mainFlag, targetFlag, setWordsList, setLoading, setWordNum);
+      handleListingWords(
+        uid,
+        mainFlag,
+        targetFlag,
+        setWordsList,
+        setLoading,
+        setWordNum
+      );
     }
   }, [uid, mainFlag, targetFlag]);
 
@@ -70,7 +100,14 @@ export const HomeScreen = ({ uid, navigation }) => {
     useCallback(() => {
       if (uid) {
         fetchUserInfo(uid, setUserInfo, setShowText);
-        handleListingWords(uid, mainFlag, targetFlag, setWordsList, setLoading, setWordNum);
+        handleListingWords(
+          uid,
+          mainFlag,
+          targetFlag,
+          setWordsList,
+          setLoading,
+          setWordNum
+        );
       }
     }, [uid, mainFlag, targetFlag])
   );
@@ -87,8 +124,7 @@ export const HomeScreen = ({ uid, navigation }) => {
           clearInterval(interval);
         }
       }, 400);
-    }
-    else {
+    } else {
       let currentNumber = 0;
       setDisplayedNumber(currentNumber);
     }
@@ -99,7 +135,12 @@ export const HomeScreen = ({ uid, navigation }) => {
   const handleLogout = () => signOut(auth).catch(console.error);
 
   return (
-    <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
+    <ImageBackground
+      source={Images.background}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+      blurRadius={6}
+    >
       <SafeAreaView style={{ flex: 1 }}>
         <HomeLayout entering={FadeInDown.duration(2000).delay(500)}>
           <HomeLayoutHeader>
@@ -107,7 +148,9 @@ export const HomeScreen = ({ uid, navigation }) => {
               <LogoutIcon source={Images.log_out} />
             </TouchableOpacity>
             {showText && (
-              <HomeHeaderSmallTextNumber entering={FadeInDown.duration(2000).delay(1000)}>
+              <HomeHeaderSmallTextNumber
+                entering={FadeInDown.duration(2000).delay(1000)}
+              >
                 Hello, {userInfo?.username}
               </HomeHeaderSmallTextNumber>
             )}
@@ -115,54 +158,95 @@ export const HomeScreen = ({ uid, navigation }) => {
 
           <HomeTopView>
             <HomeWordNumberView>
-              <HomeHeaderTextNumber entering={FadeInDown.duration(2000).delay(500)}>{displayedNumber}</HomeHeaderTextNumber>
+              <HomeHeaderTextNumber
+                entering={FadeInDown.duration(2000).delay(500)}
+              >
+                {displayedNumber}
+              </HomeHeaderTextNumber>
               <HomeHeaderText>Words</HomeHeaderText>
             </HomeWordNumberView>
             <HomeHeaderLanguageView>
-              <TouchableOpacity onPress={() => handleOpenModal("main")} style={{width: '80%'}}>
-                <HomeHeaderLanguageViewText>{Flags[mainFlag].flag} - {Flags[mainFlag].language}</HomeHeaderLanguageViewText>
+              <TouchableOpacity
+                onPress={() => handleOpenModal("main")}
+                style={{ width: "80%" }}
+              >
+                <HomeHeaderLanguageViewText>
+                  {Flags[mainFlag].flag} - {Flags[mainFlag].language}
+                </HomeHeaderLanguageViewText>
               </TouchableOpacity>
-              <Text style={{ color: 'white', fontSize: 20 }}>TO</Text>
-              <TouchableOpacity onPress={() => handleOpenModal("target")} style={{width: '80%'}}>
-                <HomeHeaderLanguageViewText>{Flags[targetFlag].flag} - {Flags[targetFlag].language}</HomeHeaderLanguageViewText>
+              <Text style={{ color: "white", fontSize: 20 }}>TO</Text>
+              <TouchableOpacity
+                onPress={() => handleOpenModal("target")}
+                style={{ width: "80%" }}
+              >
+                <HomeHeaderLanguageViewText>
+                  {Flags[targetFlag].flag} - {Flags[targetFlag].language}
+                </HomeHeaderLanguageViewText>
               </TouchableOpacity>
             </HomeHeaderLanguageView>
             <HomeLanguageWordsView>
-              {
-                wordsList.length === 0 ? (
-                  <BottomTextWhite>First, You need start to add words</BottomTextWhite>
-                ) : (
-                  <LanguageView wordsList={wordsList} loading={loading} />
-                )
-              }
+              {wordsList.length === 0 ? (
+                <BottomTextWhite>
+                  First, You need start to add words
+                </BottomTextWhite>
+              ) : (
+                <LanguageView wordsList={wordsList} loading={loading} />
+              )}
             </HomeLanguageWordsView>
           </HomeTopView>
 
           <HomeBottomView>
-            <View style={{marginBottom: 16}}>
-            <HomePracticeButton>
-              <HomePracticeButtonText>Practice</HomePracticeButtonText>
-            </HomePracticeButton>
-            <TouchableOpacity onPress={() => navigation.navigate("Input", { main: mainFlag, target: targetFlag })}>
-              <BottomTextWhite>Or You can add a new word by input</BottomTextWhite>
-            </TouchableOpacity>
+            <View style={{ marginBottom: 16 }}>
+              <HomePracticeButton>
+                <HomePracticeButtonText>Practice</HomePracticeButtonText>
+              </HomePracticeButton>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("Input", {
+                    main: mainFlag,
+                    target: targetFlag,
+                  })
+                }
+              >
+                <BottomTextWhite>
+                  Or You can add a new word by input
+                </BottomTextWhite>
+              </TouchableOpacity>
             </View>
-          <HomeBtmView>
-            <TouchableOpacity onPress={() => navigation.navigate("Speech", { main: mainFlag, target: targetFlag })}>
-              <HomeBtmIcons source={Images.mic_icon} />
-              <HomeBtmIconText>Voice</HomeBtmIconText>
-            </TouchableOpacity>
-            <HomeVerticalView />
-            <TouchableOpacity onPress={() => navigation.navigate("Ocr", { main: mainFlag, target: targetFlag })}>
-              <HomeBtmIcons source={Images.cam_icon} />
-              <HomeBtmIconText>Camera</HomeBtmIconText>
-            </TouchableOpacity>
-          </HomeBtmView>
+            <HomeBtmView>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("Speech", {
+                    main: mainFlag,
+                    target: targetFlag,
+                  })
+                }
+              >
+                <HomeBtmIcons source={Images.mic_icon} />
+                <HomeBtmIconText>Voice</HomeBtmIconText>
+              </TouchableOpacity>
+              <HomeVerticalView />
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("Ocr", {
+                    main: mainFlag,
+                    target: targetFlag,
+                  })
+                }
+              >
+                <HomeBtmIcons source={Images.cam_icon} />
+                <HomeBtmIconText>Camera</HomeBtmIconText>
+              </TouchableOpacity>
+            </HomeBtmView>
           </HomeBottomView>
         </HomeLayout>
-        <ModalFlag 
+        <ModalFlag
           modalVisible={modalVisible}
-          onSave={flag === "main" ? (flagName) => saveFlagState(flagName, true) : (flagName) => saveFlagState(flagName, false)}
+          onSave={
+            flag === "main"
+              ? (flagName) => saveFlagState(flagName, true)
+              : (flagName) => saveFlagState(flagName, false)
+          }
           onCancel={() => setModalVisible(false)}
           excludeFlag={flag === "main" ? targetFlag : mainFlag}
           loading={loading}

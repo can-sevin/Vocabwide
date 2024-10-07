@@ -1,21 +1,21 @@
 {
-    "cli": {
-      "version": ">= 9.2.0"
+  "cli": {
+    "version": ">= 9.2.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
     },
-    "build": {
-      "development": {
-        "developmentClient": true,
-        "distribution": "internal",
-        "android": {
-          "buildType": "apk"
-        }
-      },
-      "staging": {
-        "distribution": "internal"
-      },
-      "production": {}
+    "staging": {
+      "distribution": "internal"
     },
-    "submit": {
-      "production": {}
-    }
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
 }

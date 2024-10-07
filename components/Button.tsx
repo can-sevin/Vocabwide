@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
-import { Pressable, Text, StyleSheet } from 'react-native';
+import React, { useCallback } from "react";
+import { Pressable, Text, StyleSheet } from "react-native";
 
-import { Colors } from '../config';
+import { Colors } from "../config";
 
 export const Button = ({
   children,
@@ -9,11 +9,11 @@ export const Button = ({
   activeOpacity = 0.3,
   borderless = false,
   title,
-  style
+  style,
 }) => {
   const _style = useCallback(({ pressed }) => [
     style,
-    { opacity: pressed ? activeOpacity : 1 }
+    { opacity: pressed ? activeOpacity : 1 },
   ]);
 
   if (borderless) {
@@ -35,6 +35,6 @@ const styles = StyleSheet.create({
   borderlessButtonText: {
     fontSize: 18,
     color: Colors.whiteLight,
-    fontFamily: 'Helvetica-Medium',
-  }
+    fontFamily: "Helvetica-Medium",
+  },
 });

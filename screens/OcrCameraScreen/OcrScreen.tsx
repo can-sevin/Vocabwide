@@ -1,27 +1,36 @@
-import React, { useRef, useState } from 'react';
-import { useCameraPermissions } from 'expo-camera';
-import { Alert, Button, Pressable, TouchableOpacity, Text, View } from 'react-native';
-import LottieView from 'lottie-react-native';
-import * as ImagePicker from 'expo-image-picker';
-import * as ImageManipulator from 'expo-image-manipulator';
-import textRecognition, { TextRecognitionScript } from '@react-native-ml-kit/text-recognition';
-import { ref, get, set } from 'firebase/database';
-import translate from 'translate-google-api';
+import React, { useRef, useState } from "react";
+import { useCameraPermissions } from "expo-camera";
+import {
+  Alert,
+  Button,
+  Pressable,
+  TouchableOpacity,
+  Text,
+  View,
+} from "react-native";
+import LottieView from "lottie-react-native";
+import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
+import textRecognition, {
+  TextRecognitionScript,
+} from "@react-native-ml-kit/text-recognition";
+import { ref, get, set } from "firebase/database";
+import translate from "translate-google-api";
 import { auth, database, Images } from "../../config";
-import { 
-  Container, 
-  CameraContainer, 
-  BackButtonContainer, 
-  BackButtonIcon, 
-  ControlPanel, 
-  ControlPanelButtons, 
-  LottieAnimation, 
-  GalleryButton, 
-  WordView, 
-  WordText, 
-  HomeBtmView 
-} from './OcrScreen.style';
-import ModalOcr from '../../components/ModalOcr';
+import {
+  Container,
+  CameraContainer,
+  BackButtonContainer,
+  BackButtonIcon,
+  ControlPanel,
+  ControlPanelButtons,
+  LottieAnimation,
+  GalleryButton,
+  WordView,
+  WordText,
+  HomeBtmView,
+} from "./OcrScreen.style";
+import ModalOcr from "../../components/ModalOcr";
 
 export const OcrScreen = ({ navigation, route }) => {
   const mainFlag = route.params.main;
@@ -67,15 +76,25 @@ export const OcrScreen = ({ navigation, route }) => {
     }
 
     const userId = currentUser.uid;
-    const originalWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}originalWords`);
-    const translatedWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}translatedWords`);
+    const originalWordsRef = ref(
+      database,
+      `users/${userId}/${mainFlag}${targetFlag}originalWords`
+    );
+    const translatedWordsRef = ref(
+      database,
+      `users/${userId}/${mainFlag}${targetFlag}translatedWords`
+    );
 
     try {
       const originalSnapshot = await get(originalWordsRef);
       const translatedSnapshot = await get(translatedWordsRef);
 
-      let currentOriginalWords = originalSnapshot.exists() ? originalSnapshot.val() : [];
-      let currentTranslatedWords = translatedSnapshot.exists() ? translatedSnapshot.val() : [];
+      let currentOriginalWords = originalSnapshot.exists()
+        ? originalSnapshot.val()
+        : [];
+      let currentTranslatedWords = translatedSnapshot.exists()
+        ? translatedSnapshot.val()
+        : [];
 
       if (!Array.isArray(currentOriginalWords)) currentOriginalWords = [];
       if (!Array.isArray(currentTranslatedWords)) currentTranslatedWords = [];
@@ -87,7 +106,10 @@ export const OcrScreen = ({ navigation, route }) => {
       }
 
       const updatedOriginalWords = [...currentOriginalWords, selectedWord];
-      const updatedTranslatedWords = [...currentTranslatedWords, translatedWord];
+      const updatedTranslatedWords = [
+        ...currentTranslatedWords,
+        translatedWord,
+      ];
 
       await set(originalWordsRef, updatedOriginalWords);
       await set(translatedWordsRef, updatedTranslatedWords);
@@ -122,8 +144,11 @@ export const OcrScreen = ({ navigation, route }) => {
 
   const pickImageHandler = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission Denied', 'We need permission to access your gallery.');
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission Denied",
+        "We need permission to access your gallery."
+      );
       return;
     }
 
@@ -147,10 +172,13 @@ export const OcrScreen = ({ navigation, route }) => {
         { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
       );
 
-      const result = await textRecognition.recognize(manipulatedImage.uri, TextRecognitionScript.LATIN);
+      const result = await textRecognition.recognize(
+        manipulatedImage.uri,
+        TextRecognitionScript.LATIN
+      );
       setResultText(result.text);
     } catch (error) {
-      console.error('Text recognition failed:', error);
+      console.error("Text recognition failed:", error);
     }
   };
 
@@ -161,7 +189,9 @@ export const OcrScreen = ({ navigation, route }) => {
   if (!permission.granted) {
     return (
       <Container>
-        <Text style={{ textAlign: 'center', paddingBottom: 10 }}>We need your permission to show the camera</Text>
+        <Text style={{ textAlign: "center", paddingBottom: 10 }}>
+          We need your permission to show the camera
+        </Text>
         <Button onPress={requestPermission} title="grant permission" />
       </Container>
     );
@@ -170,10 +200,10 @@ export const OcrScreen = ({ navigation, route }) => {
   return (
     <Container>
       <CameraContainer
-        facing={'back'}
-        autofocus={'on'}
-        flash={'auto'}
-        ref={ref => setCamera(ref as any)}
+        facing={"back"}
+        autofocus={"on"}
+        flash={"auto"}
+        ref={(ref) => setCamera(ref as any)}
       >
         <BackButtonContainer onPress={() => navigation.goBack()}>
           <BackButtonIcon source={Images.back_icon} />
@@ -194,7 +224,10 @@ export const OcrScreen = ({ navigation, route }) => {
           {resultText !== null && (
             <HomeBtmView>
               {resultText.split(/\s+/).map((word, index) => (
-                <WordView key={index} isSelected={selectedIndices.includes(index)}>
+                <WordView
+                  key={index}
+                  isSelected={selectedIndices.includes(index)}
+                >
                   <Pressable onPress={() => selectedWords(word, index)}>
                     <WordText>{word}</WordText>
                   </Pressable>

@@ -38,7 +38,11 @@ export const Flags = {
   gl: { flag: "🇪🇸", language: "Galician", speechRecognitionLocale: "gl-ES" },
   ka: { flag: "🇬🇪", language: "Georgian", speechRecognitionLocale: "ka-GE" },
   gu: { flag: "🇮🇳", language: "Gujarati", speechRecognitionLocale: "gu-IN" },
-  ht: { flag: "🇭🇹", language: "Haitian Creole", speechRecognitionLocale: "ht-HT" },
+  ht: {
+    flag: "🇭🇹",
+    language: "Haitian Creole",
+    speechRecognitionLocale: "ht-HT",
+  },
   ha: { flag: "🇳🇬", language: "Hausa", speechRecognitionLocale: "ha-NG" },
   he: { flag: "🇮🇱", language: "Hebrew", speechRecognitionLocale: "he-IL" },
   hi: { flag: "🇮🇳", language: "Hindi", speechRecognitionLocale: "hi-IN" },
@@ -57,7 +61,11 @@ export const Flags = {
   la: { flag: "🇻🇦", language: "Latin", speechRecognitionLocale: "la" },
   lv: { flag: "🇱🇻", language: "Latvian", speechRecognitionLocale: "lv-LV" },
   lt: { flag: "🇱🇹", language: "Lithuanian", speechRecognitionLocale: "lt-LT" },
-  lb: { flag: "🇱🇺", language: "Luxembourgish", speechRecognitionLocale: "lb-LU" },
+  lb: {
+    flag: "🇱🇺",
+    language: "Luxembourgish",
+    speechRecognitionLocale: "lb-LU",
+  },
   mk: { flag: "🇲🇰", language: "Macedonian", speechRecognitionLocale: "mk-MK" },
   mg: { flag: "🇲🇬", language: "Malagasy", speechRecognitionLocale: "mg-MG" },
   ms: { flag: "🇲🇾", language: "Malay", speechRecognitionLocale: "ms-MY" },
@@ -75,7 +83,11 @@ export const Flags = {
   pa: { flag: "🇮🇳", language: "Punjabi", speechRecognitionLocale: "pa-IN" },
   ro: { flag: "🇷🇴", language: "Romanian", speechRecognitionLocale: "ro-RO" },
   sm: { flag: "🇼🇸", language: "Samoan", speechRecognitionLocale: "sm-WS" },
-  gd: { flag: "🏴", language: "Scots Gaelic", speechRecognitionLocale: "gd-GB" },
+  gd: {
+    flag: "🏴",
+    language: "Scots Gaelic",
+    speechRecognitionLocale: "gd-GB",
+  },
   sr: { flag: "🇷🇸", language: "Serbian", speechRecognitionLocale: "sr-RS" },
   st: { flag: "🇱🇸", language: "Sesotho", speechRecognitionLocale: "st-LS" },
   sn: { flag: "🇿🇼", language: "Shona", speechRecognitionLocale: "sn-ZW" },
@@ -99,5 +111,5 @@ export const Flags = {
   xh: { flag: "🇿🇦", language: "Xhosa", speechRecognitionLocale: "xh-ZA" },
   yi: { flag: "🇮🇱", language: "Yiddish", speechRecognitionLocale: "yi" },
   yo: { flag: "🇳🇬", language: "Yoruba", speechRecognitionLocale: "yo-NG" },
-  zu: { flag: "🇿🇦", language: "Zulu", speechRecognitionLocale: "zu-ZA" }
+  zu: { flag: "🇿🇦", language: "Zulu", speechRecognitionLocale: "zu-ZA" },
 };

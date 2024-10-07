@@ -1,6 +1,6 @@
-import React from 'react';
-import { View as RNView, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React from "react";
+import { View as RNView, StyleSheet } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const View = ({ isSafe, style, children }) => {
   const insets = useSafeAreaInsets();
