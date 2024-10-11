@@ -30,10 +30,17 @@ export const ForgotPasswordScreen = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
+    <ImageBackground
+      source={Images.background}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+      blurRadius={6}
+    >
       <ForgotPasswordLayout>
         <HeaderTextForgotPasswordLayout>
-          <ForgotPasswordHeaderText>Reset your password</ForgotPasswordHeaderText>
+          <ForgotPasswordHeaderText>
+            Reset your password
+          </ForgotPasswordHeaderText>
         </HeaderTextForgotPasswordLayout>
         <ForgotPasswordLayoutInside>
           <ForgotPasswordForm

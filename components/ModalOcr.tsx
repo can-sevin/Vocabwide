@@ -1,15 +1,15 @@
-import React from 'react';
-import { Modal } from 'react-native';
-import { 
-  ModalContainer, 
-  ModalContent, 
-  ModalText, 
-  ModalContentInner, 
-  SaveButton, 
-  SaveButtonText, 
-  CancelButton, 
-  CancelButtonText 
-} from './styles/OcrScreen.style'; // Adjust the import path if needed
+import React from "react";
+import { Modal } from "react-native";
+import {
+  ModalContainer,
+  ModalContent,
+  ModalText,
+  ModalContentInner,
+  SaveButton,
+  SaveButtonText,
+  CancelButton,
+  CancelButtonText,
+} from "./styles/OcrScreen.style"; // Adjust the import path if needed
 
 type ModalOcrProps = {
   visible: boolean;
@@ -19,7 +19,13 @@ type ModalOcrProps = {
   onCancel: () => void;
 };
 
-const ModalOcr: React.FC<ModalOcrProps> = ({ visible, selectedWord, translatedWord, onSave, onCancel }) => (
+const ModalOcr: React.FC<ModalOcrProps> = ({
+  visible,
+  selectedWord,
+  translatedWord,
+  onSave,
+  onCancel,
+}) => (
   <Modal
     visible={visible}
     transparent={true}

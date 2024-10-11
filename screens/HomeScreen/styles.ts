@@ -1,7 +1,7 @@
-import styled from 'styled-components/native';
+import styled from "styled-components/native";
 import { Colors } from "../../config";
-import Animated from 'react-native-reanimated';
-import { View } from 'react-native';
+import Animated from "react-native-reanimated";
+import { View } from "react-native";
 
 export const HomeLayout = styled(Animated.View)`
   flex: 1;

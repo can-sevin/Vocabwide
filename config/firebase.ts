@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
-import "firebase/storage"
-import "firebase/database"
+import "firebase/storage";
+import "firebase/database";
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,7 +14,8 @@ const firebaseConfig = {
   storageBucket: Constants.expoConfig?.extra?.storageBucket,
   messagingSenderId: Constants.expoConfig?.extra?.messagingSenderId,
   appId: Constants.expoConfig?.extra?.appId,
-  databaseURL: "https://vocabwide-default-rtdb.europe-west1.firebasedatabase.app",  // Correct URL
+  databaseURL:
+    "https://vocabwide-default-rtdb.europe-west1.firebasedatabase.app", // Correct URL
 };
 
 // initialize firebase
@@ -26,6 +27,6 @@ const auth = initializeAuth(app, {
 });
 
 // Initialize Firebase Realtime Database
-const database = getDatabase(app);  // Initialize Realtime Database
+const database = getDatabase(app); // Initialize Realtime Database
 
 export { auth, database };

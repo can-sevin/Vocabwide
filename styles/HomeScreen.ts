@@ -1,203 +1,203 @@
-import styled from 'styled-components/native'
+import styled from "styled-components/native";
 import { Colors } from "../config";
-import { Dimensions } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { Dimensions } from "react-native";
+import Animated from "react-native-reanimated";
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height; 
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 export const GeneralButton = styled.TouchableOpacity`
-    width: 100%;
-    justifyContent: center;
-    alignItems: center;
-    alignSelf: flex-end;
-    marginTop: 40px;
-    backgroundColor: ${Colors.LighterGray2};
-    padding: 10px;
-    borderRadius: 8px;
-`
+  width: 100%;
+  justifycontent: center;
+  alignitems: center;
+  alignself: flex-end;
+  margintop: 40px;
+  backgroundcolor: ${Colors.LighterGray2};
+  padding: 10px;
+  borderradius: 8px;
+`;
 export const GeneralButtonText = styled.Text`
-    fontSize: 20px;
-    color: ${Colors.white};
-    fontWeight: 700;
-`
+  fontsize: 20px;
+  color: ${Colors.white};
+  fontweight: 700;
+`;
 export const LoginBtmText = styled.Text`
-    fontFamily: Helvetica-Medium; 
-    fontSize: 16px; 
-    alignSelf: center; 
-    marginTop: 12px;
-`
+  fontfamily: Helvetica-Medium;
+  fontsize: 16px;
+  alignself: center;
+  margintop: 12px;
+`;
 export const LoginLayout = styled.View`
-    flex: 1;
-    justifyContent: space-between;
-`
+  flex: 1;
+  justifycontent: space-between;
+`;
 export const HomeLayout = styled(Animated.View)`
-    flex: 1;
-    alignItems: center;
-    justifyContent: space-between;
-`
+  flex: 1;
+  alignitems: center;
+  justifycontent: space-between;
+`;
 
 export const SignupLayout = styled(LoginLayout)`
-    justifyContent: flex-end;
-`
+  justifycontent: flex-end;
+`;
 
 export const LoginLayoutInside = styled.View`
-    backgroundColor: ${Colors.whiteLight};
-    borderRadius: 16px;
-    alignSelf: center;
-    justifyContent: center;
-    alignContent: center;
-    width: 100%;
-    height: ${windowHeight * 0.55};
-    marginTop: 64px;
-    padding: 32px;
-`
+  backgroundcolor: ${Colors.whiteLight};
+  borderradius: 16px;
+  alignself: center;
+  justifycontent: center;
+  aligncontent: center;
+  width: 100%;
+  height: ${windowHeight * 0.55};
+  margintop: 64px;
+  padding: 32px;
+`;
 
 export const SignupLayoutInside = styled(LoginLayoutInside)`
-    backgroundColor: ${Colors.whiteLight};
-    borderRadius: 16px;
-    alignSelf: center;
-    justifyContent: flex-start;
-    alignContent: flex-start;
-    width: 100%;
-    height: ${windowHeight * 0.55};
-    padding: 32px;
-`
+  backgroundcolor: ${Colors.whiteLight};
+  borderradius: 16px;
+  alignself: center;
+  justifycontent: flex-start;
+  aligncontent: flex-start;
+  width: 100%;
+  height: ${windowHeight * 0.55};
+  padding: 32px;
+`;
 export const LoginHeaderText = styled.Text`
-    fontSize: 28px;
-    color: ${Colors.white};
-    fontFamily: Helvetica-Bold;
-    alignSelf: center;
-    marginTop: 128px;
-`
+  fontsize: 28px;
+  color: ${Colors.white};
+  fontfamily: Helvetica-Bold;
+  alignself: center;
+  margintop: 128px;
+`;
 export const SignupHeaderText = styled(LoginHeaderText)`
-    marginBottom: 110px;
-    marginTop: 0px;
-`
+  marginbottom: 110px;
+  margintop: 0px;
+`;
 export const HomeHeaderText = styled(LoginHeaderText)`
-    fontSize: 42px;
-    marginTop: 32px;
-`
+  fontsize: 42px;
+  margintop: 32px;
+`;
 export const HomeHeaderTextAnimated = styled(Animated.Text)`
-    color: ${Colors.white};
-    fontFamily: Helvetica-Bold;
-    alignSelf: center;
-    fontSize: 42px;
-    marginTop: 96px;
-`
+  color: ${Colors.white};
+  fontfamily: Helvetica-Bold;
+  alignself: center;
+  fontsize: 42px;
+  margintop: 96px;
+`;
 export const HomeHeaderSmallTextNumber = styled(Animated.Text)`
-    fontSize: 24;
-    color: ${Colors.white};
-    fontFamily: Helvetica-Bold;
-`
+  fontsize: 24;
+  color: ${Colors.white};
+  fontfamily: Helvetica-Bold;
+`;
 export const HomeHeaderTextNumber = styled(Animated.Text)`
-    fontSize: 42px;
-    color: ${Colors.white};
-    fontFamily: Helvetica-Bold;
-    marginTop: 32px;
-    padding-right: 32px;
-`
+  fontsize: 42px;
+  color: ${Colors.white};
+  fontfamily: Helvetica-Bold;
+  margintop: 32px;
+  padding-right: 32px;
+`;
 export const SignupKeyboardAvoiding = styled.KeyboardAvoidingView`
-    maxHeight: ${windowHeight * 0.4};
-`
+  maxheight: ${windowHeight * 0.4};
+`;
 export const HomeHeaderLanguageView = styled(Animated.View)`
-    flexDirection: row;
-    justifyContent: space-between;
-    width: 70%;
-`
+  flexdirection: row;
+  justifycontent: space-between;
+  width: 70%;
+`;
 export const HomeLanguageWordsView = styled.View`
-    flexDirection: row;
-    justifyContent: space-between;
-    marginTop: 16px;
-    borderRadius: 16px;
-    overflow: hidden;
-`
+  flexdirection: row;
+  justifycontent: space-between;
+  margintop: 16px;
+  borderradius: 16px;
+  overflow: hidden;
+`;
 export const LanguageScrollView = styled.ScrollView`
-    maxHeight: 280px;
-`
+  maxheight: 280px;
+`;
 export const LanguageInsideAlphabetView = styled.View`
-    backgroundColor: ${Colors.LighterGray2};
-`
+  backgroundcolor: ${Colors.LighterGray2};
+`;
 export const LanguageInsideView = styled.View`
-    flexDirection: row;
-    justifyContent: space-between;
-    backgroundColor: ${Colors.LighterGray5};
-    paddingHorizontal: 16px;
-`
+  flexdirection: row;
+  justifycontent: space-between;
+  backgroundcolor: ${Colors.LighterGray5};
+  paddinghorizontal: 16px;
+`;
 export const LanguageInsiderView = styled.View`
-    flexDirection: row;
-    justifyContent: space-between;
-    flex: 1;
-    marginVertical: 2px;
-    marginHorizontal: 12px;
-`
+  flexdirection: row;
+  justifycontent: space-between;
+  flex: 1;
+  marginvertical: 2px;
+  marginhorizontal: 12px;
+`;
 export const LanguageInsiderText = styled.Text`
-    color: ${Colors.black};
-    fontSize: 16px;
-    fontFamily: Helvetica-Medium;
-    textAlign: center;
-`
+  color: ${Colors.black};
+  fontsize: 16px;
+  fontfamily: Helvetica-Medium;
+  textalign: center;
+`;
 export const LanguageInsideAlphabetText = styled.Text`
-    color: ${Colors.white};
-    fontSize: 24px;
-    fontFamily: Helvetica-Bold;
-    marginHorizontal: 8px;
-`
+  color: ${Colors.white};
+  fontsize: 24px;
+  fontfamily: Helvetica-Bold;
+  marginhorizontal: 8px;
+`;
 export const HomeHeaderLanguageViewText = styled.Text`
-    fontFamily: Helvetica-Bold; 
-    fontSize: 24px;
-    color: ${Colors.white};
-    alignSelf: center; 
-    marginVertical: 12px;
-    textAlign: center;
-`
+  fontfamily: Helvetica-Bold;
+  fontsize: 24px;
+  color: ${Colors.white};
+  alignself: center;
+  marginvertical: 12px;
+  textalign: center;
+`;
 export const HomeBtmView = styled.View`
-    backgroundColor: 'rgba(255, 255, 255, 0.5)';
-    height: 180px;
-    width: 100%; 
-    borderRadius: 24px; 
-    alignItems: center; 
-    justifyContent: space-evenly;
-    flexDirection: row;
-`
+  backgroundcolor: "rgba(255, 255, 255, 0.5)";
+  height: 180px;
+  width: 100%;
+  borderradius: 24px;
+  alignitems: center;
+  justifycontent: space-evenly;
+  flexdirection: row;
+`;
 export const HomeBtmIcons = styled.Image`
-    height: 48px;
-    width: 48px;
-    marginBottom: 12px;
-    alignSelf: center;
-    alignContent: center;
-`
+  height: 48px;
+  width: 48px;
+  marginbottom: 12px;
+  alignself: center;
+  aligncontent: center;
+`;
 export const HomeBtmIconText = styled.Text`
-    fontSize: 12px;
-    color: ${Colors.black};
-    fontFamily: Helvetica-Bold;
-    textAlign: center;
-`
+  fontsize: 12px;
+  color: ${Colors.black};
+  fontfamily: Helvetica-Bold;
+  textalign: center;
+`;
 export const HomeVerticalView = styled.View`
-    width: 1px;
-    height: 160px; 
-    backgroundColor: ${Colors.black};
-`
+  width: 1px;
+  height: 160px;
+  backgroundcolor: ${Colors.black};
+`;
 export const HomePracticeButton = styled.TouchableOpacity`
-    backgroundColor: ${Colors.whiteLight};
-    borderRadius: 8px;
-    height: 42px;
-    width: 180px;
-    alignSelf: center;
-    justify-content: center;
-    alignContent: center;
-    marginVertical: 36px;
-    alignItems: center;
-`
+  backgroundcolor: ${Colors.whiteLight};
+  borderradius: 8px;
+  height: 42px;
+  width: 180px;
+  alignself: center;
+  justify-content: center;
+  aligncontent: center;
+  marginvertical: 36px;
+  alignitems: center;
+`;
 export const HomePracticeButtonText = styled.Text`
-    fontSize: 20px;
-    textAlign: center;
-    fontFamily: Helvetica-Medium;
-    alignSelf: center;
-`
+  fontsize: 20px;
+  textalign: center;
+  fontfamily: Helvetica-Medium;
+  alignself: center;
+`;
 export const BottomTextWhite = styled.Text`
-    fontSize: 16px;
-    color: ${Colors.white};
-    fontFamily: Helvetica-Medium;
-    alignSelf: center;
-`
+  fontsize: 16px;
+  color: ${Colors.white};
+  fontfamily: Helvetica-Medium;
+  alignself: center;
+`;

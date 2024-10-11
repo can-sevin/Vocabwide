@@ -1,12 +1,12 @@
-import React from 'react';
-import { TextInput as RNTextInput, View } from 'react-native';
+import React from "react";
+import { TextInput as RNTextInput, View } from "react-native";
 
-import { Icon } from './Icon';
-import { Button } from './Button';
-import { Colors } from '../config';
+import { Icon } from "./Icon";
+import { Button } from "./Button";
+import { Colors } from "../config";
 
 export const TextInput = ({
-  width = '100%',
+  width = "100%",
   leftIconName,
   rightIcon,
   errorState,
@@ -18,21 +18,21 @@ export const TextInput = ({
       style={{
         backgroundColor: Colors.white,
         borderRadius: 12,
-        flexDirection: 'row',
+        flexDirection: "row",
         padding: 12,
         marginBottom: 16,
         width,
         borderWidth: 1,
-        borderColor: Colors.mediumGray
+        borderColor: Colors.mediumGray,
       }}
     >
       <RNTextInput
         style={{
           flex: 1,
-          width: '100%',
+          width: "100%",
           fontSize: 16,
           color: Colors.black,
-          fontFamily: 'Helvetica-Medium'
+          fontFamily: "Helvetica-Medium",
         }}
         placeholderTextColor={Colors.mediumGray}
         {...otherProps}

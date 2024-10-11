@@ -18,35 +18,40 @@ export default {
       fallbackToCacheTimeout: 0,
     },
     assetBundlePatterns: ["**/*"],
-    "android": {
-      "permissions": ["android.permission.RECORD_AUDIO"],
-      "package": "com.vocabwide",
-    },  
+    android: {
+      permissions: ["android.permission.RECORD_AUDIO"],
+      package: "com.vocabwide",
+    },
     ios: {
       supportsTablet: true,
-      "bundleIdentifier": "com.anonymous.expo-vocabwide",
-      "infoPlist": {
-        "NSMicrophoneUsageDescription": "Vocabwide wants to microphone permission If you want to add word by voice you have to give voice permission",
-        "NSSpeechRecognitionUsageDescription": "Description of why you require the use of the speech recognition"
+      bundleIdentifier: "com.anonymous.expo-vocabwide",
+      infoPlist: {
+        NSMicrophoneUsageDescription:
+          "Vocabwide wants to microphone permission If you want to add word by voice you have to give voice permission",
+        NSSpeechRecognitionUsageDescription:
+          "Description of why you require the use of the speech recognition",
       },
     },
     plugins: [
       [
         "@react-native-voice/voice",
-      {
-        "microphonePermission": "CUSTOM: Allow $(PRODUCT_NAME) to access the microphone",
-        "speechRecognitionPermission": "CUSTOM: Allow $(PRODUCT_NAME) to securely recognize user speech"
-      },
+        {
+          microphonePermission:
+            "CUSTOM: Allow $(PRODUCT_NAME) to access the microphone",
+          speechRecognitionPermission:
+            "CUSTOM: Allow $(PRODUCT_NAME) to securely recognize user speech",
+        },
       ],
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
-          "recordAudioAndroid": true
-        }
-      ]
-  ],
+          cameraPermission: "Allow $(PRODUCT_NAME) to access your camera",
+          microphonePermission:
+            "Allow $(PRODUCT_NAME) to access your microphone",
+          recordAudioAndroid: true,
+        },
+      ],
+    ],
     extra: {
       apiKey: process.env.API_KEY,
       authDomain: process.env.AUTH_DOMAIN,

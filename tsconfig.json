@@ -11,21 +11,10 @@
     "resolveJsonModule": true,
     "noEmit": true,
     "isolatedModules": true,
-    "lib": [
-      "esnext"
-    ],
-    "types": [
-      "node",
-      "react",
-      "react-native"
-    ]
+    "lib": ["esnext"],
+    "types": ["node", "react", "react-native"]
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"],
   "extends": "expo/tsconfig.base"
 }

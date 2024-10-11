@@ -78,15 +78,25 @@ export const OcrScreen = ({ navigation, route }) => {
     }
 
     const userId = currentUser.uid;
-    const originalWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}originalWords`);
-    const translatedWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}translatedWords`);
+    const originalWordsRef = ref(
+      database,
+      `users/${userId}/${mainFlag}${targetFlag}originalWords`
+    );
+    const translatedWordsRef = ref(
+      database,
+      `users/${userId}/${mainFlag}${targetFlag}translatedWords`
+    );
 
     try {
       const originalSnapshot = await get(originalWordsRef);
       const translatedSnapshot = await get(translatedWordsRef);
 
-      let currentOriginalWords = originalSnapshot.exists() ? originalSnapshot.val() : [];
-      let currentTranslatedWords = translatedSnapshot.exists() ? translatedSnapshot.val() : [];
+      let currentOriginalWords = originalSnapshot.exists()
+        ? originalSnapshot.val()
+        : [];
+      let currentTranslatedWords = translatedSnapshot.exists()
+        ? translatedSnapshot.val()
+        : [];
 
       if (!Array.isArray(currentOriginalWords)) currentOriginalWords = [];
       if (!Array.isArray(currentTranslatedWords)) currentTranslatedWords = [];
@@ -98,7 +108,10 @@ export const OcrScreen = ({ navigation, route }) => {
       }
 
       const updatedOriginalWords = [...currentOriginalWords, selectedWord];
-      const updatedTranslatedWords = [...currentTranslatedWords, translatedWord];
+      const updatedTranslatedWords = [
+        ...currentTranslatedWords,
+        translatedWord,
+      ];
 
       await set(originalWordsRef, updatedOriginalWords);
       await set(translatedWordsRef, updatedTranslatedWords);
@@ -133,8 +146,11 @@ export const OcrScreen = ({ navigation, route }) => {
 
   const pickImageHandler = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission Denied', 'We need permission to access your gallery.');
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission Denied",
+        "We need permission to access your gallery."
+      );
       return;
     }
 
@@ -206,7 +222,9 @@ export const OcrScreen = ({ navigation, route }) => {
   if (!permission.granted) {
     return (
       <Container>
-        <Text style={{ textAlign: 'center', paddingBottom: 10 }}>We need your permission to show the camera</Text>
+        <Text style={{ textAlign: "center", paddingBottom: 10 }}>
+          We need your permission to show the camera
+        </Text>
         <Button onPress={requestPermission} title="grant permission" />
       </Container>
     );

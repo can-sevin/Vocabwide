@@ -1,8 +1,8 @@
-import styled from 'styled-components/native';
+import styled from "styled-components/native";
 import { Colors } from "../../config";
-import { CameraView } from 'expo-camera';
-import Animated from 'react-native-reanimated';
-import LottieView from 'lottie-react-native';
+import { CameraView } from "expo-camera";
+import Animated from "react-native-reanimated";
+import LottieView from "lottie-react-native";
 
 export const BlurryView = styled.View`
   position: absolute;
@@ -93,7 +93,8 @@ export const WordView = styled(Animated.View)<{ isSelected: boolean }>`
   width: 20%;
   height: 48px;
   border-radius: 20px;
-  background-color: ${({ isSelected }) => (isSelected ? Colors.main_light_yellow : Colors.LighterGray3)};
+  background-color: ${({ isSelected }) =>
+    isSelected ? Colors.main_light_yellow : Colors.LighterGray3};
   justify-content: center;
   margin-vertical: 12px;
   margin-horizontal: 8px;

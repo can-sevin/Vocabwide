@@ -1,27 +1,37 @@
 import React, { useState } from "react";
-import { ImageBackground, TouchableOpacity, View, Keyboard } from "react-native";
+import {
+  ImageBackground,
+  TouchableOpacity,
+  View,
+  Keyboard,
+} from "react-native";
 import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import { TextInput, FormErrorMessage, LoadingIndicator } from "../../components";
+import {
+  TextInput,
+  FormErrorMessage,
+  LoadingIndicator,
+} from "../../components";
 import { Images } from "../../config";
 import { useTogglePasswordVisibility } from "../../hooks/useTogglePasswordVisibility";
 import { loginUser } from "../../firebase/auth";
 import { loginValidationSchema } from "../../utils/index";
-import { 
-  GeneralButton, 
-  GeneralButtonText, 
-  HeaderTextLoginLayout, 
-  LoginBtmText, 
-  LoginHeaderText, 
-  LoginLayout, 
-  LoginLayoutInside 
+import {
+  GeneralButton,
+  GeneralButtonText,
+  HeaderTextLoginLayout,
+  LoginBtmText,
+  LoginHeaderText,
+  LoginLayout,
+  LoginLayoutInside,
 } from "./styles";
 
 export const LoginScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
   const [loading, setLoading] = useState(false);
-  const { passwordVisibility, handlePasswordVisibility, rightIcon } = useTogglePasswordVisibility();
+  const { passwordVisibility, handlePasswordVisibility, rightIcon } =
+    useTogglePasswordVisibility();
 
   const handleLogin = async (values: { email: string; password: string }) => {
     Keyboard.dismiss();
@@ -30,7 +40,12 @@ export const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground source={Images.background} style={{ flex: 1 }} resizeMode="cover" blurRadius={6}>
+    <ImageBackground
+      source={Images.background}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+      blurRadius={6}
+    >
       <LoginLayout>
         <HeaderTextLoginLayout>
           <LoginHeaderText>Welcome to login</LoginHeaderText>
@@ -43,10 +58,20 @@ export const LoginScreen = ({ navigation }) => {
             validateOnChange={false}
             onSubmit={(values) => handleLogin(values)}
           >
-            {({ values, touched, errors, handleChange, handleSubmit, handleBlur }) => (
+            {({
+              values,
+              touched,
+              errors,
+              handleChange,
+              handleSubmit,
+              handleBlur,
+            }) => (
               <KeyboardAwareScrollView>
                 {/* Email Input */}
-                <FormErrorMessage error={values.email !== '' && errors.email} visible={touched.email} />
+                <FormErrorMessage
+                  error={values.email !== "" && errors.email}
+                  visible={touched.email}
+                />
                 <TextInput
                   name="email"
                   leftIconName="email"
@@ -58,12 +83,15 @@ export const LoginScreen = ({ navigation }) => {
                   value={values.email}
                   onChangeText={handleChange("email")}
                   onBlur={handleBlur("email")}
-                  errorState={errorState} 
-                  rightIcon={undefined} 
+                  errorState={errorState}
+                  rightIcon={undefined}
                   handlePasswordVisibility={undefined}
                 />
                 {/* Password Input */}
-                <FormErrorMessage error={values.password !== '' && errors.password} visible={touched.password} />
+                <FormErrorMessage
+                  error={values.password !== "" && errors.password}
+                  visible={touched.password}
+                />
                 <TextInput
                   name="password"
                   leftIconName="key-variant"
@@ -94,7 +122,9 @@ export const LoginScreen = ({ navigation }) => {
             <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
               <LoginBtmText>Create a new account?</LoginBtmText>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ForgotPassword")}
+            >
               <LoginBtmText>Forgot Password</LoginBtmText>
             </TouchableOpacity>
           </>

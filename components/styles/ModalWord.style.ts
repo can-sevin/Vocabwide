@@ -1,4 +1,4 @@
-import styled from 'styled-components/native';
+import styled from "styled-components/native";
 import { Colors } from "../../config";
 
 export const ModalContainer = styled.View`

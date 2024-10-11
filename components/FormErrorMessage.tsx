@@ -1,10 +1,9 @@
-import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import React from "react";
+import { StyleSheet, Text } from "react-native";
 
-import { Colors } from '../config';
+import { Colors } from "../config";
 
 export const FormErrorMessage = ({ error, visible }) => {
-
   if (!error || !visible) {
     return null;
   }
@@ -19,6 +18,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     height: 32,
     marginVertical: 4,
-    fontFamily: 'Helvetica-Bold'
-  }
+    fontFamily: "Helvetica-Bold",
+  },
 });

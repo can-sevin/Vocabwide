@@ -1,8 +1,8 @@
-import styled from 'styled-components/native';
+import styled from "styled-components/native";
 import { Dimensions } from "react-native";
 import { Colors } from "../../config";
 
-const windowHeight = Dimensions.get('window').height; 
+const windowHeight = Dimensions.get("window").height;
 
 export const Container = styled.View`
   flex: 1;
@@ -65,6 +65,6 @@ export const ScrollContainer = styled.ScrollView`
 `;
 
 export const FormView = styled.View`
-  marginTop: 128;
-  marginHorizontal: 32;
+  margintop: 128;
+  marginhorizontal: 32;
 `;

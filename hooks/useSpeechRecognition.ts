@@ -5,12 +5,15 @@ import Voice, {
   SpeechErrorEvent,
   SpeechVolumeChangeEvent,
 } from "@react-native-voice/voice";
-import translate from 'translate-google-api';
+import translate from "translate-google-api";
 import { Flags, auth, database } from "../config";
-import { ref, get, set } from 'firebase/database';
+import { ref, get, set } from "firebase/database";
 import { Platform } from "react-native";
 
-export const useSpeechRecognition = (params: { main: string, target: string }) => {
+export const useSpeechRecognition = (params: {
+  main: string;
+  target: string;
+}) => {
   const { main, target } = params;
   const [recognized, setRecognized] = useState("");
   const [pitch, setPitch] = useState("");
@@ -75,7 +78,7 @@ export const useSpeechRecognition = (params: { main: string, target: string }) =
 
     try {
       await Voice.start(Flags[main].speechRecognitionLocale);
-      if (Platform.OS === 'ios') {
+      if (Platform.OS === "ios") {
         setTimeout(() => {
           Voice.stop();
         }, 5000);
@@ -123,7 +126,12 @@ export const useSpeechRecognition = (params: { main: string, target: string }) =
   };
 
   // Implementing the `saveWordPair` function
-  const saveWordPair = async (selectedWord: string | null, translatedWord: string | null, main: any, target: any) => {
+  const saveWordPair = async (
+    selectedWord: string | null,
+    translatedWord: string | null,
+    main: any,
+    target: any
+  ) => {
     if (!selectedWord || !translatedWord) {
       console.log("No word selected or translation is missing.");
       return;
@@ -136,8 +144,14 @@ export const useSpeechRecognition = (params: { main: string, target: string }) =
     }
 
     const userId = currentUser.uid;
-    const originalWordsRef = ref(database, `users/${userId}/${main}${target}originalWords`);
-    const translatedWordsRef = ref(database, `users/${userId}/${main}${target}translatedWords`);
+    const originalWordsRef = ref(
+      database,
+      `users/${userId}/${main}${target}originalWords`
+    );
+    const translatedWordsRef = ref(
+      database,
+      `users/${userId}/${main}${target}translatedWords`
+    );
 
     try {
       setLoading(true);
@@ -145,8 +159,12 @@ export const useSpeechRecognition = (params: { main: string, target: string }) =
       const originalSnapshot = await get(originalWordsRef);
       const translatedSnapshot = await get(translatedWordsRef);
 
-      let currentOriginalWords = originalSnapshot.exists() ? originalSnapshot.val() : [];
-      let currentTranslatedWords = translatedSnapshot.exists() ? translatedSnapshot.val() : [];
+      let currentOriginalWords = originalSnapshot.exists()
+        ? originalSnapshot.val()
+        : [];
+      let currentTranslatedWords = translatedSnapshot.exists()
+        ? translatedSnapshot.val()
+        : [];
 
       if (!Array.isArray(currentOriginalWords)) currentOriginalWords = [];
       if (!Array.isArray(currentTranslatedWords)) currentTranslatedWords = [];
@@ -159,7 +177,10 @@ export const useSpeechRecognition = (params: { main: string, target: string }) =
       }
 
       const updatedOriginalWords = [...currentOriginalWords, selectedWord];
-      const updatedTranslatedWords = [...currentTranslatedWords, translatedWord];
+      const updatedTranslatedWords = [
+        ...currentTranslatedWords,
+        translatedWord,
+      ];
 
       await set(originalWordsRef, updatedOriginalWords);
       await set(translatedWordsRef, updatedTranslatedWords);
