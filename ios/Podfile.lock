@@ -15,7 +15,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBlur (13.0.2):
     - ExpoModulesCore
-  - ExpoCamera (15.0.15):
+  - ExpoCamera (15.0.16):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -58,7 +58,7 @@ PODS:
     - Yoga
   - ExpoSystemUI (3.0.7):
     - ExpoModulesCore
-  - EXSplashScreen (0.27.5):
+  - EXSplashScreen (0.27.6):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -1368,6 +1368,8 @@ PODS:
     - React-logger (= 0.74.5)
     - React-perflogger (= 0.74.5)
     - React-utils (= 0.74.5)
+  - ReactNativeOpenAI (0.6.1):
+    - React-Core
   - RNCAsyncStorage (1.23.1):
     - React-Core
   - RNCMaskedView (0.3.1):
@@ -1545,6 +1547,7 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - ReactNativeOpenAI (from `../node_modules/react-native-openai`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-masked-view/masked-view`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
@@ -1729,6 +1732,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  ReactNativeOpenAI:
+    :path: "../node_modules/react-native-openai"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCMaskedView:
@@ -1757,7 +1762,7 @@ SPEC CHECKSUMS:
   Expo: 3bc69739da02780763c1fd66dde56f84fc46d0d8
   ExpoAsset: 323700f291684f110fb55f0d4022a3362ea9f875
   ExpoBlur: fa53f874e7b208bc3756d1bf07903c12e790beb1
-  ExpoCamera: 470eeb1c0170f5a5b96c7179b0285f0ef5e9e161
+  ExpoCamera: 929be541d1c1319fcf32f9f5d9df8b97804346b5
   ExpoFileSystem: 80bfe850b1f9922c16905822ecbf97acd711dc51
   ExpoFont: 00756e6c796d8f7ee8d211e29c8b619e75cbf238
   ExpoImageManipulator: aea99205c66043a00a0af90e345395637b9902fa
@@ -1766,7 +1771,7 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: 8cec4a09426d8934c433e83cb36262d72c667fce
   ExpoModulesCore: a4b45b5f081f5fe9b8e87667906d180cd52f32d7
   ExpoSystemUI: d4f065a016cae6721b324eb659cdee4d4cf0cb26
-  EXSplashScreen: fbf0ec78e9cee911df188bf17b4fe51d15a84b87
+  EXSplashScreen: 17a656c08a0095be15b620c52e61dfdb665863d2
   FBLazyVector: ac12dc084d1c8ec4cc4d7b3cf1b0ebda6dab85af
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
@@ -1841,6 +1846,7 @@ SPEC CHECKSUMS:
   React-runtimescheduler: cfbe85c3510c541ec6dc815c7729b41304b67961
   React-utils: f242eb7e7889419d979ca0e1c02ccc0ea6e43b29
   ReactCommon: f7da14a8827b72704169a48c929bcde802698361
+  ReactNativeOpenAI: d849415ed6a087108b69f97dec8e08fb3f524e93
   RNCAsyncStorage: 826b603ae9c0f88b5ac4e956801f755109fa4d5c
   RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
   RNDeviceInfo: b899ce37a403a4dea52b7cb85e16e49c04a5b88e
@@ -1855,6 +1861,6 @@ SPEC CHECKSUMS:
   Yoga: 950bbfd7e6f04790fdb51149ed51df41f329fcc8
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: dd4afe3ff2815800d793c1bd0aff3684ba78cf4d
+PODFILE CHECKSUM: 99f1b9d8c063129a1e9c45f9e31919918161d30f
 
 COCOAPODS: 1.14.3

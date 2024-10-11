@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import { useCameraPermissions } from 'expo-camera';
 import { Alert, Button, Pressable, TouchableOpacity, Text, View } from 'react-native';
 import LottieView from 'lottie-react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -7,7 +6,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import textRecognition, { TextRecognitionScript } from '@react-native-ml-kit/text-recognition';
 import { ref, get, set } from 'firebase/database';
 import translate from 'translate-google-api';
-import { auth, database, Images } from "../../config";
+import { auth, database, Images, Flags } from "../../config";
 import { 
   Container, 
   CameraContainer, 
@@ -19,13 +18,20 @@ import {
   GalleryButton, 
   WordView, 
   WordText, 
-  HomeBtmView 
+  HomeBtmView, 
+  ScrollViewContainer, 
+  WordContainer,
+  BlurryView,
+  ErrorMessageView
 } from './OcrScreen.style';
 import ModalOcr from '../../components/ModalOcr';
+import { FadeInDown } from 'react-native-reanimated';
+import { LoadingIndicator } from '../../components';
+import { useCameraPermissions } from 'expo-camera';
 
 export const OcrScreen = ({ navigation, route }) => {
-  const mainFlag = route.params.main;
-  const targetFlag = route.params.target;
+  const mainFlag = route.params.main as keyof typeof Flags;
+  const targetFlag = route.params.target as keyof typeof Flags;
   const [permission, requestPermission] = useCameraPermissions();
   const [camera, setCamera] = useState<null>(null);
   const [resultText, setResultText] = useState<string | null>(null);
@@ -34,6 +40,8 @@ export const OcrScreen = ({ navigation, route }) => {
   const [translatedWord, setTranslatedWord] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const cameraAnimationRef = useRef<LottieView>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const selectedWords = async (word: string, index: number) => {
     setSelectedIndices((prevIndices) => {
@@ -45,11 +53,14 @@ export const OcrScreen = ({ navigation, route }) => {
     });
 
     try {
+      setLoading(true);
       const translation = await translate(word, { to: targetFlag });
       setSelectedWord(word);
       setTranslatedWord(translation[0]);
+      setLoading(false);
       setModalVisible(true);
     } catch (error) {
+      setLoading(false);
       console.error("Translation Error:", error);
     }
   };
@@ -141,15 +152,49 @@ export const OcrScreen = ({ navigation, route }) => {
 
   const processImage = async (uri: string) => {
     try {
+      setLoading(true);
       const manipulatedImage = await ImageManipulator.manipulateAsync(
         uri,
         [{ resize: { width: 800 } }],
         { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
       );
 
-      const result = await textRecognition.recognize(manipulatedImage.uri, TextRecognitionScript.LATIN);
+      const family = Flags[mainFlag].family;
+
+      let script: TextRecognitionScript | null = null;
+      switch (family) {
+        case 'Chinese':
+          script = TextRecognitionScript.CHINESE;
+          break;
+        case 'Japanese':
+          script = TextRecognitionScript.JAPANESE;
+          break;
+        case 'Korean':
+          script = TextRecognitionScript.KOREAN;
+          break;
+        case 'Devanagari':
+          script = TextRecognitionScript.DEVANAGARI;
+          break;
+        case 'Latin':
+          script = TextRecognitionScript.LATIN;
+          break;
+        default:
+          setError("The language family doesn't support text recognition.");
+          setLoading(false);
+          return; 
+      }
+
+      if (!script) {
+        setError("Unsupported script for this language.");
+        setLoading(false);
+        return;
+      }  
+
+      const result = await textRecognition.recognize(manipulatedImage.uri, script);
       setResultText(result.text);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.error('Text recognition failed:', error);
     }
   };
@@ -169,41 +214,76 @@ export const OcrScreen = ({ navigation, route }) => {
 
   return (
     <Container>
-      <CameraContainer
-        facing={'back'}
-        autofocus={'on'}
-        flash={'auto'}
-        ref={ref => setCamera(ref as any)}
-      >
-        <BackButtonContainer onPress={() => navigation.goBack()}>
-          <BackButtonIcon source={Images.back_icon} />
-        </BackButtonContainer>
-        <ControlPanel>
-          <ControlPanelButtons>
-            <TouchableOpacity onPress={takePhotoHandler}>
-              <LottieAnimation
-                ref={cameraAnimationRef}
-                source={Images.lottie_capture}
-                loop={false}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={pickImageHandler}>
-              <GalleryButton source={Images.gallery_btn} />
-            </TouchableOpacity>
-          </ControlPanelButtons>
-          {resultText !== null && (
-            <HomeBtmView>
-              {resultText.split(/\s+/).map((word, index) => (
-                <WordView key={index} isSelected={selectedIndices.includes(index)}>
-                  <Pressable onPress={() => selectedWords(word, index)}>
-                    <WordText>{word}</WordText>
-                  </Pressable>
-                </WordView>
-              ))}
-            </HomeBtmView>
-          )}
-        </ControlPanel>
-      </CameraContainer>
+      {loading && (
+        <BlurryView>
+          <LoadingIndicator />
+        </BlurryView>
+      )}
+
+      {error && (
+        <BlurryView>
+          <ErrorMessageView>
+            <Text>{error}</Text>
+            <Button title="Back" onPress={() => navigation.goBack()} />
+          </ErrorMessageView>
+        </BlurryView>
+      )}
+
+      {!error && (
+        <CameraContainer
+          facing={'back'}
+          autofocus={'on'}
+          flash={'auto'}
+          ref={ref => setCamera(ref as any)}
+        >
+          <BackButtonContainer onPress={() => navigation.goBack()}>
+            <BackButtonIcon source={Images.back_icon} />
+          </BackButtonContainer>
+          <ControlPanel>
+            <ControlPanelButtons>
+              <TouchableOpacity onPress={takePhotoHandler}>
+                <LottieAnimation
+                  ref={cameraAnimationRef}
+                  source={Images.lottie_capture}
+                  loop={false}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={pickImageHandler}>
+                <GalleryButton source={Images.gallery_btn} />
+              </TouchableOpacity>
+            </ControlPanelButtons>
+
+            {resultText !== null && (
+              resultText.split(/\s+/).length > 9 ? (
+                <HomeBtmView>
+                  <ScrollViewContainer>
+                    <WordContainer>
+                      {resultText.split(/\s+/).map((result, index) => (
+                        <WordView key={index} isSelected={selectedIndices.includes(index)} entering={FadeInDown.duration(1000).delay(0)}>
+                          <Pressable onPress={() => selectedWords(result, index)}>
+                            <WordText>{result}</WordText>
+                          </Pressable>
+                        </WordView>
+                      ))}
+                    </WordContainer>
+                  </ScrollViewContainer>
+                </HomeBtmView>
+              ) : (
+                <HomeBtmView>
+                  {resultText.split(/\s+/).map((result, index) => (
+                    <WordView key={index} isSelected={selectedIndices.includes(index)} entering={FadeInDown.duration(1000).delay(0)}>
+                      <Pressable onPress={() => selectedWords(result, index)}>
+                        <WordText>{result}</WordText>
+                      </Pressable>
+                    </WordView>
+                  ))}
+                </HomeBtmView>
+              )
+            )}
+          </ControlPanel>
+        </CameraContainer>
+      )}
+
       <ModalOcr
         visible={modalVisible}
         selectedWord={selectedWord}

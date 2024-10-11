@@ -215,3 +215,44 @@ export const useSaveWord = () => {
 
   return { saveWordPair };
 };
+
+export const saveWordPairOcr = async (mainFlag: string, targetFlag: string, selectedWord: string | null, translatedWord: string | null, setModalVisible: Function) => {
+  if (!selectedWord || !translatedWord) {
+    console.log("No word selected or translation is missing.");
+    return;
+  }
+
+  const currentUser = auth.currentUser;
+  if (!currentUser) {
+    console.log("No user is currently logged in.");
+    return;
+  }
+
+  const userId = currentUser.uid;
+  const originalWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}originalWords`);
+  const translatedWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}translatedWords`);
+
+  try {
+    const originalSnapshot = await get(originalWordsRef);
+    const translatedSnapshot = await get(translatedWordsRef);
+
+    let currentOriginalWords = originalSnapshot.exists() ? originalSnapshot.val() : [];
+    let currentTranslatedWords = translatedSnapshot.exists() ? translatedSnapshot.val() : [];
+
+    if (currentOriginalWords.includes(selectedWord)) {
+      console.log("The word already exists.");
+      setModalVisible(false);
+      return;
+    }
+
+    const updatedOriginalWords = [...currentOriginalWords, selectedWord];
+    const updatedTranslatedWords = [...currentTranslatedWords, translatedWord];
+
+    await set(originalWordsRef, updatedOriginalWords);
+    await set(translatedWordsRef, updatedTranslatedWords);
+
+    setModalVisible(false);
+  } catch (error) {
+    console.error("Error saving words:", error);
+  }
+};

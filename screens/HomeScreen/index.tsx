@@ -86,7 +86,7 @@ export const HomeScreen = ({ uid, navigation }) => {
         if (currentNumber >= wordNum) {
           clearInterval(interval);
         }
-      }, 400);
+      }, 200);
     }
     else {
       let currentNumber = 0;
