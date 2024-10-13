@@ -57,7 +57,7 @@ export const GeneralButton = styled.TouchableOpacity`
 export const GeneralButtonText = styled.Text`
   font-size: 20px;
   color: ${Colors.white};
-  font-weight: 700;
+  fontweight: 700;
 `;
 
 export const ScrollContainer = styled.ScrollView`
@@ -65,6 +65,6 @@ export const ScrollContainer = styled.ScrollView`
 `;
 
 export const FormView = styled.View`
-  margintop: 128;
-  marginhorizontal: 32;
+  margin-top: 128;
+  margin-horizontal: 32;
 `;

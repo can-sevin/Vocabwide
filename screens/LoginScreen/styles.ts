@@ -6,27 +6,27 @@ const windowHeight = Dimensions.get("window").height;
 
 export const LoginLayout = styled.View`
   flex: 1;
-  justifycontent: space-between;
+  justify-content: space-between;
 `;
 
 export const HeaderTextLoginLayout = styled.View`
   flex: 1;
-  justifycontent: center;
+  justify-content: center;
 `;
 
 export const LoginHeaderText = styled.Text`
-  fontsize: 28px;
+  font-size: 28px;
   color: ${Colors.white};
-  fontfamily: Helvetica-Bold;
-  alignself: center;
+  font-family: Helvetica-Bold;
+  align-self: center;
 `;
 
 export const LoginLayoutInside = styled.View`
-  backgroundcolor: ${Colors.whiteLight};
-  borderradius: 16px;
-  alignself: center;
-  justifycontent: center;
-  aligncontent: center;
+  background-color: ${Colors.whiteLight};
+  border-radius: 16px;
+  align-self: center;
+  justify-content: center;
+  align-content: center;
   width: 100%;
   height: ${windowHeight * 0.5};
   padding: 32px;
@@ -34,24 +34,24 @@ export const LoginLayoutInside = styled.View`
 
 export const GeneralButton = styled.TouchableOpacity`
   width: 100%;
-  justifycontent: center;
-  alignitems: center;
-  alignself: flex-end;
-  margintop: 40px;
-  backgroundcolor: ${Colors.LighterGray2};
+  justify-content: center;
+  align-items: center;
+  align-self: flex-end;
+  margin-top: 40px;
+  background-color: ${Colors.LighterGray2};
   padding: 10px;
-  borderradius: 8px;
+  border-radius: 8px;
 `;
 
 export const GeneralButtonText = styled.Text`
-  fontsize: 20px;
+  font-size: 20px;
   color: ${Colors.white};
   fontweight: 700;
 `;
 
 export const LoginBtmText = styled.Text`
-  fontfamily: Helvetica-Medium;
-  fontsize: 16px;
-  alignself: center;
-  margintop: 12px;
+  font-family: Helvetica-Medium;
+  font-size: 16px;
+  align-self: center;
+  margin-top: 12px;
 `;

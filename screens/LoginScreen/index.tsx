@@ -67,7 +67,6 @@ export const LoginScreen = ({ navigation }) => {
               handleBlur,
             }) => (
               <KeyboardAwareScrollView>
-                {/* Email Input */}
                 <FormErrorMessage
                   error={values.email !== "" && errors.email}
                   visible={touched.email}

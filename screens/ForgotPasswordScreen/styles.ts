@@ -18,8 +18,10 @@ export const HeaderTextForgotPasswordLayout = styled.View`
 `;
 
 export const ForgotPasswordHeaderText = styled.Text`
-  font-size: 24px;
-  color: white;
+  font-size: 28px;
+  color: ${Colors.white};
+  font-family: Helvetica-Bold;
+  align-self: center;
 `;
 
 export const GeneralButton = styled.TouchableOpacity`
@@ -33,7 +35,7 @@ export const GeneralButton = styled.TouchableOpacity`
 export const GeneralButtonText = styled.Text`
   color: white;
   font-size: 16px;
-  font-weight: bold;
+  fontweight: bold;
 `;
 
 export const ForgotPasswordBtmText = styled.Text`

@@ -20,7 +20,7 @@ export const ForgotPasswordScreen = ({ navigation }) => {
     Keyboard.dismiss();
 
     try {
-      await sendPasswordReset(email); // Use the service
+      await sendPasswordReset(email);
       navigation.navigate("Login");
     } catch (error) {
       setErrorState(error.message);

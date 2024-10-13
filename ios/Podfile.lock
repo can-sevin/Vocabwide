@@ -1404,7 +1404,51 @@ PODS:
     - GoogleMLKit/TextRecognitionJapanese (= 6.0.0)
     - GoogleMLKit/TextRecognitionKorean (= 6.0.0)
     - React
-  - RNReanimated (3.10.1):
+  - RNReanimated (3.15.4):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNReanimated/reanimated (= 3.15.4)
+    - RNReanimated/worklets (= 3.15.4)
+    - Yoga
+  - RNReanimated/reanimated (3.15.4):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - RNReanimated/worklets (3.15.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1447,7 +1491,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - SDWebImage/Core (5.19.6)
+  - SDWebImage/Core (5.19.7)
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
@@ -1852,9 +1896,9 @@ SPEC CHECKSUMS:
   RNDeviceInfo: b899ce37a403a4dea52b7cb85e16e49c04a5b88e
   RNGestureHandler: 2282cfbcf86c360d29f44ace393203afd5c6cff7
   RNMLKitTextRecognition: 2f05c72ed3f0cabad3a97307171f5078846ea29d
-  RNReanimated: 35f9ac9c3ac42d0497ebd1cce5c39d7687a8493e
+  RNReanimated: f05f23988b1456a594fc4eab0ef2c46b430007ac
   RNScreens: b32a9ff15bea7fcdbe5dff6477bc503f792b1208
-  SDWebImage: a79252b60f4678812d94316c91da69ec83089c9f
+  SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   VisionCamera: 3b7cfecebbcb3871c4dd3fb47791b96a47fe5371
