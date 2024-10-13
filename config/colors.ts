@@ -22,4 +22,5 @@ export const Colors = {
   main_blue: "#1066c0",
   main_blue_light: "#4eabe6",
   main_light_yellow: "#dabf6f",
+  main_green: "#7CFC00",
 };

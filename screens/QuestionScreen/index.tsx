@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, StyleSheet, Dimensions, View } from 'react-native';
+import { Text, StyleSheet, Dimensions, View, ImageBackground, SafeAreaView } from 'react-native';
 import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
@@ -8,38 +8,34 @@ import Animated, {
   withSpring,
   withTiming,
   runOnJS,
-  Easing,
-  interpolate
 } from 'react-native-reanimated';
 import { BackButtonContainer, BackButtonIcon, ModalText } from './style';
-import { Images } from '../../config';
+import { Colors, Images, Sounds } from '../../config';
+import { Audio } from 'expo-av';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.2;
-const SWIPE_THRESHOLD_HEIGHT = SCREEN_HEIGHT * 0.15;
-const AnimatedText = Animated.createAnimatedComponent(Text);
+const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.15;
+const SWIPE_THRESHOLD_HEIGHT = SCREEN_HEIGHT * 0.1;
 
-const Card = ({ card, index, originalText, updateCardText, resetCardText, removeCard }) => {
+const Card = ({ card, index, removing, originalText, updateCardText, resetCardText, removeCard, playSound }) => {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
-  
-  const triggerBounce = () => {
-    scale.value = withTiming(1.1, {
-      duration: 150,
-      easing: Easing.bounce,
-    }, () => {
-      scale.value = withTiming(1, { duration: 150 });
-    });
-  };
 
-  const triggerFadeOut = (index: number) => {
+  useEffect(() => {
+    if (removing) {
+      opacity.value = withTiming(0, { duration: 300 }, () => {
+        runOnJS(removeCard)(index);
+      });
+    }
+  }, [removing]);
+
+  const triggerFadeOut = (index) => {
     opacity.value = withTiming(0, { duration: 300 }, () => {
       runOnJS(removeCard)(index);
     });
   };
-
 
   const panGestureEvent = useAnimatedGestureHandler({
     onActive: (event) => {
@@ -48,26 +44,27 @@ const Card = ({ card, index, originalText, updateCardText, resetCardText, remove
 
       if (translateY.value < -SWIPE_THRESHOLD_HEIGHT) {
         runOnJS(updateCardText)(index, 'Up');
-        runOnJS(triggerBounce)();
       } else if (translateY.value > SWIPE_THRESHOLD_HEIGHT) {
         runOnJS(updateCardText)(index, 'Down');
-        runOnJS(triggerBounce)();
       } else if (translateX.value < -SWIPE_THRESHOLD) {
         runOnJS(updateCardText)(index, 'Left');
-        runOnJS(triggerBounce)();
       } else if (translateX.value > SWIPE_THRESHOLD) {
         runOnJS(updateCardText)(index, 'Right');
-        runOnJS(triggerBounce)();
       }
     },
     onEnd: () => {
-      if (translateX.value < -SWIPE_THRESHOLD || translateX.value > SWIPE_THRESHOLD ||
-          translateY.value < -SWIPE_THRESHOLD_HEIGHT || translateY.value > SWIPE_THRESHOLD_HEIGHT) {
+      if (
+        translateX.value < -SWIPE_THRESHOLD || 
+        translateX.value > SWIPE_THRESHOLD ||
+        translateY.value < -SWIPE_THRESHOLD_HEIGHT || 
+        translateY.value > SWIPE_THRESHOLD_HEIGHT
+      ) {
+        runOnJS(playSound)("correct");
         runOnJS(triggerFadeOut)(index);
       } else {
-        runOnJS(resetCardText)(index, originalText);
         translateX.value = withSpring(0);
         translateY.value = withSpring(0);
+        runOnJS(resetCardText)(index, originalText);
       }
     },
   });
@@ -86,104 +83,133 @@ const Card = ({ card, index, originalText, updateCardText, resetCardText, remove
   return (
     <PanGestureHandler onGestureEvent={panGestureEvent}>
       <Animated.View style={[styles.card, animatedStyle]}>
+        <ImageBackground
+          source={Images.yellow_card}
+          imageStyle={styles.imageStyle}
+          style={styles.imageBackground}>
         <Text style={styles.cardText}>{card}</Text>
+        </ImageBackground>
       </Animated.View>
     </PanGestureHandler>
   );
 };
 
-export const SwipeableStack = ({navigation}) => {
+export const SwipeableStack = ({ navigation }) => {
   const [cards, setCards] = useState([
-    'Card 1',
-    'Card 2',
-    'Card 3',
-    'Card 4',
-    'Card 5',
-    'Card 6',
-    'Card 7',
+    { text: 'Card 1', removing: false },
+    { text: 'Card 2', removing: false },
+    { text: 'Card 3', removing: false },
+    { text: 'Card 4', removing: false },
+    { text: 'Card 5', removing: false },
+    { text: 'Card 6', removing: false },
+    { text: 'Card 7', removing: false },
   ]);
 
-  const time = useSharedValue(7);
+  const [timer, setTimer] = useState(10);
+
+  const playSound = async (soundKey: keyof typeof Sounds) => {
+    const { sound } = await Audio.Sound.createAsync(Sounds[soundKey]);
+    await sound.playAsync();
+  };
 
   useEffect(() => {
-    time.value = withTiming(0, {
-      duration: 7000,
-      easing: Easing.linear,
-    });
-  }, []);
+    if (cards.length > 0) {
+      const interval = setInterval(() => {
+        setTimer((prevTime) => {
+          if (prevTime === 1) {
+            removeCard();
+            runOnJS(playSound)("time");
+            return 10;
+          } else {
+            return prevTime - 1;
+          }
+        });
+      }, 1000);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: interpolate(time.value, [0, 7], [1, 1.2]) }],
-    };
-  });
+      return () => clearInterval(interval);
+    }
+  }, [cards]);
 
-  const animatedTextStyle = useAnimatedStyle(() => {
-    return {
-      opacity: interpolate(time.value, [0, 7], [1, 0]),
-    };
-  });
-  const updateCardText = (index: number, direction: string) => {
+  const removeCard = () => {
+    const lastIndex = cards.length - 1;
+    if (lastIndex >= 0) {
+      setCards((prevCards) => {
+        const filteredCards = prevCards.filter((_, i) => i !== lastIndex);
+        setTimer(10);
+        return filteredCards;
+      });
+    }
+  };
+
+  const updateCardText = (index, direction) => {
     setCards((prevCards) => {
       const updatedCards = [...prevCards];
-      updatedCards[index] = direction;
+      if (updatedCards[index]) {
+        updatedCards[index] = { ...updatedCards[index], text: direction };
+      }
       return updatedCards;
     });
   };
 
-  const resetCardText = (index: number, originalText: string) => {
+  const resetCardText = (index, originalText) => {
     setCards((prevCards) => {
       const updatedCards = [...prevCards];
-      updatedCards[index] = originalText;
+      if (updatedCards[index]) {
+        updatedCards[index] = { ...updatedCards[index], text: originalText };
+      }
       return updatedCards;
     });
-  };
-
-  const removeCard = (index: number) => {
-    setCards((prevCards) => prevCards.filter((_, i) => i !== index));
   };
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <BackButtonContainer onPress={() => navigation.goBack()}>
-        <BackButtonIcon source={Images.back_icon} />
-      </BackButtonContainer>
-      <Animated.View style={[styles.timerContainer, animatedStyle]}>
-      <Animated.Text style={[styles.timerText, animatedTextStyle]}>
-        {Math.ceil(time.value)} {/* Countdown text from 7 to 0 */}
-      </Animated.Text>
-    </Animated.View>
-      <View style={styles.questionContainer}>
-        <ModalText>Questionnaire: Please swipe the cards as required.</ModalText>
-      </View>
-      <View style={styles.cardContainer}>
-        <View style={styles.backgroundLayer} />
-        {cards.map((card, index) => (
-          <Card
-            key={index}
-            card={card}
-            index={index}
-            originalText={`Card ${index + 1}`}
-            updateCardText={updateCardText}
-            resetCardText={resetCardText}
-            removeCard={removeCard}
-          />
-        ))}
+    <SafeAreaView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={styles.container}>
+        <BackButtonContainer onPress={() => navigation.goBack()}>
+          <BackButtonIcon source={Images.back_icon} />
+        </BackButtonContainer>
+        <View style={styles.questionContainer}>
+          <ModalText>Questionnaire: Please swipe the cards as required.</ModalText>
+        </View>
 
-        <View style={styles.topView}>
-          <Text style={styles.text}>Top</Text>
+        <View style={styles.timerContainer}>
+          <Text style={styles.timerText}>{timer}</Text>
         </View>
-        <View style={styles.bottomView}>
-          <Text style={styles.text}>Bottom</Text>
-        </View>
-        <View style={styles.leftView}>
-          <Text style={styles.leftText}>Left</Text>
-        </View>
-        <View style={styles.rightView}>
-          <Text style={styles.rightText}>Right</Text>
-        </View>
-      </View>
-    </GestureHandlerRootView>
+
+        <ImageBackground
+          source={Images.background}
+          style={styles.cardContainer}
+          resizeMode="cover"
+          blurRadius={20}
+        >
+          {cards.map((card, index) => (
+            <Card
+              key={index}
+              card={card.text}
+              index={index}
+              removing={card.removing}
+              originalText={`Card ${index + 1}`}
+              updateCardText={updateCardText}
+              resetCardText={resetCardText}
+              removeCard={removeCard}
+              playSound={playSound}
+            />
+          ))}
+
+          <View style={styles.topView}>
+            <Text style={styles.text}>Top</Text>
+          </View>
+          <View style={styles.bottomView}>
+            <Text style={styles.text}>Bottom</Text>
+          </View>
+          <View style={styles.leftView}>
+            <Text style={styles.leftText}>Left</Text>
+          </View>
+          <View style={styles.rightView}>
+            <Text style={styles.rightText}>Right</Text>
+          </View>
+        </ImageBackground>
+      </GestureHandlerRootView>
+    </SafeAreaView>
   );
 };
 
@@ -192,35 +218,43 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   questionContainer: {
-    flex: 0.4,
+    flex: 0.36,
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
     margin: 24,
+    borderRadius: 16,
   },
   cardText: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: Colors.black,
   },
   cardContainer: {
-    flex: 0.6,
+    flex: 0.64,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
     width: '100%',
-  },
-  backgroundLayer: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'black',
+    backgroundColor: Colors.LighterGray1,
   },
   card: {
     width: SCREEN_WIDTH * 0.4,
     height: SCREEN_HEIGHT * 0.2,
-    backgroundColor: '#ffcccb',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
     position: 'absolute',
+  },
+  imageStyle: {
+    borderRadius: 12,
+  },
+  imageBackground: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   text: {
     color: 'white',
@@ -247,7 +281,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: 100,
-    backgroundColor: 'red',
   },
   bottomView: {
     position: 'absolute',
@@ -257,7 +290,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: 100,
-    backgroundColor: 'blue',
   },
   leftView: {
     position: 'absolute',
@@ -267,7 +299,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: 72,
-    backgroundColor: 'green',
   },
   rightView: {
     position: 'absolute',
@@ -277,10 +308,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: 72,
-    backgroundColor: 'orange',
   },
   timerText: {
-    fontSize: 48, 
+    fontSize: 48,
     fontWeight: 'bold',
     color: 'black',
     textAlign: 'center',
