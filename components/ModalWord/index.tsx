@@ -1,6 +1,5 @@
 import React from "react";
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Colors } from "../config";
+import { Modal } from "react-native";
 import {
   ButtonContainer,
   CancelButton,
@@ -10,7 +9,7 @@ import {
   ModalText,
   SaveButton,
   SaveButtonText,
-} from "./styles/ModalWord.style";
+} from "./style";
 
 type ModalWordProps = {
   modalVisible: boolean;

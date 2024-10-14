@@ -1,12 +1,10 @@
 import React from 'react';
-import { TimerText } from './styles';
+import { TimerContainer, TimerText } from './styles';
 
-interface TimerProps {
-  timer: number;
-}
-
-const Timer: React.FC<TimerProps> = ({ timer }) => {
-  return <TimerText>{timer}</TimerText>;
+export const Timer = ({ timer }) => {
+  return (
+    <TimerContainer>
+      <TimerText>{timer}</TimerText>
+    </TimerContainer>
+  );
 };
-
-export default Timer;

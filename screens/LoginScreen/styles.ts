@@ -55,3 +55,11 @@ export const LoginBtmText = styled.Text`
   align-self: center;
   margin-top: 12px;
 `;
+
+export const ErrorText = styled.Text`
+  font-family: Helvetica-Bold;
+  font-size: 14px;
+  align-self: center;
+  margin-top: 8px;
+  color: red;
+`;

@@ -6,7 +6,7 @@ import { useCustomFonts } from "../providers/Fonts";
 import { ActivityIndicator } from "react-native";
 import { Colors } from "../config";
 import { LoadingContainer } from "./style";
-import SwipeableStack from "../screens/QuestionScreen";
+import QuestionScreen from "../screens/QuestionScreen";
 
 const Stack = createStackNavigator();
 
@@ -24,7 +24,7 @@ export const AppStack = ({ uid }) => {
   return (
     <Stack.Navigator       
       screenOptions={{ headerShown: false }}
-      initialRouteName="Question"
+      initialRouteName="Home"
     >
       <Stack.Screen name="Home">
         {(props) => <HomeScreen {...props} uid={uid} />} 
@@ -32,7 +32,7 @@ export const AppStack = ({ uid }) => {
       <Stack.Screen name="Speech" component={SpeechTextScreen} />
       <Stack.Screen name="Ocr" component={OcrScreen} />
       <Stack.Screen name="Input" component={InputScreen} />
-      <Stack.Screen name="Question" component={SwipeableStack} />
+      <Stack.Screen name="Question" component={QuestionScreen} />
     </Stack.Navigator>
   );
 };

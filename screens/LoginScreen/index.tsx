@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   View,
   Keyboard,
+  Text,
 } from "react-native";
 import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -18,6 +19,7 @@ import { useTogglePasswordVisibility } from "../../hooks/useTogglePasswordVisibi
 import { loginUser } from "../../firebase/auth";
 import { loginValidationSchema } from "../../utils/index";
 import {
+  ErrorText,
   GeneralButton,
   GeneralButtonText,
   HeaderTextLoginLayout,
@@ -106,7 +108,6 @@ export const LoginScreen = ({ navigation }) => {
                   onBlur={handleBlur("password")}
                   errorState={errorState}
                 />
-                {/* Loading Indicator or Button */}
                 {loading ? (
                   <LoadingIndicator />
                 ) : (
@@ -118,6 +119,11 @@ export const LoginScreen = ({ navigation }) => {
             )}
           </Formik>
           <>
+          {errorState ? (
+            <ErrorText>
+              {errorState}
+            </ErrorText>
+          ) : null}
             <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
               <LoginBtmText>Create a new account?</LoginBtmText>
             </TouchableOpacity>

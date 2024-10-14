@@ -13,9 +13,9 @@ import {
   ModalContainer,
   ModalContent,
   ModalText,
-} from "./styles/ModalFlag.style";
-import { Flags } from "../config";
-import { LoadingIndicator } from "./LoadingIndicator";
+} from "./style";
+import { Flags } from "../../config";
+import { LoadingIndicator } from "../LoadingIndicator";
 
 type FlagKey = keyof typeof Flags;
 

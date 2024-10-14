@@ -1,12 +1,7 @@
-// components/PermissionComponent.tsx
 import React from "react";
 import { TouchableOpacity } from "react-native";
-import {
-  Icons,
-  SmallText,
-  ContainerPermission,
-} from "../screens/PermissionScreen/style";
-import { Images } from "../config";
+import { Images } from "../../config";
+import { ContainerPermission, Icons, SmallText } from "./style";
 
 interface PermissionComponentProps {
   permissionType: "camera" | "voice";

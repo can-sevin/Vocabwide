@@ -1,17 +1,11 @@
 import React from 'react';
-import { Images } from '../../config';
 import { BackButtonContainer, BackButtonIcon } from './styles';
+import { Images } from '../../config';
 
-interface BackButtonProps {
-  onPress: () => void;
-}
-
-const BackButton: React.FC<BackButtonProps> = ({ onPress }) => {
+export const BackButton = ({ navigation }) => {
   return (
-    <BackButtonContainer onPress={onPress}>
+    <BackButtonContainer onPress={() => navigation.goBack()}>
       <BackButtonIcon source={Images.back_icon} />
     </BackButtonContainer>
   );
 };
-
-export default BackButton;

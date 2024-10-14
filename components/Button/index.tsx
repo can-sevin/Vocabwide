@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { Pressable, Text, StyleSheet } from "react-native";
 
-import { Colors } from "../config";
+import { Colors } from "../../config";
 
 export const Button = ({
   children,

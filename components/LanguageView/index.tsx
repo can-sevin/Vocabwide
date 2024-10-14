@@ -7,15 +7,15 @@ import {
   LanguageInsideView,
   LanguageInsiderView,
   LanguageInsiderText,
-} from "./styles/LanguageView.style";
-import { LoadingIndicator } from "./LoadingIndicator";
+} from "./style";
+import { LoadingIndicator } from "../LoadingIndicator";
 
 type LanguageViewProps = {
   wordsList: [string, string][];
   loading: boolean;
 };
 
-const LanguageView: React.FC<LanguageViewProps> = ({ wordsList, loading }) => {
+export const LanguageView: React.FC<LanguageViewProps> = ({ wordsList, loading }) => {
   const groupedWords: Record<string, [string, string][]> = {};
 
   wordsList.forEach(([originalWord, translatedWord]) => {

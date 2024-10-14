@@ -7,3 +7,9 @@ export const TimerText = styled.Text`
   text-align: center;
   margin-top: 20px;
 `;
+
+export const TimerContainer = styled.View`
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+`;

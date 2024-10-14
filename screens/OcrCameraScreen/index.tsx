@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Alert, Button, Pressable, TouchableOpacity, Text, View } from 'react-native';
+import { Alert, Button, Pressable, TouchableOpacity, Text, View, SafeAreaView } from 'react-native';
 import LottieView from 'lottie-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -23,7 +23,7 @@ import {
   WordContainer,
   BlurryView,
   ErrorMessageView
-} from './OcrScreen.style';
+} from './style';
 import ModalOcr from '../../components/ModalOcr';
 import { FadeInDown } from 'react-native-reanimated';
 import { LoadingIndicator } from '../../components';
@@ -232,6 +232,7 @@ export const OcrScreen = ({ navigation, route }) => {
 
   return (
     <Container>
+      <SafeAreaView style={{ flex: 1 }}>
       {loading && (
         <BlurryView>
           <LoadingIndicator />
@@ -309,6 +310,7 @@ export const OcrScreen = ({ navigation, route }) => {
         onSave={saveWordPair}
         onCancel={() => setModalVisible(false)}
       />
+      </SafeAreaView>
     </Container>
   );
 };

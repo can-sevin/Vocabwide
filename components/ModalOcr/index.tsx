@@ -9,7 +9,7 @@ import {
   SaveButtonText,
   CancelButton,
   CancelButtonText,
-} from "./styles/OcrScreen.style"; // Adjust the import path if needed
+} from "./style";
 
 type ModalOcrProps = {
   visible: boolean;
@@ -19,7 +19,7 @@ type ModalOcrProps = {
   onCancel: () => void;
 };
 
-const ModalOcr: React.FC<ModalOcrProps> = ({
+export const ModalOcr: React.FC<ModalOcrProps> = ({
   visible,
   selectedWord,
   translatedWord,

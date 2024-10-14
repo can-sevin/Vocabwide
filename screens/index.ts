@@ -3,7 +3,7 @@ import { SignupScreen } from "./SignupScreen";
 import { HomeScreen } from "./HomeScreen";
 import { ForgotPasswordScreen } from "./ForgotPasswordScreen";
 import { SpeechTextScreen } from "./VoiceTextScreen";
-import { OcrScreen } from "./OcrCameraScreen/OcrScreen";
+import { OcrScreen } from "./OcrCameraScreen";
 import { InputScreen } from "./InputScreen";
 
 export {

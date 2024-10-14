@@ -1,24 +1,11 @@
 import styled from 'styled-components/native';
-import { Dimensions } from 'react-native';
 import { Colors } from '../../config';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-
-// Geri Butonu Container
-export const BackButtonContainer = styled.TouchableOpacity`
-  align-self: flex-start;
-  padding: 10px;
-  margin-left: 16px;
-  margin-top: 20px;
+export const Container = styled(GestureHandlerRootView)`
+  flex: 1;
 `;
 
-// Geri Butonu Icon
-export const BackButtonIcon = styled.Image`
-  width: 36px;
-  height: 36px;
-`;
-
-// Soru ekranındaki metin
 export const ModalText = styled.Text`
   font-size: 20px;
   font-family: Helvetica-Medium;
@@ -26,13 +13,13 @@ export const ModalText = styled.Text`
   margin-bottom: 20px;
 `;
 
-// SafeArea Container
-export const Container = styled.SafeAreaView`
-  flex: 1;
+export const FinishText = styled.Text`
+  fontSize: 24px;
+  textAlign: center;
+  marginTop: 50px;
 `;
 
-// Kartların gösterildiği ana container
-export const CardContainer = styled.View`
+export const CardContainer = styled.ImageBackground`
   flex: 0.64;
   justify-content: center;
   align-items: center;
@@ -41,49 +28,6 @@ export const CardContainer = styled.View`
   background-color: ${Colors.LighterGray1};
 `;
 
-// Kart stili
-export const CardView = styled.View`
-  width: ${SCREEN_WIDTH * 0.4}px;
-  height: ${SCREEN_HEIGHT * 0.2}px;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  position: absolute;
-`;
-
-// Kartın içindeki metin
-export const CardText = styled.Text`
-  font-size: 24px;
-  font-weight: bold;
-  color: ${Colors.black};
-`;
-
-// ImageBackground için stil
-export const ImageBackgroundStyled = styled.ImageBackground`
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  border-radius: 12px;
-`;
-
-// Timer Container
-export const TimerContainer = styled.View`
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-`;
-
-// Timer Metni
-export const TimerText = styled.Text`
-  font-size: 48px;
-  font-weight: bold;
-  color: black;
-  text-align: center;
-`;
-
-// Konumlandırma View'ları
 export const TopView = styled.View`
   position: absolute;
   top: 0;

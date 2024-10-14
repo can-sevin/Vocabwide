@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ImageBackground, Keyboard } from "react-native";
+import { ImageBackground, Keyboard, SafeAreaView } from "react-native";
 import { LoadingIndicator, TextInput } from "../../components";
 import {
   BottomTextWhite,
@@ -55,6 +55,7 @@ export const InputScreen = ({ navigation, route }) => {
       resizeMode="cover"
       blurRadius={6}
     >
+      <SafeAreaView style={{ flex: 1 }}>
       <Container>
         <BackButton onPress={() => navigation.goBack()}>
           <BackButtonImage source={Images.back_icon} />
@@ -97,6 +98,7 @@ export const InputScreen = ({ navigation, route }) => {
           )}
         </FormView>
       </Container>
+      </SafeAreaView>
     </ImageBackground>
   );
 };

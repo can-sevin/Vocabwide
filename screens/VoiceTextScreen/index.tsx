@@ -4,6 +4,7 @@ import {
   ImageBackground,
   Pressable,
   View,
+  SafeAreaView,
 } from "react-native";
 import { FadeInDown } from "react-native-reanimated";
 import { Images } from "../../config";
@@ -60,6 +61,7 @@ export const SpeechTextScreen = ({ navigation, route }) => {
       style={{ flex: 1 }}
       resizeMode="cover"
     >
+      <SafeAreaView style={{ flex: 1 }}>
       <Container entering={FadeInDown.duration(2000).delay(100)}>
         {loading ? (
           <LoadingComponent />
@@ -141,6 +143,7 @@ export const SpeechTextScreen = ({ navigation, route }) => {
           )}
         </ResultsContainer>
       </Container>
+      </SafeAreaView>
     </ImageBackground>
   );
 };

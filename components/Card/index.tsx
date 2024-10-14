@@ -1,40 +1,15 @@
 import React, { useEffect } from 'react';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import {
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-  runOnJS,
-} from 'react-native-reanimated';
+import { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring, withTiming, runOnJS } from 'react-native-reanimated';
+import { YellowCard, CardView, CardText } from './styles';
 import { Images } from '../../config';
-import { CardContainer, CardText, ImageBackgroundStyled } from './styles'; // Kart stil dosyası
+import { Dimensions, StyleSheet } from 'react-native';
 
-interface CardProps {
-  card: string;
-  index: number;
-  removing: boolean;
-  originalText: string;
-  updateCardText: (index: number, text: string) => void;
-  resetCardText: (index: number, text: string) => void;
-  removeCard: (index: number) => void;
-  playSound: (soundKey: string) => void;
-}
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.15;
+const SWIPE_THRESHOLD_HEIGHT = SCREEN_HEIGHT * 0.1;
 
-const SWIPE_THRESHOLD = 150;
-const SWIPE_THRESHOLD_HEIGHT = 100;
-
-const Card = ({
-  card,
-  index,
-  removing,
-  originalText,
-  updateCardText,
-  resetCardText,
-  removeCard,
-  playSound,
-}: CardProps) => {
+export const Card = ({ card, index, removing, originalText, updateCardText, resetCardText, removeCard, playSound }) => {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const opacity = useSharedValue(1);
@@ -47,7 +22,7 @@ const Card = ({
     }
   }, [removing]);
 
-  const triggerFadeOut = () => {
+  const triggerFadeOut = (index: number) => {
     opacity.value = withTiming(0, { duration: 300 }, () => {
       runOnJS(removeCard)(index);
     });
@@ -70,13 +45,13 @@ const Card = ({
     },
     onEnd: () => {
       if (
-        translateX.value < -SWIPE_THRESHOLD ||
+        translateX.value < -SWIPE_THRESHOLD || 
         translateX.value > SWIPE_THRESHOLD ||
-        translateY.value < -SWIPE_THRESHOLD_HEIGHT ||
+        translateY.value < -SWIPE_THRESHOLD_HEIGHT || 
         translateY.value > SWIPE_THRESHOLD_HEIGHT
       ) {
-        runOnJS(playSound)('correct');
-        runOnJS(triggerFadeOut)();
+        runOnJS(playSound)("correct");
+        runOnJS(triggerFadeOut)(index);
       } else {
         translateX.value = withSpring(0);
         translateY.value = withSpring(0);
@@ -85,25 +60,27 @@ const Card = ({
     },
   });
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { translateX: translateX.value },
-        { translateY: translateY.value },
-      ],
-      opacity: opacity.value,
-    };
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+    ],
+    opacity: opacity.value,
+  }));
 
   return (
     <PanGestureHandler onGestureEvent={panGestureEvent}>
-      <CardContainer style={animatedStyle}>
-        <ImageBackgroundStyled source={Images.yellow_card} style={{ flex: 1 }}>
+      <CardView style={animatedStyle}>
+        <YellowCard source={Images.yellow_card} imageStyle={styles.imageStyle}>
           <CardText>{card}</CardText>
-        </ImageBackgroundStyled>
-      </CardContainer>
+        </YellowCard>
+      </CardView>
     </PanGestureHandler>
   );
 };
 
-export default Card;
+const styles = StyleSheet.create({
+  imageStyle: {
+    borderRadius: 12,
+  },
+});

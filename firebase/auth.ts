@@ -17,7 +17,7 @@ export const loginUser = async (
     await signInWithEmailAndPassword(auth, email, password);
     setLoading(false);
   } catch (error) {
-    setErrorState(error.message);
+    setErrorState("Invalid email or password. Please try again.");
     setLoading(false);
   }
 };
@@ -48,7 +48,7 @@ export const registerUser = async (
 
     setLoading(false);
   } catch (error) {
-    setErrorState(error.message); // Capture and pass only the error message
+    setErrorState(error.message);
     setLoading(false);
   }
 };

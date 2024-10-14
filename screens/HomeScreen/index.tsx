@@ -198,18 +198,17 @@ export const HomeScreen = ({ uid, navigation }) => {
 
           <HomeBottomView>
             <View style={{ marginBottom: 16 }}>
-            <TouchableOpacity
-                onPress={() =>
+              <HomePracticeButton
+                onPress={() => {
                   navigation.navigate("Question", {
-                    main: mainFlag,
-                    target: targetFlag,
+                  main: mainFlag,
+                  target: targetFlag,
                   })
                 }
+              }                
               >
-              <HomePracticeButton>
                 <HomePracticeButtonText>Practice</HomePracticeButtonText>
               </HomePracticeButton>
-              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() =>
                   navigation.navigate("Input", {
