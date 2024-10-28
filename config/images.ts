@@ -10,6 +10,7 @@ export const Images = {
   succeed_icon: require("../assets/icons/succeed.png"),
   lottie_recognition: require("../assets/lotties/recognition_new.json"),
   lottie_capture: require("../assets/lotties/capture.json"),
+  lottie_loading: require("../assets/lotties/loading_animation.json"),
   green_card: require("../assets/icons/greenCard.png"),
   red_card: require("../assets/icons/redCard.png"),
   blue_card: require("../assets/icons/blueCard.png"),

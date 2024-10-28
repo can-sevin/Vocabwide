@@ -38,7 +38,6 @@ export const GeneralButton = styled.TouchableOpacity`
   align-items: center;
   align-self: flex-end;
   margin-top: 40px;
-  background-color: ${Colors.LighterGray2};
   padding: 10px;
   border-radius: 8px;
 `;

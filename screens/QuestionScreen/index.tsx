@@ -1,39 +1,69 @@
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, Text } from 'react-native';
-import { Container, CardContainer, QuestionContainer, ModalText, TopView, BottomView, LeftView, RightView, TextStyled, FinishText } from './style';
+import React, { useEffect, useState, useRef } from 'react';
+import { SafeAreaView, View, Text, Animated } from 'react-native';
+import { Container, CardContainer, QuestionContainer, ModalText, FinishText, TopView, BottomView, LeftView, RightView, TextStyled } from './style';
 import { Card } from '../../components/Card';
-import { Timer } from '../../components/Timer';
 import { BackButton } from '../../components/BackButton';
 import { Images, Sounds } from '../../config';
 import { Audio } from 'expo-av';
+import { fetchTranslations } from '../../config/gpt';
+import LottieView from 'lottie-react-native';
 
-export const QuestionScreen = ({ navigation }) => {
-  const [cards, setCards] = useState([
-    { text: 'Card 1', removing: false },
-    { text: 'Card 2', removing: false },
-    { text: 'Card 3', removing: false },
-    { text: 'Card 4', removing: false },
-    { text: 'Card 5', removing: false },
-    { text: 'Card 6', removing: false },
-    { text: 'Card 7', removing: false },
-  ]);
-
+export const QuestionScreen = ({ navigation, route }) => {
+  const { target, wordsList } = route.params;
+  const [cards, setCards] = useState(
+    wordsList.map(([word]) => ({
+      originalText: word,
+      text: word,
+      removing: false,
+      top: 'TopWord', 
+      bottom: 'BottomWord',
+      left: 'LeftWord',
+      right: 'RightWord',
+    }))
+  );
+  
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [timer, setTimer] = useState(10);
+  const [loading, setLoading] = useState(true);
+  const [showFinish, setShowFinish] = useState(false);
+  const [timerColor, setTimerColor] = useState('black');
+
+  const timerScale = useRef(new Animated.Value(1)).current;
 
   const playSound = async (soundKey: string) => {
-    const { sound } = await Audio.Sound.createAsync(Sounds[soundKey]);
+    const soundSource = Sounds[soundKey];
+    if (!soundSource) {
+      console.warn(`Ses kaynağı bulunamadı: ${soundKey}`);
+      return;
+    }
+  
+    const { sound } = await Audio.Sound.createAsync(soundSource);
     await sound.playAsync();
   };
+    useEffect(() => {
+    const getTranslations = async () => {
+      try {
+        setLoading(true);
+        await fetchTranslations(wordsList.map(([word]) => word), target, setCards, setLoading);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching translations: ", error);
+        setLoading(false);
+      }
+    };
+
+    getTranslations();
+  }, []);
 
   useEffect(() => {
-    if (cards.length > 0) {
+    if (!loading && cards.length > 0) {
       const interval = setInterval(() => {
         setTimer((prevTime) => {
           if (prevTime === 1) {
-            removeCard(cards.length - 1);
-            playSound("time");
+            handleNextCard();
             return 10;
           } else {
+            animateTimer();
             return prevTime - 1;
           }
         });
@@ -41,56 +71,119 @@ export const QuestionScreen = ({ navigation }) => {
 
       return () => clearInterval(interval);
     }
-  }, [cards]);
+  }, [cards, loading, currentIndex]);
 
-  const removeCard = (index: number) => {
-    setCards((prevCards) => prevCards.filter((_, i) => i !== index));
-    setTimer(10);
+  const animateTimer = () => {
+    timerScale.setValue(1);
+    Animated.spring(timerScale, {
+      toValue: 1.2,
+      friction: 2,
+      useNativeDriver: true,
+    }).start();
   };
 
-  const updateCardText = (index: number, direction: string) => {
-    setCards((prevCards) => prevCards.map((card, i) => (i === index ? { ...card, text: direction } : card)));
+  const handleNextCard = () => {
+    setTimerColor('black');
+    if (currentIndex < cards.length - 1) {
+      setCurrentIndex((prevIndex) => prevIndex + 1);
+      setTimer(10);
+    } else {
+      setShowFinish(true);
+    }
   };
 
-  const resetCardText = (index: number, originalText: string) => {
-    setCards((prevCards) => prevCards.map((card, i) => (i === index ? { ...card, text: originalText } : card)));
-  };
+  const checkAnswer = (direction: string | number) => {
+    const card = cards[currentIndex];
+    const selectedWord = String(card[direction]).trim().toLowerCase();
+    const correctWord = String(card.correct).trim().toLowerCase();
+    
+    console.log('selectedWord', selectedWord);
+    console.log('correctWord', correctWord);
 
+    if (selectedWord === correctWord) {
+      playSound("correct");
+      setTimerColor('green');
+      setTimeout(() => {
+        setTimerColor('black');
+        handleNextCard();
+      }, 1000);
+      return true;
+    } else {
+      playSound("error");
+      setTimerColor('red');
+      setTimeout(() => setTimerColor('black'), 1000);
+      return false;
+    }
+  };
+    
+  const updateCardText = (index: any, direction: any) => {
+    setCards((prevCards: any[]) =>
+      prevCards.map((card: any, i: any) => 
+        i === index ? { ...card, text: direction } : card
+      )
+    );
+  };
+  
+  
+const resetCardText = (index: any, originalText: any) => {
+  console.log('resetCardText çağrıldı', index, originalText);
+  setCards((prevCards: any[]) =>
+    prevCards.map((card: any, i: any) =>
+      i === index ? { ...card, text: originalText } : card
+    )
+  );
+};    
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Container>
         <BackButton navigation={navigation} />
-        {cards.length > 0 ? (
-          <>
-        <QuestionContainer>
-          <ModalText>Questionnaire: Please swipe the cards as required.</ModalText>
-        </QuestionContainer>
-
-        <Timer timer={timer} />
-
-        <CardContainer source={Images.background}>
-          {cards.map((card, index) => (
-            <Card
-              key={index}
-              card={card.text}
-              index={index}
-              removing={card.removing}
-              originalText={`Card ${index + 1}`}
-              updateCardText={updateCardText}
-              resetCardText={resetCardText}
-              removeCard={removeCard}
-              playSound={playSound}
+        {loading ? (
+          <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, marginHorizontal: 64 }}>
+            <LottieView
+              style={{ width: 150, height: 150 }}
+              source={Images.lottie_recognition}
+              loop={true}
+              autoPlay
             />
-          ))}
-
-          <TopView><TextStyled>Top</TextStyled></TopView>
-          <BottomView><TextStyled>Bottom</TextStyled></BottomView>
-          <LeftView><TextStyled>Left</TextStyled></LeftView>
-          <RightView><TextStyled>Right</TextStyled></RightView>
-        </CardContainer>
-        </>
-        ) : (
+            <ModalText>Testiniz Hazırlanıyor Lütfen Bekleyiniz</ModalText>
+          </View>
+        ) : showFinish ? (
           <FinishText>Finish</FinishText>
+        ) : (
+          <>
+            <QuestionContainer>
+              <ModalText>Bu kelimenin anlamı nedir?</ModalText>
+            </QuestionContainer>
+            <View style={{ alignItems: 'center', marginVertical: 10 }}>
+              <Animated.Text style={{ fontSize: 24, color: timerColor, transform: [{ scale: timerScale }] }}>
+                {timer}
+              </Animated.Text>
+            </View>
+            <CardContainer source={Images.background}>
+              {cards.length > 0 && (
+                <Card
+                  key={currentIndex}
+                  card={cards[currentIndex].text}
+                  index={currentIndex}
+                  removing={cards[currentIndex].removing}
+                  originalText={cards[currentIndex].originalText}
+                  updateCardText={updateCardText}
+                  resetCardText={resetCardText}
+                  removeCard={handleNextCard}
+                  playSound={playSound}
+                  top={cards[currentIndex].top}
+                  right={cards[currentIndex].right}
+                  left={cards[currentIndex].left}
+                  bottom={cards[currentIndex].bottom}
+                  isCorrect={(direction: any) => checkAnswer(direction)}
+                />
+              )}
+              <TopView><TextStyled>{cards[currentIndex].top}</TextStyled></TopView>
+              <BottomView><TextStyled>{cards[currentIndex].bottom}</TextStyled></BottomView>
+              <LeftView><TextStyled>{cards[currentIndex].left}</TextStyled></LeftView>
+              <RightView><TextStyled>{cards[currentIndex].right}</TextStyled></RightView>
+            </CardContainer>
+          </>
         )}
       </Container>
     </SafeAreaView>

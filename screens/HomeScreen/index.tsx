@@ -5,9 +5,10 @@ import {
   ImageBackground,
   SafeAreaView,
   Text,
+  Alert,
 } from "react-native";
 import { signOut } from "firebase/auth";
-import { auth, Flags, Images } from "../../config";
+import { auth, Colors, Flags, Images } from "../../config";
 import { FadeInDown } from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
 import {
@@ -30,6 +31,7 @@ import {
   HomeLanguageWordsView,
   HomeTopView,
   HomeBottomView,
+  EmptyWordText,
 } from "./styles";
 import { ModalFlag } from "../../components/ModalFlag";
 import LanguageView from "../../components/LanguageView";
@@ -56,7 +58,6 @@ export const HomeScreen = ({ uid, navigation }) => {
 
   const handleOpenModal = (flagType: string) => {
     setFlag(flagType);
-
     setModalVisible(true);
     setLoading(true);
 
@@ -124,8 +125,7 @@ export const HomeScreen = ({ uid, navigation }) => {
           clearInterval(interval);
         }
       }, 200);
-    }
-    else {
+    } else {
       let currentNumber = 0;
       setDisplayedNumber(currentNumber);
     }
@@ -134,6 +134,22 @@ export const HomeScreen = ({ uid, navigation }) => {
   }, [wordNum]);
 
   const handleLogout = () => signOut(auth).catch(console.error);
+
+  const handlePracticePress = () => {
+    if (wordNum >= 10) {
+      navigation.navigate("Question", {
+        main: mainFlag,
+        target: targetFlag,
+        wordsList,
+      });
+    } else {
+      Alert.alert(
+        "Insufficient words",
+        "You want to practice with words, you should add 10 or more words.",
+        [{ text: "OK" }]
+      );
+    }
+  };
 
   return (
     <ImageBackground
@@ -187,27 +203,25 @@ export const HomeScreen = ({ uid, navigation }) => {
             </HomeHeaderLanguageView>
             <HomeLanguageWordsView>
               {wordsList.length === 0 ? (
-                <BottomTextWhite>
-                  First, You need start to add words
-                </BottomTextWhite>
+                <EmptyWordText>
+                  First, You need to start by adding words.
+                </EmptyWordText>
               ) : (
                 <LanguageView wordsList={wordsList} loading={loading} />
               )}
             </HomeLanguageWordsView>
           </HomeTopView>
-
           <HomeBottomView>
             <View style={{ marginBottom: 16 }}>
               <HomePracticeButton
-                onPress={() => {
-                  navigation.navigate("Question", {
-                  main: mainFlag,
-                  target: targetFlag,
-                  })
-                }
-              }                
+                onPress={handlePracticePress}
+                style={{
+                  backgroundColor: wordNum >= 10 ? Colors.main_yellow : Colors.LighterGray2,
+                }}
               >
-                <HomePracticeButtonText>Practice</HomePracticeButtonText>
+                <HomePracticeButtonText style={{color: wordNum >= 10 ? Colors.white : Colors.black}}>
+                  Practice
+                </HomePracticeButtonText>
               </HomePracticeButton>
               <TouchableOpacity
                 onPress={() =>
@@ -218,7 +232,7 @@ export const HomeScreen = ({ uid, navigation }) => {
                 }
               >
                 <BottomTextWhite>
-                  Or You can add a new word by input
+                  Or you can add a new word by input
                 </BottomTextWhite>
               </TouchableOpacity>
             </View>

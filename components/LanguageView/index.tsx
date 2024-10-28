@@ -34,7 +34,6 @@ export const LanguageView: React.FC<LanguageViewProps> = ({ wordsList, loading }
         <LanguageScrollView showsVerticalScrollIndicator={false}>
           {Object.keys(groupedWords).map((letter) => (
             <View key={letter}>
-              {/* Wrap letter in a Text component */}
               <LanguageInsideAlphabetView>
                 <LanguageInsideAlphabetText>
                   <Text>{letter}</Text>
@@ -45,7 +44,6 @@ export const LanguageView: React.FC<LanguageViewProps> = ({ wordsList, loading }
                 ([originalWord, translatedWord], index) => (
                   <LanguageInsideView key={index}>
                     <LanguageInsiderView>
-                      {/* Wrap text in Text components */}
                       <LanguageInsiderText>
                         <Text>{originalWord}</Text>
                       </LanguageInsiderText>

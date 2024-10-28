@@ -12,7 +12,7 @@ import { LoadingContainer } from "./style";
 
 const Stack = createStackNavigator();
 
-export const AuthStack = () => {
+export const AuthStack = ({navigation}) => {
   const [route, setRoute] = useState<string | null>(null);
   const fontsLoaded = useCustomFonts();
 
@@ -35,7 +35,7 @@ export const AuthStack = () => {
   }
 
   if (route === "Permission") {
-    return <PermissionScreen />;
+    return <PermissionScreen navigation={navigation} />;
   }
 
   return (
@@ -43,6 +43,7 @@ export const AuthStack = () => {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+      <Stack.Screen name="Permission" component={PermissionScreen} />
     </Stack.Navigator>
   );
 };

@@ -80,6 +80,7 @@ export const HomeLanguageWordsView = styled.View`
   margin-top: 16px;
   border-radius: 16px;
   overflow: hidden;
+  flex: 1;
 `;
 
 export const HomePracticeButton = styled.TouchableOpacity`
@@ -103,6 +104,14 @@ export const BottomTextWhite = styled.Text`
   font-size: 16px;
   color: ${Colors.white};
   font-family: Helvetica-Medium;
+  align-self: center;
+`;
+
+export const EmptyWordText = styled.Text`
+  font-size: 24px;
+  color: ${Colors.white};
+  font-family: Helvetica-Bold;
+  text-align: center;
   align-self: center;
 `;
 

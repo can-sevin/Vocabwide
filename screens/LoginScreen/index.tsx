@@ -14,7 +14,7 @@ import {
   FormErrorMessage,
   LoadingIndicator,
 } from "../../components";
-import { Images } from "../../config";
+import { Colors, Images } from "../../config";
 import { useTogglePasswordVisibility } from "../../hooks/useTogglePasswordVisibility";
 import { loginUser } from "../../firebase/auth";
 import { loginValidationSchema } from "../../utils/index";
@@ -67,63 +67,75 @@ export const LoginScreen = ({ navigation }) => {
               handleChange,
               handleSubmit,
               handleBlur,
-            }) => (
-              <KeyboardAwareScrollView>
-                <FormErrorMessage
-                  error={values.email !== "" && errors.email}
-                  visible={touched.email}
-                />
-                <TextInput
-                  name="email"
-                  leftIconName="email"
-                  placeholder="Enter email"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  textContentType="emailAddress"
-                  autoFocus={true}
-                  value={values.email}
-                  onChangeText={handleChange("email")}
-                  onBlur={handleBlur("email")}
-                  errorState={errorState}
-                  rightIcon={undefined}
-                  handlePasswordVisibility={undefined}
-                />
-                {/* Password Input */}
-                <FormErrorMessage
-                  error={values.password !== "" && errors.password}
-                  visible={touched.password}
-                />
-                <TextInput
-                  name="password"
-                  leftIconName="key-variant"
-                  placeholder="Enter password"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  secureTextEntry={passwordVisibility}
-                  textContentType="password"
-                  rightIcon={rightIcon}
-                  handlePasswordVisibility={handlePasswordVisibility}
-                  value={values.password}
-                  onChangeText={handleChange("password")}
-                  onBlur={handleBlur("password")}
-                  errorState={errorState}
-                />
-                {loading ? (
-                  <LoadingIndicator />
-                ) : (
-                  <GeneralButton onPress={() => handleSubmit()}>
-                    <GeneralButtonText>Login</GeneralButtonText>
-                  </GeneralButton>
-                )}
-              </KeyboardAwareScrollView>
-            )}
+            }) => {
+
+              const isFormValid =
+                values.email !== "" &&
+                values.password !== "" &&
+                !errors.email &&
+                !errors.password;
+
+              return (
+                <KeyboardAwareScrollView>
+                  <FormErrorMessage
+                    error={values.email !== "" && errors.email}
+                    visible={touched.email}
+                  />
+                  <TextInput
+                    name="email"
+                    leftIconName="email"
+                    placeholder="Enter email"
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    textContentType="emailAddress"
+                    autoFocus={true}
+                    value={values.email}
+                    onChangeText={handleChange("email")}
+                    onBlur={handleBlur("email")}
+                    errorState={errorState}
+                    rightIcon={undefined}
+                    handlePasswordVisibility={undefined}
+                  />
+                  <FormErrorMessage
+                    error={values.password !== "" && errors.password}
+                    visible={touched.password}
+                  />
+                  <TextInput
+                    name="password"
+                    leftIconName="key-variant"
+                    placeholder="Enter password"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    secureTextEntry={passwordVisibility}
+                    textContentType="password"
+                    rightIcon={rightIcon}
+                    handlePasswordVisibility={handlePasswordVisibility}
+                    value={values.password}
+                    onChangeText={handleChange("password")}
+                    onBlur={handleBlur("password")}
+                    errorState={errorState}
+                  />
+                  {loading ? (
+                    <LoadingIndicator />
+                  ) : (
+                    <GeneralButton
+                      onPress={() => handleSubmit()}
+                      style={{
+                        backgroundColor: isFormValid ? Colors.main_yellow : Colors.LighterGray2,
+                      }}
+                      disabled={!isFormValid}
+                    >
+                      <GeneralButtonText>Login</GeneralButtonText>
+                    </GeneralButton>
+                  )}
+                </KeyboardAwareScrollView>
+              );
+            }}
           </Formik>
           <>
-          {errorState ? (
-            <ErrorText>
-              {errorState}
-            </ErrorText>
-          ) : null}
+            {errorState ? (
+              <ErrorText>{errorState}</ErrorText>
+            ) : null}
             <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
               <LoginBtmText>Create a new account?</LoginBtmText>
             </TouchableOpacity>

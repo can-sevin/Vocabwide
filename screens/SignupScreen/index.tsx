@@ -8,7 +8,7 @@ import {
   FormErrorMessage,
   LoadingIndicator,
 } from "../../components";
-import { Images } from "../../config";
+import { Colors, Images } from "../../config";
 import { useTogglePasswordVisibility } from "../../hooks/useTogglePasswordVisibility";
 import { signupValidationSchema } from "../../utils/index";
 import { registerUser } from "../../firebase/auth";
@@ -75,93 +75,111 @@ export const SignupScreen = ({ navigation }) => {
               handleChange,
               handleSubmit,
               handleBlur,
-            }) => (
-              <KeyboardAwareScrollView>
-                <TextInput
-                  name="username"
-                  leftIconName="username"
-                  placeholder="Enter username"
-                  autoCapitalize="none"
-                  keyboardType="default"
-                  textContentType="username"
-                  value={values.username}
-                  onChangeText={handleChange("username")}
-                  onBlur={handleBlur("username")}
-                />
-                <FormErrorMessage
-                  error={values.username !== "" && errors.username}
-                  visible={touched.username}
-                />
+            }) => {
+              const isFormValid =
+                values.username !== "" &&
+                values.email !== "" &&
+                values.password !== "" &&
+                values.confirmPassword !== "" &&
+                !errors.username &&
+                !errors.email &&
+                !errors.password &&
+                !errors.confirmPassword;
 
-                <TextInput
-                  name="email"
-                  leftIconName="email"
-                  placeholder="Enter email"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  textContentType="emailAddress"
-                  value={values.email}
-                  onChangeText={handleChange("email")}
-                  onBlur={handleBlur("email")}
-                />
-                <FormErrorMessage
-                  error={values.email !== "" && errors.email}
-                  visible={touched.email}
-                />
+              return (
+                <KeyboardAwareScrollView>
+                  <TextInput
+                    name="username"
+                    leftIconName="username"
+                    placeholder="Enter username"
+                    autoCapitalize="none"
+                    keyboardType="default"
+                    textContentType="username"
+                    value={values.username}
+                    onChangeText={handleChange("username")}
+                    onBlur={handleBlur("username")}
+                  />
+                  <FormErrorMessage
+                    error={values.username !== "" && errors.username}
+                    visible={touched.username}
+                  />
 
-                <TextInput
-                  name="password"
-                  leftIconName="key-variant"
-                  placeholder="Enter password"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  secureTextEntry={passwordVisibility}
-                  textContentType="newPassword"
-                  rightIcon={rightIcon}
-                  handlePasswordVisibility={handlePasswordVisibility}
-                  value={values.password}
-                  onChangeText={handleChange("password")}
-                  onBlur={handleBlur("password")}
-                />
-                <FormErrorMessage
-                  error={values.password !== "" && errors.password}
-                  visible={touched.password}
-                />
+                  <TextInput
+                    name="email"
+                    leftIconName="email"
+                    placeholder="Enter email"
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    textContentType="emailAddress"
+                    value={values.email}
+                    onChangeText={handleChange("email")}
+                    onBlur={handleBlur("email")}
+                  />
+                  <FormErrorMessage
+                    error={values.email !== "" && errors.email}
+                    visible={touched.email}
+                  />
 
-                <TextInput
-                  name="confirmPassword"
-                  leftIconName="key-variant"
-                  placeholder="Re-Enter password"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  secureTextEntry={confirmPasswordVisibility}
-                  textContentType="password"
-                  rightIcon={confirmPasswordIcon}
-                  handlePasswordVisibility={handleConfirmPasswordVisibility}
-                  value={values.confirmPassword}
-                  onChangeText={handleChange("confirmPassword")}
-                  onBlur={handleBlur("confirmPassword")}
-                />
-                <FormErrorMessage
-                  error={
-                    values.confirmPassword !== "" && errors.confirmPassword
-                  }
-                  visible={touched.confirmPassword}
-                />
+                  <TextInput
+                    name="password"
+                    leftIconName="key-variant"
+                    placeholder="Enter password"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    secureTextEntry={passwordVisibility}
+                    textContentType="newPassword"
+                    rightIcon={rightIcon}
+                    handlePasswordVisibility={handlePasswordVisibility}
+                    value={values.password}
+                    onChangeText={handleChange("password")}
+                    onBlur={handleBlur("password")}
+                  />
+                  <FormErrorMessage
+                    error={values.password !== "" && errors.password}
+                    visible={touched.password}
+                  />
 
-                {errorState !== "" ? (
-                  <FormErrorMessage error={errorState} visible={true} />
-                ) : null}
+                  <TextInput
+                    name="confirmPassword"
+                    leftIconName="key-variant"
+                    placeholder="Re-Enter password"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    secureTextEntry={confirmPasswordVisibility}
+                    textContentType="password"
+                    rightIcon={confirmPasswordIcon}
+                    handlePasswordVisibility={handleConfirmPasswordVisibility}
+                    value={values.confirmPassword}
+                    onChangeText={handleChange("confirmPassword")}
+                    onBlur={handleBlur("confirmPassword")}
+                  />
+                  <FormErrorMessage
+                    error={
+                      values.confirmPassword !== "" && errors.confirmPassword
+                    }
+                    visible={touched.confirmPassword}
+                  />
 
-                {loading ? (
-                  <LoadingIndicator />
-                ) : (
-                  <GeneralButton onPress={() => handleSubmit()}>
-                    <GeneralButtonText>Signup</GeneralButtonText>
-                  </GeneralButton>
-                )}
-              </KeyboardAwareScrollView>
-            )}
+                  {errorState !== "" ? (
+                    <FormErrorMessage error={errorState} visible={true} />
+                  ) : null}
+
+                  {loading ? (
+                    <LoadingIndicator />
+                  ) : (
+                    <GeneralButton
+                      onPress={() => handleSubmit()}
+                      style={{
+                        backgroundColor: isFormValid ? Colors.main_yellow : Colors.LighterGray2,
+                      }}
+                      disabled={!isFormValid}
+                    >
+                      <GeneralButtonText>Signup</GeneralButtonText>
+                    </GeneralButton>
+                  )}
+                </KeyboardAwareScrollView>
+              );
+            }}
           </Formik>
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <LoginBtmText>Already have an account?</LoginBtmText>

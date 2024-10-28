@@ -8,6 +8,21 @@ export const Sounds = {
 };
 
 export const playSound = async (soundKey: keyof typeof Sounds) => {
+  await Audio.setAudioModeAsync({
+    allowsRecordingIOS: false,
+    playsInSilentModeIOS: false,
+    shouldDuckAndroid: true,
+    playThroughEarpieceAndroid: false,
+    staysActiveInBackground: true,
+  });
+
   const { sound } = await Audio.Sound.createAsync(Sounds[soundKey]);
-  await sound.playAsync();
+  
+  try {
+    await sound.playAsync();
+  } catch (error) {
+    console.error(`Error playing sound: ${soundKey}`, error);
+  } finally {
+    sound.unloadAsync();
+  }
 };

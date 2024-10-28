@@ -1,4 +1,3 @@
-// screens/PermissionScreen.tsx
 import React, { useEffect, useState } from "react";
 import { ImageBackground } from "react-native";
 
