@@ -59,36 +59,53 @@ export const Card = ({
       translateX.value = event.translationX;
       translateY.value = event.translationY;
   
-      if (translateY.value < -SWIPE_THRESHOLD_HEIGHT && card !== top) {
-        runOnJS(updateCardText)(index, top);
-      } else if (translateY.value > SWIPE_THRESHOLD_HEIGHT && card !== bottom) {
-        runOnJS(updateCardText)(index, bottom);
-      } else if (translateX.value < -SWIPE_THRESHOLD && card !== left) {
-        runOnJS(updateCardText)(index, left);
-      } else if (translateX.value > SWIPE_THRESHOLD && card !== right) {
-        runOnJS(updateCardText)(index, right);
+      const absX = Math.abs(translateX.value);
+      const absY = Math.abs(translateY.value);
+  
+      console.log("translateX:", translateX.value, "translateY:", translateY.value);
+      console.log("absX:", absX, "absY:", absY);
+  
+      if (absY > SWIPE_THRESHOLD_HEIGHT && absY > absX) {
+        if (translateY.value < -SWIPE_THRESHOLD_HEIGHT) {
+          console.log("Up swipe detected");
+          runOnJS(updateCardText)(index, top);
+        } else if (translateY.value > SWIPE_THRESHOLD_HEIGHT) {
+          console.log("Down swipe detected");
+          runOnJS(updateCardText)(index, bottom);
+        }
+      } else if (absX > SWIPE_THRESHOLD && absX > absY) {
+        if (translateX.value < -SWIPE_THRESHOLD) {
+          console.log("Left swipe detected");
+          runOnJS(updateCardText)(index, left);
+        } else if (translateX.value > SWIPE_THRESHOLD) {
+          console.log("Right swipe detected");
+          runOnJS(updateCardText)(index, right);
+        }
       }
     },
-    onEnd: () => {  
-      const direction = 
-        Math.abs(translateX.value) > SWIPE_THRESHOLD
-          ? (translateX.value > 0 ? 'right' : 'left')
-          : (translateY.value > 0 ? 'down' : 'up');
+    onEnd: () => {
+      const absX = Math.abs(translateX.value);
+      const absY = Math.abs(translateY.value);
+      console.log("Final translateX:", translateX.value, "translateY:", translateY.value);
   
-      if (
-        Math.abs(translateX.value) > SWIPE_THRESHOLD || 
-        Math.abs(translateY.value) > SWIPE_THRESHOLD_HEIGHT
-      ) {
-        runOnJS(handleSwipe)(direction);
-      } else {
+      const direction =
+        absX > absY && absX > SWIPE_THRESHOLD ? (translateX.value > 0 ? 'right' : 'left') :
+        absY > absX && absY > SWIPE_THRESHOLD_HEIGHT ? (translateY.value > 0 ? 'bottom' : 'top') :
+        null;
+  
+      if (!direction) {
+        console.log("Swipe canceled, resetting to original text");
         runOnJS(resetCardText)(index);
+      } else {
+        console.log("Detected swipe direction:", direction);
+        runOnJS(handleSwipe)(direction);
       }
-  
+      
       translateX.value = withSpring(0);
       translateY.value = withSpring(0);
     },
   });
-    
+              
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: translateX.value },

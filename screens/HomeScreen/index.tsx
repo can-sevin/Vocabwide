@@ -140,6 +140,7 @@ export const HomeScreen = ({ uid, navigation }) => {
       navigation.navigate("Question", {
         main: mainFlag,
         target: targetFlag,
+        uid: uid,
         wordsList,
       });
     } else {

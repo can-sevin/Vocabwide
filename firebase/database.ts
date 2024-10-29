@@ -313,3 +313,28 @@ export const saveWordPairOcr = async (mainFlag: string, targetFlag: string, sele
     console.error("Error saving words:", error);
   }
 };
+
+export const deleteCorrectWordsFromFirebase = async (uid: any, correctWords: string | any[], mainFlag: any, targetFlag: any) => {
+  const originalWordsRef = ref(database, `users/${uid}/${mainFlag}${targetFlag}originalWords`);
+  const translatedWordsRef = ref(database, `users/${uid}/${mainFlag}${targetFlag}translatedWords`);
+
+  try {
+    const originalSnapshot = await get(originalWordsRef);
+    if (originalSnapshot.exists()) {
+      const currentOriginalWords = originalSnapshot.val();
+      const updatedOriginalWords = currentOriginalWords.filter((word: any) => !correctWords.includes(word));
+      await set(originalWordsRef, updatedOriginalWords);
+    }
+
+    const translatedSnapshot = await get(translatedWordsRef);
+    if (translatedSnapshot.exists()) {
+      const currentTranslatedWords = translatedSnapshot.val();
+      const updatedTranslatedWords = currentTranslatedWords.filter((word: any) => !correctWords.includes(word));
+      await set(translatedWordsRef, updatedTranslatedWords);
+    }
+
+    console.log("Correct words successfully deleted from Firebase.");
+  } catch (error) {
+    console.error("Error deleting correct words from Firebase:", error);
+  }
+};

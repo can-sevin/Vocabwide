@@ -7,9 +7,11 @@ import { Images, Sounds } from '../../config';
 import { Audio } from 'expo-av';
 import { fetchTranslations } from '../../config/gpt';
 import LottieView from 'lottie-react-native';
+import { deleteCorrectWordsFromFirebase } from '../../firebase/database';
+import { LoadingIndicator } from '../../components/LoadingIndicator';
 
 export const QuestionScreen = ({ navigation, route }) => {
-  const { target, wordsList } = route.params;
+  const { target, main, wordsList, uid } = route.params;
   const originalTexts = useRef(wordsList.map(([word]) => word));
   const [cards, setCards] = useState(
     wordsList.map(([word]) => ({
@@ -28,6 +30,9 @@ export const QuestionScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(true);
   const [showFinish, setShowFinish] = useState(false);
   const [timerColor, setTimerColor] = useState('black');
+  const [correctCount, setCorrectCount] = useState(0);
+  const [correctWords, setCorrectWords] = useState<string[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const timerScale = useRef(new Animated.Value(1)).current;
 
@@ -74,6 +79,18 @@ export const QuestionScreen = ({ navigation, route }) => {
     }
   }, [cards, loading, currentIndex]);
 
+  const handleDeleteWords = async () => {
+    setIsDeleting(true);
+    await deleteCorrectWordsFromFirebase(uid, correctWords, main, target);
+    setIsDeleting(false);
+  };
+
+  useEffect(() => {
+    if (showFinish) {
+      handleDeleteWords();
+    }
+  }, [showFinish]);
+  
   const animateTimer = () => {
     timerScale.setValue(1);
     Animated.spring(timerScale, {
@@ -100,10 +117,12 @@ export const QuestionScreen = ({ navigation, route }) => {
     
     console.log('selectedWord', selectedWord);
     console.log('correctWord', correctWord);
-
-    if (selectedWord === correctWord) {
+    
+    if (selectedWord === correctWord && correctWord) {
       playSound("correct");
       setTimerColor('green');
+      setCorrectCount((prev) => prev + 1);
+      setCorrectWords((prev) => [...prev, card.text]);  
       setTimeout(() => {
         setTimerColor('black');
         handleNextCard();
@@ -146,14 +165,21 @@ const resetCardText = (index: any) => {
               loop={true}
               autoPlay
             />
-            <ModalText>Testiniz Hazırlanıyor Lütfen Bekleyiniz</ModalText>
+            <ModalText>Test prepare just wait approximately 10 sec...</ModalText>
           </View>
         ) : showFinish ? (
-          <FinishText>Finish</FinishText>
+          isDeleting ? (
+            <LoadingIndicator />
+          ) : (
+            <FinishText>
+              {`Doğru: ${correctCount}/${originalTexts.current.length} kelime`}
+            </FinishText>
+          )
         ) : (
           <>
             <QuestionContainer>
-              <ModalText>Bu kelimenin anlamı nedir?</ModalText>
+              <ModalText>Match the words with their correct meanings 🧩</ModalText>
+              <ModalText>{currentIndex + 1} / {originalTexts.current.length} questions completed</ModalText>
             </QuestionContainer>
             <View style={{ alignItems: 'center', marginVertical: 10 }}>
               <Animated.Text style={{ fontSize: 24, color: timerColor, transform: [{ scale: timerScale }] }}>
@@ -170,7 +196,6 @@ const resetCardText = (index: any) => {
                   originalText={originalTexts.current[currentIndex]}
                   updateCardText={updateCardText}
                   resetCardText={resetCardText}
-                  removeCard={handleNextCard}
                   playSound={playSound}
                   top={cards[currentIndex].top}
                   right={cards[currentIndex].right}
