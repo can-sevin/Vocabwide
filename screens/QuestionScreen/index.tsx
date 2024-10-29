@@ -10,6 +10,7 @@ import LottieView from 'lottie-react-native';
 
 export const QuestionScreen = ({ navigation, route }) => {
   const { target, wordsList } = route.params;
+  const originalTexts = useRef(wordsList.map(([word]) => word));
   const [cards, setCards] = useState(
     wordsList.map(([word]) => ({
       originalText: word,
@@ -111,7 +112,7 @@ export const QuestionScreen = ({ navigation, route }) => {
     } else {
       playSound("error");
       setTimerColor('red');
-      setTimeout(() => setTimerColor('black'), 1000);
+      setTimeout(() => setTimerColor('black'), 500);
       return false;
     }
   };
@@ -125,8 +126,8 @@ export const QuestionScreen = ({ navigation, route }) => {
   };
   
   
-const resetCardText = (index: any, originalText: any) => {
-  console.log('resetCardText çağrıldı', index, originalText);
+const resetCardText = (index: any) => {
+  const originalText = originalTexts.current[index];
   setCards((prevCards: any[]) =>
     prevCards.map((card: any, i: any) =>
       i === index ? { ...card, text: originalText } : card
@@ -166,7 +167,7 @@ const resetCardText = (index: any, originalText: any) => {
                   card={cards[currentIndex].text}
                   index={currentIndex}
                   removing={cards[currentIndex].removing}
-                  originalText={cards[currentIndex].originalText}
+                  originalText={originalTexts.current[currentIndex]}
                   updateCardText={updateCardText}
                   resetCardText={resetCardText}
                   removeCard={handleNextCard}

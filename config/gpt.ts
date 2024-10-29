@@ -42,10 +42,10 @@ export const fetchTranslations = async (
     
       Object.keys(parsedResponse).forEach((word) => {
         const { correct, others } = parsedResponse[word];
-        const allOptions = [...others, correct];
-      
+        const uniqueOthers = Array.from(new Set(others));      
+        const allOptions = [...uniqueOthers.slice(0, 3), correct];
         const shuffled = allOptions.sort(() => 0.5 - Math.random());
-
+      
         const wordData = {
           text: word,
           top: shuffled[0],
@@ -58,7 +58,7 @@ export const fetchTranslations = async (
       
         updatedCards.push(wordData);
       });
-    
+          
       setCards(updatedCards);
       setLoading(false);
     } catch (error) {

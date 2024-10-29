@@ -5,8 +5,8 @@ import { YellowCard, CardView, CardText } from './styles';
 import { Dimensions, StyleSheet } from 'react-native';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.1;
-const SWIPE_THRESHOLD_HEIGHT = SCREEN_HEIGHT * 0.07;
+const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.08;
+const SWIPE_THRESHOLD_HEIGHT = SCREEN_HEIGHT * 0.08;
 
 export const Card = ({
   card,
@@ -15,7 +15,6 @@ export const Card = ({
   removing,
   updateCardText,
   resetCardText,
-  removeCard,
   playSound,
   isCorrect,
   top,
@@ -59,37 +58,37 @@ export const Card = ({
     onActive: (event) => {
       translateX.value = event.translationX;
       translateY.value = event.translationY;
-
-      if (translateY.value < -SWIPE_THRESHOLD_HEIGHT) {
+  
+      if (translateY.value < -SWIPE_THRESHOLD_HEIGHT && card !== top) {
         runOnJS(updateCardText)(index, top);
-      } else if (translateY.value > SWIPE_THRESHOLD_HEIGHT) {
+      } else if (translateY.value > SWIPE_THRESHOLD_HEIGHT && card !== bottom) {
         runOnJS(updateCardText)(index, bottom);
-      } else if (translateX.value < -SWIPE_THRESHOLD) {
+      } else if (translateX.value < -SWIPE_THRESHOLD && card !== left) {
         runOnJS(updateCardText)(index, left);
-      } else if (translateX.value > SWIPE_THRESHOLD) {
+      } else if (translateX.value > SWIPE_THRESHOLD && card !== right) {
         runOnJS(updateCardText)(index, right);
       }
     },
-    onEnd: () => {
-      const direction =
-        translateX.value > 0 ? 'right' :
-        translateX.value < 0 ? 'left' :
-        translateY.value > 0 ? 'down' : 'up';
+    onEnd: () => {  
+      const direction = 
+        Math.abs(translateX.value) > SWIPE_THRESHOLD
+          ? (translateX.value > 0 ? 'right' : 'left')
+          : (translateY.value > 0 ? 'down' : 'up');
   
       if (
-        Math.abs(translateX.value) < SWIPE_THRESHOLD &&
-        Math.abs(translateY.value) < SWIPE_THRESHOLD_HEIGHT
+        Math.abs(translateX.value) > SWIPE_THRESHOLD || 
+        Math.abs(translateY.value) > SWIPE_THRESHOLD_HEIGHT
       ) {
-        console.log('onEnd', originalText);
-        runOnJS(resetCardText)(index, originalText);
-      } else {
         runOnJS(handleSwipe)(direction);
+      } else {
+        runOnJS(resetCardText)(index);
       }
+  
       translateX.value = withSpring(0);
       translateY.value = withSpring(0);
     },
-    });
-
+  });
+    
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: translateX.value },
