@@ -56,48 +56,48 @@ export const InputScreen = ({ navigation, route }) => {
       blurRadius={6}
     >
       <SafeAreaView style={{ flex: 1 }}>
-      <Container>
-        <BackButton onPress={() => navigation.goBack()}>
-          <BackButtonImage source={Images.back_icon} />
-        </BackButton>
-        <HeaderText>Input Page</HeaderText>
-        <FormView>
-          <Formik
-            initialValues={{ words: "" }}
-            validationSchema={wordValidationSchema}
-            onSubmit={handleFormSubmit}
-          >
-            {({ values, handleChange, handleSubmit, handleBlur }) => (
-              <SignupKeyboardAvoiding enableOnAndroid={true}>
-                <TextInput
-                  name="words"
-                  placeholder="Enter words"
-                  autoCapitalize="none"
-                  keyboardType="default"
-                  autoFocus={true}
-                  value={values.words}
-                  onChangeText={handleChange("words")}
-                  onBlur={handleBlur("words")}
-                />
-                <BottomTextWhite>{text}</BottomTextWhite>
-                <GeneralButton onPress={() => handleSubmit()}>
-                  <GeneralButtonText>Add Words</GeneralButtonText>
-                </GeneralButton>
-              </SignupKeyboardAvoiding>
+        <Container>
+          <BackButton onPress={() => navigation.goBack()}>
+            <BackButtonImage source={Images.back_icon} />
+          </BackButton>
+          <HeaderText>Input Page</HeaderText>
+          <FormView>
+            <Formik
+              initialValues={{ words: "" }}
+              validationSchema={wordValidationSchema}
+              onSubmit={handleFormSubmit}
+            >
+              {({ values, handleChange, handleSubmit, handleBlur }) => (
+                <SignupKeyboardAvoiding enableOnAndroid={true}>
+                  <TextInput
+                    name="words"
+                    placeholder="Enter words"
+                    autoCapitalize="none"
+                    keyboardType="default"
+                    autoFocus={true}
+                    value={values.words}
+                    onChangeText={handleChange("words")}
+                    onBlur={handleBlur("words")}
+                  />
+                  <BottomTextWhite>{text}</BottomTextWhite>
+                  <GeneralButton onPress={() => handleSubmit()}>
+                    <GeneralButtonText>Add Words</GeneralButtonText>
+                  </GeneralButton>
+                </SignupKeyboardAvoiding>
+              )}
+            </Formik>
+            <HeaderText>Last Added Words</HeaderText>
+            {loading ? (
+              <LoadingIndicator />
+            ) : (
+              <ScrollContainer>
+                {wordsList.map((word, index) => (
+                  <BottomTextWhite key={index}>{word}</BottomTextWhite>
+                ))}
+              </ScrollContainer>
             )}
-          </Formik>
-          <HeaderText>Last Added Words</HeaderText>
-          {loading ? (
-            <LoadingIndicator />
-          ) : (
-            <ScrollContainer>
-              {wordsList.map((word, index) => (
-                <BottomTextWhite key={index}>{word}</BottomTextWhite>
-              ))}
-            </ScrollContainer>
-          )}
-        </FormView>
-      </Container>
+          </FormView>
+        </Container>
       </SafeAreaView>
     </ImageBackground>
   );

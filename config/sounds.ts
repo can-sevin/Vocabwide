@@ -17,7 +17,7 @@ export const playSound = async (soundKey: keyof typeof Sounds) => {
   });
 
   const { sound } = await Audio.Sound.createAsync(Sounds[soundKey]);
-  
+
   try {
     await sound.playAsync();
   } catch (error) {

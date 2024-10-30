@@ -170,7 +170,9 @@ export const SignupScreen = ({ navigation }) => {
                     <GeneralButton
                       onPress={() => handleSubmit()}
                       style={{
-                        backgroundColor: isFormValid ? Colors.main_yellow : Colors.LighterGray2,
+                        backgroundColor: isFormValid
+                          ? Colors.main_yellow
+                          : Colors.LighterGray2,
                       }}
                       disabled={!isFormValid}
                     >

@@ -217,10 +217,13 @@ export const HomeScreen = ({ uid, navigation }) => {
               <HomePracticeButton
                 onPress={handlePracticePress}
                 style={{
-                  backgroundColor: wordNum >= 10 ? Colors.main_yellow : Colors.LighterGray2,
+                  backgroundColor:
+                    wordNum >= 10 ? Colors.main_yellow : Colors.LighterGray2,
                 }}
               >
-                <HomePracticeButtonText style={{color: wordNum >= 10 ? Colors.white : Colors.black}}>
+                <HomePracticeButtonText
+                  style={{ color: wordNum >= 10 ? Colors.white : Colors.black }}
+                >
                   Practice
                 </HomePracticeButtonText>
               </HomePracticeButton>

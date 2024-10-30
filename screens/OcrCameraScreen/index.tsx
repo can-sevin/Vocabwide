@@ -1,33 +1,43 @@
-import React, { useRef, useState } from 'react';
-import { Alert, Button, Pressable, TouchableOpacity, Text, View, SafeAreaView } from 'react-native';
-import LottieView from 'lottie-react-native';
-import * as ImagePicker from 'expo-image-picker';
-import * as ImageManipulator from 'expo-image-manipulator';
-import textRecognition, { TextRecognitionScript } from '@react-native-ml-kit/text-recognition';
-import { ref, get, set } from 'firebase/database';
-import translate from 'translate-google-api';
+import React, { useRef, useState } from "react";
+import {
+  Alert,
+  Button,
+  Pressable,
+  TouchableOpacity,
+  Text,
+  View,
+  SafeAreaView,
+} from "react-native";
+import LottieView from "lottie-react-native";
+import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
+import textRecognition, {
+  TextRecognitionScript,
+} from "@react-native-ml-kit/text-recognition";
+import { ref, get, set } from "firebase/database";
+import translate from "translate-google-api";
 import { auth, database, Images, Flags } from "../../config";
-import { 
-  Container, 
-  CameraContainer, 
-  BackButtonContainer, 
-  BackButtonIcon, 
-  ControlPanel, 
-  ControlPanelButtons, 
-  LottieAnimation, 
-  GalleryButton, 
-  WordView, 
-  WordText, 
-  HomeBtmView, 
-  ScrollViewContainer, 
+import {
+  Container,
+  CameraContainer,
+  BackButtonContainer,
+  BackButtonIcon,
+  ControlPanel,
+  ControlPanelButtons,
+  LottieAnimation,
+  GalleryButton,
+  WordView,
+  WordText,
+  HomeBtmView,
+  ScrollViewContainer,
   WordContainer,
   BlurryView,
-  ErrorMessageView
-} from './style';
-import ModalOcr from '../../components/ModalOcr';
-import { FadeInDown } from 'react-native-reanimated';
-import { LoadingIndicator } from '../../components';
-import { useCameraPermissions } from 'expo-camera';
+  ErrorMessageView,
+} from "./style";
+import ModalOcr from "../../components/ModalOcr";
+import { FadeInDown } from "react-native-reanimated";
+import { LoadingIndicator } from "../../components";
+import { useCameraPermissions } from "expo-camera";
 
 export const OcrScreen = ({ navigation, route }) => {
   const mainFlag = route.params.main as keyof typeof Flags;
@@ -179,39 +189,42 @@ export const OcrScreen = ({ navigation, route }) => {
 
       let script: TextRecognitionScript | null = null;
       switch (family) {
-        case 'Chinese':
+        case "Chinese":
           script = TextRecognitionScript.CHINESE;
           break;
-        case 'Japanese':
+        case "Japanese":
           script = TextRecognitionScript.JAPANESE;
           break;
-        case 'Korean':
+        case "Korean":
           script = TextRecognitionScript.KOREAN;
           break;
-        case 'Devanagari':
+        case "Devanagari":
           script = TextRecognitionScript.DEVANAGARI;
           break;
-        case 'Latin':
+        case "Latin":
           script = TextRecognitionScript.LATIN;
           break;
         default:
           setError("The language family doesn't support text recognition.");
           setLoading(false);
-          return; 
+          return;
       }
 
       if (!script) {
         setError("Unsupported script for this language.");
         setLoading(false);
         return;
-      }  
+      }
 
-      const result = await textRecognition.recognize(manipulatedImage.uri, script);
+      const result = await textRecognition.recognize(
+        manipulatedImage.uri,
+        script
+      );
       setResultText(result.text);
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.error('Text recognition failed:', error);
+      console.error("Text recognition failed:", error);
     }
   };
 
@@ -233,83 +246,92 @@ export const OcrScreen = ({ navigation, route }) => {
   return (
     <Container>
       <SafeAreaView style={{ flex: 1 }}>
-      {loading && (
-        <BlurryView>
-          <LoadingIndicator />
-        </BlurryView>
-      )}
+        {loading && (
+          <BlurryView>
+            <LoadingIndicator />
+          </BlurryView>
+        )}
 
-      {error && (
-        <BlurryView>
-          <ErrorMessageView>
-            <Text>{error}</Text>
-            <Button title="Back" onPress={() => navigation.goBack()} />
-          </ErrorMessageView>
-        </BlurryView>
-      )}
+        {error && (
+          <BlurryView>
+            <ErrorMessageView>
+              <Text>{error}</Text>
+              <Button title="Back" onPress={() => navigation.goBack()} />
+            </ErrorMessageView>
+          </BlurryView>
+        )}
 
-      {!error && (
-        <CameraContainer
-          facing={'back'}
-          autofocus={'on'}
-          flash={'auto'}
-          ref={ref => setCamera(ref as any)}
-        >
-          <BackButtonContainer onPress={() => navigation.goBack()}>
-            <BackButtonIcon source={Images.back_icon} />
-          </BackButtonContainer>
-          <ControlPanel>
-            <ControlPanelButtons>
-              <TouchableOpacity onPress={takePhotoHandler}>
-                <LottieAnimation
-                  ref={cameraAnimationRef}
-                  source={Images.lottie_capture}
-                  loop={false}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={pickImageHandler}>
-                <GalleryButton source={Images.gallery_btn} />
-              </TouchableOpacity>
-            </ControlPanelButtons>
+        {!error && (
+          <CameraContainer
+            facing={"back"}
+            autofocus={"on"}
+            flash={"auto"}
+            ref={(ref) => setCamera(ref as any)}
+          >
+            <BackButtonContainer onPress={() => navigation.goBack()}>
+              <BackButtonIcon source={Images.back_icon} />
+            </BackButtonContainer>
+            <ControlPanel>
+              <ControlPanelButtons>
+                <TouchableOpacity onPress={takePhotoHandler}>
+                  <LottieAnimation
+                    ref={cameraAnimationRef}
+                    source={Images.lottie_capture}
+                    loop={false}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={pickImageHandler}>
+                  <GalleryButton source={Images.gallery_btn} />
+                </TouchableOpacity>
+              </ControlPanelButtons>
 
-            {resultText !== null && (
-              resultText.split(/\s+/).length > 9 ? (
-                <HomeBtmView>
-                  <ScrollViewContainer>
-                    <WordContainer>
-                      {resultText.split(/\s+/).map((result, index) => (
-                        <WordView key={index} isSelected={selectedIndices.includes(index)} entering={FadeInDown.duration(1000).delay(0)}>
-                          <Pressable onPress={() => selectedWords(result, index)}>
-                            <WordText>{result}</WordText>
-                          </Pressable>
-                        </WordView>
-                      ))}
-                    </WordContainer>
-                  </ScrollViewContainer>
-                </HomeBtmView>
-              ) : (
-                <HomeBtmView>
-                  {resultText.split(/\s+/).map((result, index) => (
-                    <WordView key={index} isSelected={selectedIndices.includes(index)} entering={FadeInDown.duration(1000).delay(0)}>
-                      <Pressable onPress={() => selectedWords(result, index)}>
-                        <WordText>{result}</WordText>
-                      </Pressable>
-                    </WordView>
-                  ))}
-                </HomeBtmView>
-              )
-            )}
-          </ControlPanel>
-        </CameraContainer>
-      )}
+              {resultText !== null &&
+                (resultText.split(/\s+/).length > 9 ? (
+                  <HomeBtmView>
+                    <ScrollViewContainer>
+                      <WordContainer>
+                        {resultText.split(/\s+/).map((result, index) => (
+                          <WordView
+                            key={index}
+                            isSelected={selectedIndices.includes(index)}
+                            entering={FadeInDown.duration(1000).delay(0)}
+                          >
+                            <Pressable
+                              onPress={() => selectedWords(result, index)}
+                            >
+                              <WordText>{result}</WordText>
+                            </Pressable>
+                          </WordView>
+                        ))}
+                      </WordContainer>
+                    </ScrollViewContainer>
+                  </HomeBtmView>
+                ) : (
+                  <HomeBtmView>
+                    {resultText.split(/\s+/).map((result, index) => (
+                      <WordView
+                        key={index}
+                        isSelected={selectedIndices.includes(index)}
+                        entering={FadeInDown.duration(1000).delay(0)}
+                      >
+                        <Pressable onPress={() => selectedWords(result, index)}>
+                          <WordText>{result}</WordText>
+                        </Pressable>
+                      </WordView>
+                    ))}
+                  </HomeBtmView>
+                ))}
+            </ControlPanel>
+          </CameraContainer>
+        )}
 
-      <ModalOcr
-        visible={modalVisible}
-        selectedWord={selectedWord}
-        translatedWord={translatedWord}
-        onSave={saveWordPair}
-        onCancel={() => setModalVisible(false)}
-      />
+        <ModalOcr
+          visible={modalVisible}
+          selectedWord={selectedWord}
+          translatedWord={translatedWord}
+          onSave={saveWordPair}
+          onCancel={() => setModalVisible(false)}
+        />
       </SafeAreaView>
     </Container>
   );

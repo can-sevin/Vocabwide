@@ -68,7 +68,6 @@ export const LoginScreen = ({ navigation }) => {
               handleSubmit,
               handleBlur,
             }) => {
-
               const isFormValid =
                 values.email !== "" &&
                 values.password !== "" &&
@@ -121,7 +120,9 @@ export const LoginScreen = ({ navigation }) => {
                     <GeneralButton
                       onPress={() => handleSubmit()}
                       style={{
-                        backgroundColor: isFormValid ? Colors.main_yellow : Colors.LighterGray2,
+                        backgroundColor: isFormValid
+                          ? Colors.main_yellow
+                          : Colors.LighterGray2,
                       }}
                       disabled={!isFormValid}
                     >
@@ -133,9 +134,7 @@ export const LoginScreen = ({ navigation }) => {
             }}
           </Formik>
           <>
-            {errorState ? (
-              <ErrorText>{errorState}</ErrorText>
-            ) : null}
+            {errorState ? <ErrorText>{errorState}</ErrorText> : null}
             <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
               <LoginBtmText>Create a new account?</LoginBtmText>
             </TouchableOpacity>

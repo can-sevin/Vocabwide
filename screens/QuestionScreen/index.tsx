@@ -1,14 +1,25 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { SafeAreaView, View, Text, Animated } from 'react-native';
-import { Container, CardContainer, QuestionContainer, ModalText, FinishText, TopView, BottomView, LeftView, RightView, TextStyled } from './style';
-import { Card } from '../../components/Card';
-import { BackButton } from '../../components/BackButton';
-import { Images, Sounds } from '../../config';
-import { Audio } from 'expo-av';
-import { fetchTranslations } from '../../config/gpt';
-import LottieView from 'lottie-react-native';
-import { deleteCorrectWordsFromFirebase } from '../../firebase/database';
-import { LoadingIndicator } from '../../components/LoadingIndicator';
+import React, { useEffect, useState, useRef } from "react";
+import { SafeAreaView, View, Text, Animated } from "react-native";
+import {
+  Container,
+  CardContainer,
+  QuestionContainer,
+  ModalText,
+  FinishText,
+  TopView,
+  BottomView,
+  LeftView,
+  RightView,
+  TextStyled,
+} from "./style";
+import { Card } from "../../components/Card";
+import { BackButton } from "../../components/BackButton";
+import { Images, Sounds } from "../../config";
+import { Audio } from "expo-av";
+import { fetchTranslations } from "../../config/gpt";
+import LottieView from "lottie-react-native";
+import { deleteCorrectWordsFromFirebase } from "../../firebase/database";
+import { LoadingIndicator } from "../../components/LoadingIndicator";
 
 export const QuestionScreen = ({ navigation, route }) => {
   const { target, main, wordsList, uid } = route.params;
@@ -18,18 +29,18 @@ export const QuestionScreen = ({ navigation, route }) => {
       originalText: word,
       text: word,
       removing: false,
-      top: 'TopWord', 
-      bottom: 'BottomWord',
-      left: 'LeftWord',
-      right: 'RightWord',
+      top: "TopWord",
+      bottom: "BottomWord",
+      left: "LeftWord",
+      right: "RightWord",
     }))
   );
-  
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [timer, setTimer] = useState(10);
   const [loading, setLoading] = useState(true);
   const [showFinish, setShowFinish] = useState(false);
-  const [timerColor, setTimerColor] = useState('black');
+  const [timerColor, setTimerColor] = useState("black");
   const [correctCount, setCorrectCount] = useState(0);
   const [correctWords, setCorrectWords] = useState<string[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -42,15 +53,20 @@ export const QuestionScreen = ({ navigation, route }) => {
       console.warn(`Ses kaynağı bulunamadı: ${soundKey}`);
       return;
     }
-  
+
     const { sound } = await Audio.Sound.createAsync(soundSource);
     await sound.playAsync();
   };
-    useEffect(() => {
+  useEffect(() => {
     const getTranslations = async () => {
       try {
         setLoading(true);
-        await fetchTranslations(wordsList.map(([word]) => word), target, setCards, setLoading);
+        await fetchTranslations(
+          wordsList.map(([word]) => word),
+          target,
+          setCards,
+          setLoading
+        );
         setLoading(false);
       } catch (error) {
         console.error("Error fetching translations: ", error);
@@ -90,7 +106,7 @@ export const QuestionScreen = ({ navigation, route }) => {
       handleDeleteWords();
     }
   }, [showFinish]);
-  
+
   const animateTimer = () => {
     timerScale.setValue(1);
     Animated.spring(timerScale, {
@@ -101,7 +117,7 @@ export const QuestionScreen = ({ navigation, route }) => {
   };
 
   const handleNextCard = () => {
-    setTimerColor('black');
+    setTimerColor("black");
     if (currentIndex < cards.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
       setTimer(10);
@@ -114,58 +130,66 @@ export const QuestionScreen = ({ navigation, route }) => {
     const card = cards[currentIndex];
     const selectedWord = String(card[direction]).trim().toLowerCase();
     const correctWord = String(card.correct).trim().toLowerCase();
-    
-    console.log('selectedWord', selectedWord);
-    console.log('correctWord', correctWord);
-    
+
+    console.log("selectedWord", selectedWord);
+    console.log("correctWord", correctWord);
+
     if (selectedWord === correctWord && correctWord) {
       playSound("correct");
-      setTimerColor('green');
+      setTimerColor("green");
       setCorrectCount((prev) => prev + 1);
-      setCorrectWords((prev) => [...prev, card.text]);  
+      setCorrectWords((prev) => [...prev, card.text]);
       setTimeout(() => {
-        setTimerColor('black');
+        setTimerColor("black");
         handleNextCard();
       }, 1000);
       return true;
     } else {
       playSound("error");
-      setTimerColor('red');
-      setTimeout(() => setTimerColor('black'), 500);
+      setTimerColor("red");
+      setTimeout(() => setTimerColor("black"), 500);
       return false;
     }
   };
-    
+
   const updateCardText = (index: any, direction: any) => {
     setCards((prevCards: any[]) =>
-      prevCards.map((card: any, i: any) => 
+      prevCards.map((card: any, i: any) =>
         i === index ? { ...card, text: direction } : card
       )
     );
   };
-  
-  
-const resetCardText = (index: any) => {
-  const originalText = originalTexts.current[index];
-  setCards((prevCards: any[]) =>
-    prevCards.map((card: any, i: any) =>
-      i === index ? { ...card, text: originalText } : card
-    )
-  );
-};    
+
+  const resetCardText = (index: any) => {
+    const originalText = originalTexts.current[index];
+    setCards((prevCards: any[]) =>
+      prevCards.map((card: any, i: any) =>
+        i === index ? { ...card, text: originalText } : card
+      )
+    );
+  };
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Container>
         <BackButton navigation={navigation} />
         {loading ? (
-          <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, marginHorizontal: 64 }}>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              flex: 1,
+              marginHorizontal: 64,
+            }}
+          >
             <LottieView
               style={{ width: 150, height: 150 }}
               source={Images.lottie_recognition}
               loop={true}
               autoPlay
             />
-            <ModalText>Test prepare just wait approximately 10 sec...</ModalText>
+            <ModalText>
+              Test prepare just wait approximately 10 sec...
+            </ModalText>
           </View>
         ) : showFinish ? (
           isDeleting ? (
@@ -178,11 +202,22 @@ const resetCardText = (index: any) => {
         ) : (
           <>
             <QuestionContainer>
-              <ModalText>Match the words with their correct meanings 🧩</ModalText>
-              <ModalText>{currentIndex + 1} / {originalTexts.current.length} questions completed</ModalText>
+              <ModalText>
+                Match the words with their correct meanings 🧩
+              </ModalText>
+              <ModalText>
+                {currentIndex + 1} / {originalTexts.current.length} questions
+                completed
+              </ModalText>
             </QuestionContainer>
-            <View style={{ alignItems: 'center', marginVertical: 10 }}>
-              <Animated.Text style={{ fontSize: 24, color: timerColor, transform: [{ scale: timerScale }] }}>
+            <View style={{ alignItems: "center", marginVertical: 10 }}>
+              <Animated.Text
+                style={{
+                  fontSize: 24,
+                  color: timerColor,
+                  transform: [{ scale: timerScale }],
+                }}
+              >
                 {timer}
               </Animated.Text>
             </View>
@@ -204,10 +239,18 @@ const resetCardText = (index: any) => {
                   isCorrect={(direction: any) => checkAnswer(direction)}
                 />
               )}
-              <TopView><TextStyled>{cards[currentIndex].top}</TextStyled></TopView>
-              <BottomView><TextStyled>{cards[currentIndex].bottom}</TextStyled></BottomView>
-              <LeftView><TextStyled>{cards[currentIndex].left}</TextStyled></LeftView>
-              <RightView><TextStyled>{cards[currentIndex].right}</TextStyled></RightView>
+              <TopView>
+                <TextStyled>{cards[currentIndex].top}</TextStyled>
+              </TopView>
+              <BottomView>
+                <TextStyled>{cards[currentIndex].bottom}</TextStyled>
+              </BottomView>
+              <LeftView>
+                <TextStyled>{cards[currentIndex].left}</TextStyled>
+              </LeftView>
+              <RightView>
+                <TextStyled>{cards[currentIndex].right}</TextStyled>
+              </RightView>
             </CardContainer>
           </>
         )}
