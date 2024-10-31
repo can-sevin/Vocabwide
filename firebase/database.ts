@@ -141,6 +141,7 @@ export const handleAddingWords = async (
 
     if (uniqueNewWords.length === 0) {
       setText("No new unique words to add.");
+      setLoading(false);
       return;
     }
 
@@ -152,13 +153,12 @@ export const handleAddingWords = async (
 
       if (
         !translatedWords ||
-        translatedWords.length !== uniqueNewWords.length
+        translatedWords.some((translation: any) => !translation)
       ) {
-        setText("Error translating words.");
+        setText("Error translating words. Some translations are undefined.");
+        setLoading(false);
         return;
       }
-
-      console.log('NE BU LA', translatedWords, targetFlag)
 
       const translatedSnapshot = await get(translatedWordsRef);
       let currentTranslatedWords = translatedSnapshot.exists()
@@ -174,29 +174,21 @@ export const handleAddingWords = async (
         ...currentTranslatedWords,
         ...translatedWords,
       ];
-      
-      while (updatedOriginalWords.length > updatedTranslatedWords.length) {
-        updatedTranslatedWords.push("undefined");
-      }
-      
-      while (updatedTranslatedWords.length > updatedOriginalWords.length) {
-        updatedOriginalWords.push("undefined");
-      }
-      
+
       const formattedWordsList = updatedOriginalWords.map(
         (word, index) => `${word} -> ${updatedTranslatedWords[index]}`
       );
-      
+
       console.log("Final formatted list:", formattedWordsList);
-      
+
       await set(originalWordsRef, updatedOriginalWords);
       await set(translatedWordsRef, updatedTranslatedWords);
-            
+
       setWordsList(formattedWordsList.reverse());
       setText(`Words successfully added: ${uniqueNewWords.join(", ")}`);
-      setLoading(false);
     } catch (translateError) {
       setText("Error translating words.");
+    } finally {
       setLoading(false);
     }
   } catch (error) {
@@ -327,28 +319,49 @@ export const saveWordPairOcr = async (mainFlag: string, targetFlag: string, sele
   }
 };
 
-export const deleteCorrectWordsFromFirebase = async (uid: any, correctWords: string | any[], mainFlag: any, targetFlag: any) => {
+export const deleteCorrectWordsFromFirebase = async (
+  uid: string,
+  correctWords: string[],
+  mainFlag: string,
+  targetFlag: string,
+  setLoading: (loading: boolean) => void
+) => {
+  setLoading(true);
+
   const originalWordsRef = ref(database, `users/${uid}/${mainFlag}${targetFlag}originalWords`);
   const translatedWordsRef = ref(database, `users/${uid}/${mainFlag}${targetFlag}translatedWords`);
 
-  console.log('NE GELİİOO', correctWords)
+  console.log("Attempting to delete words:", correctWords);
+
   try {
     const originalSnapshot = await get(originalWordsRef);
     if (originalSnapshot.exists()) {
       const currentOriginalWords = originalSnapshot.val();
-      const updatedOriginalWords = currentOriginalWords.filter((word: any) => !correctWords.includes(word));
+      const updatedOriginalWords = Object.fromEntries(
+        Object.entries(currentOriginalWords).filter(
+          ([word]) => !correctWords.includes(word)
+        )
+      );
       await set(originalWordsRef, updatedOriginalWords);
+      console.log("Updated original words:", updatedOriginalWords);
     }
 
     const translatedSnapshot = await get(translatedWordsRef);
     if (translatedSnapshot.exists()) {
       const currentTranslatedWords = translatedSnapshot.val();
-      const updatedTranslatedWords = currentTranslatedWords.filter((word: any) => !correctWords.includes(word));
+      const updatedTranslatedWords = Object.fromEntries(
+        Object.entries(currentTranslatedWords).filter(
+          ([word]) => !correctWords.includes(word)
+        )
+      );
       await set(translatedWordsRef, updatedTranslatedWords);
+      console.log("Updated translated words:", updatedTranslatedWords);
     }
 
-    console.log("Correct words successfully deleted from Firebase.");
+    console.log("All correct words successfully deleted from Firebase.");
   } catch (error) {
     console.error("Error deleting correct words from Firebase:", error);
+  } finally {
+    setLoading(false);
   }
 };

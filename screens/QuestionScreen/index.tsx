@@ -19,7 +19,6 @@ import { Audio } from "expo-av";
 import { fetchTranslations } from "../../config/gpt";
 import LottieView from "lottie-react-native";
 import { deleteCorrectWordsFromFirebase } from "../../firebase/database";
-import { LoadingIndicator } from "../../components/LoadingIndicator";
 
 export const QuestionScreen = ({ navigation, route }) => {
   const { target, main, wordsList, uid } = route.params;
@@ -57,6 +56,7 @@ export const QuestionScreen = ({ navigation, route }) => {
     const { sound } = await Audio.Sound.createAsync(soundSource);
     await sound.playAsync();
   };
+
   useEffect(() => {
     const getTranslations = async () => {
       try {
@@ -97,7 +97,8 @@ export const QuestionScreen = ({ navigation, route }) => {
 
   const handleDeleteWords = async () => {
     setIsDeleting(true);
-    await deleteCorrectWordsFromFirebase(uid, correctWords, main, target);
+    await new Promise(resolve => setTimeout(resolve, 5000)); // 5 saniye bekleme
+    await deleteCorrectWordsFromFirebase(uid, correctWords, main, target, setLoading);
     setIsDeleting(false);
   };
 
@@ -168,6 +169,7 @@ export const QuestionScreen = ({ navigation, route }) => {
       )
     );
   };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Container>
@@ -188,15 +190,23 @@ export const QuestionScreen = ({ navigation, route }) => {
               autoPlay
             />
             <ModalText>
-              Test prepare just wait approximately 10 sec...
+              Test preparing, please wait approximately 10 sec...
             </ModalText>
           </View>
         ) : showFinish ? (
           isDeleting ? (
-            <LoadingIndicator />
+            <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
+              <LottieView
+                style={{ width: 200, height: 200 }}
+                source={Images.lottie_loading}
+                loop={true}
+                autoPlay
+              />
+              <ModalText>Deleting correct words, please wait...</ModalText>
+            </View>
           ) : (
             <FinishText>
-              {`Doğru: ${correctCount}/${originalTexts.current.length} kelime`}
+              {`Correct: ${correctCount}/${originalTexts.current.length} words`}
             </FinishText>
           )
         ) : (
