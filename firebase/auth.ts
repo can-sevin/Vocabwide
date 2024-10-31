@@ -1,6 +1,7 @@
 // firebaseHelpers.ts
 import {
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth, database } from "../config";
@@ -49,6 +50,23 @@ export const registerUser = async (
     setLoading(false);
   } catch (error) {
     setErrorState(error.message);
+    setLoading(false);
+  }
+};
+
+export const resetPassword = async (
+  email: string,
+  setLoading: (loading: boolean) => void,
+  setErrorState: (error: string) => void,
+  setSuccessMessage: (message: string) => void
+) => {
+  setLoading(true);
+  try {
+    await sendPasswordResetEmail(auth, email);
+    setLoading(false);
+    setSuccessMessage("Password reset email sent. Please check your inbox.");
+  } catch (error) {
+    setErrorState("Failed to send password reset email. Please try again.");
     setLoading(false);
   }
 };

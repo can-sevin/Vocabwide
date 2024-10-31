@@ -10,5 +10,7 @@
 # react-native-reanimated
 -keep class com.swmansion.reanimated.** { *; }
 -keep class com.facebook.react.turbomodule.** { *; }
+-keep class org.slf4j.** { *; }
+-dontwarn org.slf4j.**
 
 # Add any project specific keep options here:

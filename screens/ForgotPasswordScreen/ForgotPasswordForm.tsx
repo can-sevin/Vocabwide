@@ -17,6 +17,7 @@ type ForgotPasswordFormProps = {
   onSubmit: (values: { email: string }) => void;
   loading: boolean;
   errorState: string;
+  successMessage: string; // Add successMessage to the props
   navigation: any;
 };
 
@@ -24,6 +25,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
   onSubmit,
   loading,
   errorState,
+  successMessage, // Destructure successMessage
   navigation,
 }) => (
   <Formik
@@ -48,6 +50,10 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
 
         {errorState !== "" && (
           <FormErrorMessage error={errorState} visible={true} />
+        )}
+
+        {successMessage !== "" && (
+          <FormErrorMessage error={successMessage} visible={true} />
         )}
 
         {loading ? (
