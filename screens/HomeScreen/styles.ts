@@ -91,7 +91,7 @@ export const HomePracticeButton = styled.TouchableOpacity`
   align-self: center;
   justify-content: center;
   align-items: center;
-  margin-vertical: 36px;
+  margin-vertical: 8px;
 `;
 
 export const HomePracticeButtonText = styled.Text`

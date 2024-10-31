@@ -2,7 +2,7 @@ import styled from "styled-components/native";
 import { Colors } from "../../config";
 
 export const LanguageScrollView = styled.ScrollView`
-  max-height: 280px;
+  flex: 1;
 `;
 
 export const LanguageInsideAlphabetView = styled.View`

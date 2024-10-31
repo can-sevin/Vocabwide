@@ -1,5 +1,13 @@
-import React, { useRef, useState } from "react";
-import { Alert, Button, Pressable, TouchableOpacity, Text, View, SafeAreaView } from "react-native";
+import React, { useRef, useState, useEffect } from "react";
+import {
+  Alert,
+  Button,
+  Pressable,
+  TouchableOpacity,
+  Text,
+  View,
+  SafeAreaView,
+} from "react-native";
 import LottieView from "lottie-react-native";
 import { auth, Images, Flags } from "../../config";
 import {
@@ -41,12 +49,31 @@ export const OcrScreen = ({ navigation, route }) => {
 
   const userId = auth.currentUser?.uid;
 
+  // Step 1: Check the language family
+  useEffect(() => {
+    const family = Flags[mainFlag]?.family;
+    const supportedFamilies = [
+      "Chinese",
+      "Japanese",
+      "Korean",
+      "Devanagari",
+      "Latin",
+    ];
+
+    if (!supportedFamilies.includes(family)) {
+      setError("The language family doesn't support text recognition.");
+      setTimeout(() => navigation.goBack(), 3000); // Go back after 3 seconds
+    }
+  }, [mainFlag, navigation]);
+
   if (!permission) return <View />;
 
   if (!permission.granted) {
     return (
       <Container>
-        <Text style={{ textAlign: "center", paddingBottom: 10 }}>We need your permission to show the camera</Text>
+        <Text style={{ textAlign: "center", paddingBottom: 10 }}>
+          We need your permission to show the camera
+        </Text>
         <Button onPress={requestPermission} title="grant permission" />
       </Container>
     );
@@ -71,16 +98,45 @@ export const OcrScreen = ({ navigation, route }) => {
         )}
 
         {!error && (
-          <CameraContainer facing="back" autofocus="on" flash="auto" ref={(ref) => setCamera(ref as any)}>
+          <CameraContainer
+            facing="back"
+            autofocus="on"
+            flash="auto"
+            ref={(ref) => setCamera(ref as any)}
+          >
             <BackButtonContainer onPress={() => navigation.goBack()}>
               <BackButtonIcon source={Images.back_icon} />
             </BackButtonContainer>
             <ControlPanel>
               <ControlPanelButtons>
-                <TouchableOpacity onPress={() => takePhotoHandler(camera, cameraAnimationRef, setLoading, mainFlag, setResultText)}>
-                  <LottieAnimation ref={cameraAnimationRef} source={Images.lottie_capture} loop={false} />
+                <TouchableOpacity
+                  onPress={() =>
+                    takePhotoHandler(
+                      camera,
+                      cameraAnimationRef,
+                      setLoading,
+                      mainFlag,
+                      setResultText
+                    )
+                  }
+                >
+                  <LottieAnimation
+                    ref={cameraAnimationRef}
+                    source={Images.lottie_capture}
+                    loop={false}
+                  />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => pickImageHandler(setLoading, setError, cameraAnimationRef, mainFlag, setResultText)}>
+                <TouchableOpacity
+                  onPress={() =>
+                    pickImageHandler(
+                      setLoading,
+                      setError,
+                      cameraAnimationRef,
+                      mainFlag,
+                      setResultText
+                    )
+                  }
+                >
                   <GalleryButton source={Images.gallery_btn} />
                 </TouchableOpacity>
               </ControlPanelButtons>
@@ -90,8 +146,23 @@ export const OcrScreen = ({ navigation, route }) => {
                   <ScrollViewContainer>
                     <WordContainer>
                       {resultText.split(/\s+/).map((result, index) => (
-                        <WordView key={index} isSelected={selectedIndices.includes(index)}>
-                          <Pressable onPress={() => selectedWords(result, index, targetFlag, setSelectedWord, setTranslatedWord, setLoading, setModalVisible)}>
+                        <WordView
+                          key={index}
+                          isSelected={selectedIndices.includes(index)}
+                        >
+                          <Pressable
+                            onPress={() =>
+                              selectedWords(
+                                result,
+                                index,
+                                targetFlag,
+                                setSelectedWord,
+                                setTranslatedWord,
+                                setLoading,
+                                setModalVisible
+                              )
+                            }
+                          >
                             <WordText>{result}</WordText>
                           </Pressable>
                         </WordView>
@@ -108,7 +179,20 @@ export const OcrScreen = ({ navigation, route }) => {
           visible={modalVisible}
           selectedWord={selectedWord}
           translatedWord={translatedWord}
-          onSave={() => saveWordPair(selectedWord, translatedWord, mainFlag, targetFlag, userId, resultText, setModalVisible, setSelectedWord, setTranslatedWord, setSelectedIndices)}
+          onSave={() =>
+            saveWordPair(
+              selectedWord,
+              translatedWord,
+              mainFlag,
+              targetFlag,
+              userId,
+              resultText,
+              setModalVisible,
+              setSelectedWord,
+              setTranslatedWord,
+              setSelectedIndices
+            )
+          }
           onCancel={() => setModalVisible(false)}
         />
       </SafeAreaView>
