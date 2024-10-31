@@ -158,6 +158,8 @@ export const handleAddingWords = async (
         return;
       }
 
+      console.log('NE BU LA', translatedWords, targetFlag)
+
       const translatedSnapshot = await get(translatedWordsRef);
       let currentTranslatedWords = translatedSnapshot.exists()
         ? translatedSnapshot.val()
@@ -172,13 +174,24 @@ export const handleAddingWords = async (
         ...currentTranslatedWords,
         ...translatedWords,
       ];
-
-      await set(originalWordsRef, updatedOriginalWords);
-      await set(translatedWordsRef, updatedTranslatedWords);
-
+      
+      while (updatedOriginalWords.length > updatedTranslatedWords.length) {
+        updatedTranslatedWords.push("undefined");
+      }
+      
+      while (updatedTranslatedWords.length > updatedOriginalWords.length) {
+        updatedOriginalWords.push("undefined");
+      }
+      
       const formattedWordsList = updatedOriginalWords.map(
         (word, index) => `${word} -> ${updatedTranslatedWords[index]}`
       );
+      
+      console.log("Final formatted list:", formattedWordsList);
+      
+      await set(originalWordsRef, updatedOriginalWords);
+      await set(translatedWordsRef, updatedTranslatedWords);
+            
       setWordsList(formattedWordsList.reverse());
       setText(`Words successfully added: ${uniqueNewWords.join(", ")}`);
       setLoading(false);
@@ -318,6 +331,7 @@ export const deleteCorrectWordsFromFirebase = async (uid: any, correctWords: str
   const originalWordsRef = ref(database, `users/${uid}/${mainFlag}${targetFlag}originalWords`);
   const translatedWordsRef = ref(database, `users/${uid}/${mainFlag}${targetFlag}translatedWords`);
 
+  console.log('NE GELİİOO', correctWords)
   try {
     const originalSnapshot = await get(originalWordsRef);
     if (originalSnapshot.exists()) {

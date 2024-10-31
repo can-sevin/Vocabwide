@@ -45,6 +45,6 @@ export const CancelButtonText = styled.Text`
 
 export const ButtonContainer = styled.View`
   flex-direction: row;
-  justify-content: space-around;
-  width: 80%;
+  justify-content: center;
+  width: 40%;
 `;

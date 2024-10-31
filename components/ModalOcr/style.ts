@@ -19,7 +19,7 @@ export const ModalContent = styled.View`
 export const ModalContentInner = styled.View`
   flexdirection: row;
   justifycontent: space-around;
-  width: 80%;
+  width: 40%;
 `;
 
 export const ModalText = styled.Text`
@@ -31,6 +31,9 @@ export const SaveButton = styled.TouchableOpacity`
   background-color: ${Colors.main_yellow};
   padding: 12px;
   border-radius: 8px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
 `;
 
 export const SaveButtonText = styled.Text`
@@ -41,6 +44,8 @@ export const CancelButton = styled.TouchableOpacity`
   background-color: red;
   padding: 12px;
   border-radius: 8px;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const CancelButtonText = styled.Text`

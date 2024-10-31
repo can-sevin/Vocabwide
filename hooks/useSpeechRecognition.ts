@@ -1,19 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Voice, {
   SpeechRecognizedEvent,
   SpeechResultsEvent,
   SpeechErrorEvent,
-  SpeechVolumeChangeEvent,
 } from "@react-native-voice/voice";
 import translate from "translate-google-api";
 import { Flags, auth, database } from "../config";
 import { ref, get, set } from "firebase/database";
 import { Platform } from "react-native";
 
-export const useSpeechRecognition = (params: {
-  main: string;
-  target: string;
-}) => {
+export const useSpeechRecognition = (params: { main: string; target: string }) => {
   const { main, target } = params;
   const [recognized, setRecognized] = useState("");
   const [pitch, setPitch] = useState("");
@@ -29,31 +25,12 @@ export const useSpeechRecognition = (params: {
   const [translatedWord, setTranslatedWord] = useState<string | null>(null);
 
   useEffect(() => {
-    const onSpeechStart = (e: any) => {
-      setStarted("√");
-    };
-
-    const onSpeechRecognized = (e: SpeechRecognizedEvent) => {
-      setRecognized("√");
-    };
-
-    const onSpeechEnd = (e: any) => {
-      setEnd("√");
-    };
-
-    const onSpeechError = (e: SpeechErrorEvent) => {
-      setError(JSON.stringify(e.error));
-    };
-
-    const onSpeechResults = (e: SpeechResultsEvent) => {
-      const words = e.value ? e.value[0].split(" ") : [];
-      setResults(words);
-    };
-
-    const onSpeechPartialResults = (e: SpeechResultsEvent) => {
-      const words = e.value ? e.value[0].split(" ") : [];
-      setPartialResults(words);
-    };
+    const onSpeechStart = (e: any) => setStarted("√");
+    const onSpeechRecognized = (e: SpeechRecognizedEvent) => setRecognized("√");
+    const onSpeechEnd = (e: any) => setEnd("√");
+    const onSpeechError = (e: SpeechErrorEvent) => setError(JSON.stringify(e.error));
+    const onSpeechResults = (e: SpeechResultsEvent) => setResults(e.value ? e.value[0].split(" ") : []);
+    const onSpeechPartialResults = (e: SpeechResultsEvent) => setPartialResults(e.value ? e.value[0].split(" ") : []);
 
     Voice.onSpeechStart = onSpeechStart;
     Voice.onSpeechRecognized = onSpeechRecognized;
@@ -104,14 +81,6 @@ export const useSpeechRecognition = (params: {
   };
 
   const selectedWords = async (result: string, index: number) => {
-    setSelectedIndices((prevIndices) => {
-      if (prevIndices.includes(index)) {
-        return prevIndices.filter((i) => i !== index);
-      } else {
-        return [...prevIndices, index];
-      }
-    });
-
     try {
       setLoading(true);
       const translation = await translate(result, { to: target });
@@ -125,7 +94,6 @@ export const useSpeechRecognition = (params: {
     }
   };
 
-  // Implementing the `saveWordPair` function
   const saveWordPair = async (
     selectedWord: string | null,
     translatedWord: string | null,
@@ -184,6 +152,12 @@ export const useSpeechRecognition = (params: {
 
       await set(originalWordsRef, updatedOriginalWords);
       await set(translatedWordsRef, updatedTranslatedWords);
+
+      // Kaydedildikten sonra `selectedIndices` güncelle
+      const resultIndex = results.indexOf(selectedWord);
+      if (resultIndex !== -1) {
+        setSelectedIndices((prev) => [...prev, resultIndex]);
+      }
 
       setLoading(false);
       setModalVisible(false);
