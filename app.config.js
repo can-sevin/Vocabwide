@@ -19,7 +19,7 @@ export default {
     },
     assetBundlePatterns: ["**/*"],
     android: {
-      permissions: ["android.permission.RECORD_AUDIO"],
+      permissions: ["android.permission.RECORD_AUDIO", "CAMERA", "WRITE_EXTERNAL_STORAGE"],
       package: "com.vocabwide",
     },
     ios: {
