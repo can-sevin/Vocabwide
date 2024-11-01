@@ -321,47 +321,51 @@ export const saveWordPairOcr = async (mainFlag: string, targetFlag: string, sele
 
 export const deleteCorrectWordsFromFirebase = async (
   uid: string,
-  correctWords: string[],
+  word: string,
+  correctWord: string,
   mainFlag: string,
   targetFlag: string,
-  setLoading: (loading: boolean) => void
+  setLoading: (loading: boolean) => void,
+  shouldSetLoading = true
 ) => {
-  setLoading(true);
+  if (shouldSetLoading) setLoading(true);
 
   const originalWordsRef = ref(database, `users/${uid}/${mainFlag}${targetFlag}originalWords`);
   const translatedWordsRef = ref(database, `users/${uid}/${mainFlag}${targetFlag}translatedWords`);
-
-  console.log("Attempting to delete words:", correctWords);
 
   try {
     const originalSnapshot = await get(originalWordsRef);
     if (originalSnapshot.exists()) {
       const currentOriginalWords = originalSnapshot.val();
-      const updatedOriginalWords = Object.fromEntries(
-        Object.entries(currentOriginalWords).filter(
-          ([word]) => !correctWords.includes(word)
-        )
-      );
-      await set(originalWordsRef, updatedOriginalWords);
-      console.log("Updated original words:", updatedOriginalWords);
+      const wordIndex = currentOriginalWords.indexOf(word);
+
+      if (wordIndex !== -1) {
+        currentOriginalWords.splice(wordIndex, 1);
+        await set(originalWordsRef, currentOriginalWords);
+        console.log(`Deleted "${word}" from originalWords`);
+      } else {
+        console.log(`Word "${word}" not found in originalWords`);
+      }
     }
 
     const translatedSnapshot = await get(translatedWordsRef);
     if (translatedSnapshot.exists()) {
       const currentTranslatedWords = translatedSnapshot.val();
-      const updatedTranslatedWords = Object.fromEntries(
-        Object.entries(currentTranslatedWords).filter(
-          ([word]) => !correctWords.includes(word)
-        )
-      );
-      await set(translatedWordsRef, updatedTranslatedWords);
-      console.log("Updated translated words:", updatedTranslatedWords);
+      const correctWordIndex = currentTranslatedWords.indexOf(correctWord);
+
+      if (correctWordIndex !== -1) {
+        currentTranslatedWords.splice(correctWordIndex, 1);
+        await set(translatedWordsRef, currentTranslatedWords);
+        console.log(`Deleted "${correctWord}" from translatedWords`);
+      } else {
+        console.log(`Correct word "${correctWord}" not found in translatedWords`);
+      }
     }
 
-    console.log("All correct words successfully deleted from Firebase.");
+    console.log("Specified words successfully deleted from Firebase.");
   } catch (error) {
-    console.error("Error deleting correct words from Firebase:", error);
+    console.error("Error deleting specified words from Firebase:", error);
   } finally {
-    setLoading(false);
+    if (shouldSetLoading) setLoading(false);
   }
 };

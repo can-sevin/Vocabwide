@@ -42,7 +42,6 @@ export const QuestionScreen = ({ navigation, route }) => {
   const [timerColor, setTimerColor] = useState("black");
   const [correctCount, setCorrectCount] = useState(0);
   const [correctWords, setCorrectWords] = useState<string[]>([]);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const timerScale = useRef(new Animated.Value(1)).current;
 
@@ -95,19 +94,10 @@ export const QuestionScreen = ({ navigation, route }) => {
     }
   }, [cards, loading, currentIndex]);
 
-  const handleDeleteWords = async () => {
-    setIsDeleting(true);
-    await new Promise(resolve => setTimeout(resolve, 5000)); // 5 saniye bekleme
-    await deleteCorrectWordsFromFirebase(uid, correctWords, main, target, setLoading);
-    setIsDeleting(false);
+  const handleDeleteWords = async (word: string, correctWord: string) => {
+    await deleteCorrectWordsFromFirebase(uid, word, correctWord, main, target, setLoading, false);
   };
-
-  useEffect(() => {
-    if (showFinish) {
-      handleDeleteWords();
-    }
-  }, [showFinish]);
-
+  
   const animateTimer = () => {
     timerScale.setValue(1);
     Animated.spring(timerScale, {
@@ -127,7 +117,7 @@ export const QuestionScreen = ({ navigation, route }) => {
     }
   };
 
-  const checkAnswer = (direction: string | number) => {
+  const checkAnswer = (direction: string | number, original: string) => {
     const card = cards[currentIndex];
     const selectedWord = String(card[direction]).trim().toLowerCase();
     const correctWord = String(card.correct).trim().toLowerCase();
@@ -138,6 +128,7 @@ export const QuestionScreen = ({ navigation, route }) => {
     if (selectedWord === correctWord && correctWord) {
       playSound("correct");
       setTimerColor("green");
+      handleDeleteWords(original, correctWord);
       setCorrectCount((prev) => prev + 1);
       setCorrectWords((prev) => [...prev, card.text]);
       setTimeout(() => {
@@ -194,21 +185,9 @@ export const QuestionScreen = ({ navigation, route }) => {
             </ModalText>
           </View>
         ) : showFinish ? (
-          isDeleting ? (
-            <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
-              <LottieView
-                style={{ width: 200, height: 200 }}
-                source={Images.lottie_loading}
-                loop={true}
-                autoPlay
-              />
-              <ModalText>Deleting correct words, please wait...</ModalText>
-            </View>
-          ) : (
             <FinishText>
               {`Correct: ${correctCount}/${originalTexts.current.length} words`}
             </FinishText>
-          )
         ) : (
           <>
             <QuestionContainer>
@@ -246,7 +225,7 @@ export const QuestionScreen = ({ navigation, route }) => {
                   right={cards[currentIndex].right}
                   left={cards[currentIndex].left}
                   bottom={cards[currentIndex].bottom}
-                  isCorrect={(direction: any) => checkAnswer(direction)}
+                  isCorrect={(direction: any) => checkAnswer(direction, originalTexts.current[currentIndex])}
                 />
               )}
               <TopView>
