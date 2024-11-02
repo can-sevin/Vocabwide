@@ -330,14 +330,22 @@ export const deleteCorrectWordsFromFirebase = async (
 ) => {
   if (shouldSetLoading) setLoading(true);
 
-  const originalWordsRef = ref(database, `users/${uid}/${mainFlag}${targetFlag}originalWords`);
-  const translatedWordsRef = ref(database, `users/${uid}/${mainFlag}${targetFlag}translatedWords`);
+  const originalWordsRef = ref(
+    database,
+    `users/${uid}/${mainFlag}${targetFlag}originalWords`
+  );
+  const translatedWordsRef = ref(
+    database,
+    `users/${uid}/${mainFlag}${targetFlag}translatedWords`
+  );
 
   try {
     const originalSnapshot = await get(originalWordsRef);
     if (originalSnapshot.exists()) {
       const currentOriginalWords = originalSnapshot.val();
-      const wordIndex = currentOriginalWords.indexOf(word);
+      const wordIndex = currentOriginalWords.findIndex(
+        (w) => w.trim().toLowerCase() === word.trim().toLowerCase()
+      );
 
       if (wordIndex !== -1) {
         currentOriginalWords.splice(wordIndex, 1);
@@ -351,14 +359,18 @@ export const deleteCorrectWordsFromFirebase = async (
     const translatedSnapshot = await get(translatedWordsRef);
     if (translatedSnapshot.exists()) {
       const currentTranslatedWords = translatedSnapshot.val();
-      const correctWordIndex = currentTranslatedWords.indexOf(correctWord);
+      const correctWordIndex = currentTranslatedWords.findIndex(
+        (w) => w.trim().toLowerCase() === correctWord.trim().toLowerCase()
+      );
 
       if (correctWordIndex !== -1) {
         currentTranslatedWords.splice(correctWordIndex, 1);
         await set(translatedWordsRef, currentTranslatedWords);
         console.log(`Deleted "${correctWord}" from translatedWords`);
       } else {
-        console.log(`Correct word "${correctWord}" not found in translatedWords`);
+        console.log(
+          `Correct word "${correctWord}" not found in translatedWords`
+        );
       }
     }
 

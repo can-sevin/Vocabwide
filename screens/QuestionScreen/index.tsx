@@ -23,6 +23,7 @@ import { deleteCorrectWordsFromFirebase } from "../../firebase/database";
 export const QuestionScreen = ({ navigation, route }) => {
   const { target, main, wordsList, uid } = route.params;
   const originalTexts = useRef(wordsList.map(([word]) => word));
+
   const [cards, setCards] = useState(
     wordsList.map(([word]) => ({
       originalText: word,
@@ -36,12 +37,11 @@ export const QuestionScreen = ({ navigation, route }) => {
   );
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(5);
   const [loading, setLoading] = useState(true);
   const [showFinish, setShowFinish] = useState(false);
   const [timerColor, setTimerColor] = useState("black");
   const [correctCount, setCorrectCount] = useState(0);
-  const [correctWords, setCorrectWords] = useState<string[]>([]);
 
   const timerScale = useRef(new Animated.Value(1)).current;
 
@@ -62,6 +62,7 @@ export const QuestionScreen = ({ navigation, route }) => {
         setLoading(true);
         await fetchTranslations(
           wordsList.map(([word]) => word),
+          wordsList.map(([_, translation]) => translation),
           target,
           setCards,
           setLoading
@@ -82,7 +83,7 @@ export const QuestionScreen = ({ navigation, route }) => {
         setTimer((prevTime) => {
           if (prevTime === 1) {
             handleNextCard();
-            return 10;
+            return 5;
           } else {
             animateTimer();
             return prevTime - 1;
@@ -95,9 +96,17 @@ export const QuestionScreen = ({ navigation, route }) => {
   }, [cards, loading, currentIndex]);
 
   const handleDeleteWords = async (word: string, correctWord: string) => {
-    await deleteCorrectWordsFromFirebase(uid, word, correctWord, main, target, setLoading, false);
+    await deleteCorrectWordsFromFirebase(
+      uid,
+      word,
+      correctWord,
+      main,
+      target,
+      setLoading,
+      false
+    );
   };
-  
+
   const animateTimer = () => {
     timerScale.setValue(1);
     Animated.spring(timerScale, {
@@ -111,7 +120,7 @@ export const QuestionScreen = ({ navigation, route }) => {
     setTimerColor("black");
     if (currentIndex < cards.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
-      setTimer(10);
+      setTimer(5);
     } else {
       setShowFinish(true);
     }
@@ -130,7 +139,6 @@ export const QuestionScreen = ({ navigation, route }) => {
       setTimerColor("green");
       handleDeleteWords(original, correctWord);
       setCorrectCount((prev) => prev + 1);
-      setCorrectWords((prev) => [...prev, card.text]);
       setTimeout(() => {
         setTimerColor("black");
         handleNextCard();
@@ -139,7 +147,10 @@ export const QuestionScreen = ({ navigation, route }) => {
     } else {
       playSound("error");
       setTimerColor("red");
-      setTimeout(() => setTimerColor("black"), 500);
+      setTimeout(() => {
+        setTimerColor("black");
+        handleNextCard();
+      }, 1000);
       return false;
     }
   };
@@ -185,9 +196,9 @@ export const QuestionScreen = ({ navigation, route }) => {
             </ModalText>
           </View>
         ) : showFinish ? (
-            <FinishText>
-              {`Correct: ${correctCount}/${originalTexts.current.length} words`}
-            </FinishText>
+          <FinishText>
+            {`Correct: ${correctCount}/${originalTexts.current.length} words`}
+          </FinishText>
         ) : (
           <>
             <QuestionContainer>
@@ -225,7 +236,9 @@ export const QuestionScreen = ({ navigation, route }) => {
                   right={cards[currentIndex].right}
                   left={cards[currentIndex].left}
                   bottom={cards[currentIndex].bottom}
-                  isCorrect={(direction: any) => checkAnswer(direction, originalTexts.current[currentIndex])}
+                  isCorrect={(direction: any) =>
+                    checkAnswer(direction, originalTexts.current[currentIndex])
+                  }
                 />
               )}
               <TopView>

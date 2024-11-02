@@ -1491,7 +1491,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - SDWebImage/Core (5.19.7)
+  - SDWebImage/Core (5.20.0)
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
@@ -1898,7 +1898,7 @@ SPEC CHECKSUMS:
   RNMLKitTextRecognition: 2f05c72ed3f0cabad3a97307171f5078846ea29d
   RNReanimated: f05f23988b1456a594fc4eab0ef2c46b430007ac
   RNScreens: b32a9ff15bea7fcdbe5dff6477bc503f792b1208
-  SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
+  SDWebImage: 73c6079366fea25fa4bb9640d5fb58f0893facd8
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   VisionCamera: 3b7cfecebbcb3871c4dd3fb47791b96a47fe5371
@@ -1907,4 +1907,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 99f1b9d8c063129a1e9c45f9e31919918161d30f
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2
