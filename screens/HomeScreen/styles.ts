@@ -13,16 +13,17 @@ export const HomeLayoutHeader = styled(View)`
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
+  height: 100px;
+  margin-top: 12px;
   align-items: center;
-  margin-top: 20px;
-  padding-horizontal: 32px;
+  padding-horizontal: 20px;
 `;
 
 export const HomeTopView = styled(Animated.View)`
   justify-content: flex-start;
   align-items: center;
   flex: 1;
-  margin: 32px;
+  margin-horizontal: 32px;
   width: 80%;
 `;
 
@@ -146,6 +147,11 @@ export const HomeVerticalView = styled.View`
 `;
 
 export const LogoutIcon = styled.Image`
+  width: 36px;
+  height: 36px;
+`;
+
+export const SettingsIcon = styled.Image`
   width: 36px;
   height: 36px;
 `;

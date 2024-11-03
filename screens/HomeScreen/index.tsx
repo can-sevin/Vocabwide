@@ -32,6 +32,7 @@ import {
   HomeTopView,
   HomeBottomView,
   EmptyWordText,
+  SettingsIcon,
 } from "./styles";
 import { ModalFlag } from "../../components/ModalFlag";
 import LanguageView from "../../components/LanguageView";
@@ -162,9 +163,14 @@ export const HomeScreen = ({ uid, navigation }) => {
       <SafeAreaView style={{ flex: 1 }}>
         <HomeLayout entering={FadeInDown.duration(2000).delay(500)}>
           <HomeLayoutHeader>
-            <TouchableOpacity onPress={handleLogout}>
-              <LogoutIcon source={Images.log_out} />
-            </TouchableOpacity>
+            <View style={{ justifyContent: "space-around", height: 100 }}>
+              <TouchableOpacity onPress={handleLogout}>
+                <LogoutIcon source={Images.log_out} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleLogout}>
+                <SettingsIcon source={Images.settings} />
+              </TouchableOpacity>
+            </View>
             {showText && (
               <HomeHeaderSmallTextNumber
                 entering={FadeInDown.duration(2000).delay(1000)}
@@ -227,18 +233,6 @@ export const HomeScreen = ({ uid, navigation }) => {
                   Practice
                 </HomePracticeButtonText>
               </HomePracticeButton>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("Input", {
-                    main: mainFlag,
-                    target: targetFlag,
-                  })
-                }
-              >
-                <BottomTextWhite>
-                  Or you can add a new word by input
-                </BottomTextWhite>
-              </TouchableOpacity>
             </View>
             <HomeBtmView>
               <TouchableOpacity
@@ -251,6 +245,18 @@ export const HomeScreen = ({ uid, navigation }) => {
               >
                 <HomeBtmIcons source={Images.mic_icon} />
                 <HomeBtmIconText>Voice</HomeBtmIconText>
+              </TouchableOpacity>
+              <HomeVerticalView />
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("Input", {
+                    main: mainFlag,
+                    target: targetFlag,
+                  })
+                }
+              >
+                <HomeBtmIcons source={Images.keyboard} />
+                <HomeBtmIconText>Input</HomeBtmIconText>
               </TouchableOpacity>
               <HomeVerticalView />
               <TouchableOpacity

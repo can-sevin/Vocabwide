@@ -4,6 +4,7 @@ export const Images = {
   background: require("../assets/background_img.jpg"),
   mic_icon: require("../assets/icons/new_mic_permission.png"),
   cam_icon: require("../assets/icons/new_cam_permission.png"),
+  keyboard: require("../assets/icons/keyboard.png"),
   back_icon: require("../assets/icons/back.png"),
   log_out: require("../assets/icons/shutdown.png"),
   gallery_btn: require("../assets/icons/photo-gallery.png"),
@@ -15,4 +16,5 @@ export const Images = {
   red_card: require("../assets/icons/redCard.png"),
   blue_card: require("../assets/icons/blueCard.png"),
   yellow_card: require("../assets/icons/yellowCard.png"),
+  settings: require("../assets/icons/settings.png"),
 };
