@@ -51,7 +51,7 @@
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>CUSTOM: Allow $(PRODUCT_NAME) to securely recognize user speech</string>
 	<key>UILaunchStoryboardName</key>
-	<string>SplashScreen.storyboard</string>
+	<string>SplashScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>arm64</string>
