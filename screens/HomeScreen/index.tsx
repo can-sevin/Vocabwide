@@ -32,7 +32,6 @@ import {
   HomeTopView,
   HomeBottomView,
   EmptyWordText,
-  SettingsIcon,
 } from "./styles";
 import { ModalFlag } from "../../components/ModalFlag";
 import LanguageView from "../../components/LanguageView";
@@ -166,9 +165,6 @@ export const HomeScreen = ({ uid, navigation }) => {
             <View style={{ justifyContent: "space-around", height: 100 }}>
               <TouchableOpacity onPress={handleLogout}>
                 <LogoutIcon source={Images.log_out} />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleLogout}>
-                <SettingsIcon source={Images.settings} />
               </TouchableOpacity>
             </View>
             {showText && (
