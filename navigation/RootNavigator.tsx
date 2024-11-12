@@ -2,29 +2,43 @@ import React, { useState, useContext, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { onAuthStateChanged } from "firebase/auth";
 
-import { AuthStack } from "./AuthStack";
 import { AppStack } from "./AppStack";
-import { AuthenticatedUserContext } from "../providers";
 import { LoadingIndicator } from "../components";
 import { auth } from "../config";
+import { AuthenticatedUserContext } from "../providers";
+import { createUserIfNotExists, signInAnonymouslyWithFirebase } from "../firebase";
 
 export const RootNavigator = () => {
   const { user, setUser } = useContext(AuthenticatedUserContext);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   useEffect(() => {
-    // onAuthStateChanged returns an unsubscriber
     const unsubscribeAuthStateChanged = onAuthStateChanged(
       auth,
-      (authenticatedUser) => {
-        authenticatedUser ? setUser(authenticatedUser) : setUser(null);
-        setIsLoading(false);
+      async (authenticatedUser) => {
+        if (authenticatedUser) {
+          // Kullanıcı giriş yaptıysa, kullanıcıyı ayarla ve verilerini kontrol et
+          setUser(authenticatedUser);
+          await createUserIfNotExists(authenticatedUser.uid); // Kullanıcı var mı kontrol et, yoksa oluştur
+          setIsLoading(false);
+        } else {
+          // Kullanıcı yoksa anonim giriş yap ve kullanıcıyı oluştur
+          try {
+            const anonymousUser = await signInAnonymouslyWithFirebase(
+              setIsLoading
+            );
+            setUser(anonymousUser);
+            await createUserIfNotExists(anonymousUser.uid); // Anonim kullanıcıyı veritabanına ekle
+          } catch (error) {
+            console.error("Error signing in anonymously:", error.message);
+            setIsLoading(false);
+          }
+        }
       }
     );
 
-    // unsubscribe auth listener on unmount
-    return unsubscribeAuthStateChanged;
-  }, [user]);
+    return unsubscribeAuthStateChanged; // Dinleyiciyi temizle
+  }, []);
 
   if (isLoading) {
     return <LoadingIndicator />;
@@ -32,7 +46,7 @@ export const RootNavigator = () => {
 
   return (
     <NavigationContainer>
-      {!user ? <AuthStack /> : <AppStack uid={user.uid}/>}
+      <AppStack uid={user.uid} />
     </NavigationContainer>
   );
 };

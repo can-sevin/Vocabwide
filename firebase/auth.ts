@@ -2,10 +2,11 @@
 import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
+  signInAnonymously,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth, database } from "../config";
-import { ref, set } from "firebase/database";
+import { get, ref, set } from "firebase/database";
 
 export const loginUser = async (
   email: string,
@@ -68,5 +69,44 @@ export const resetPassword = async (
   } catch (error) {
     setErrorState("Failed to send password reset email. Please try again.");
     setLoading(false);
+  }
+};
+
+export const signInAnonymouslyWithFirebase = async (
+  setLoading: (loading: boolean) => void
+) => {
+  setLoading(true);
+  try {
+    const userCredential = await signInAnonymously(auth);
+    const user = userCredential.user;
+
+    console.log("Anonymous user signed in:", user);
+
+    // Kullanıcıyı veritabanında kontrol et ve yoksa oluştur
+    await createUserIfNotExists(user.uid);
+
+    setLoading(false);
+    return user;
+  } catch (error) {
+    console.error("Error during anonymous login:", error.message);
+    setLoading(false);
+    throw error;
+  }
+};
+
+export const createUserIfNotExists = async (uid: string) => {
+  const userRef = ref(database, `users/${uid}`);
+  const snapshot = await get(userRef);
+
+  if (!snapshot.exists()) {
+    console.log("User data not found, creating new record...");
+    await set(userRef, {
+      name: "Anonymous",
+      email: null,
+      flags: { mainFlag: "en", targetFlag: "es" },
+    });
+    console.log("User record created.");
+  } else {
+    console.log("User data already exists.");
   }
 };

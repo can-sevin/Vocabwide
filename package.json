@@ -16,7 +16,7 @@
     "@react-navigation/native": "^6.1.16",
     "@react-navigation/stack": "^6.3.28",
     "dotenv": "^10.0.0",
-    "expo": "51.0.10",
+    "expo": "51.0.38",
     "expo-av": "~14.0.7",
     "expo-blur": "^13.0.2",
     "expo-camera": "~15.0.15",

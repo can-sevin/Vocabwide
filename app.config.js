@@ -9,6 +9,7 @@ export default {
     version: "0.19.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
+    jsEngine: "hermes",
     splash: {
       image: "./assets/splash.png",
       resizeMode: "cover",
@@ -19,7 +20,11 @@ export default {
     },
     assetBundlePatterns: ["**/*"],
     android: {
-      permissions: ["android.permission.RECORD_AUDIO", "CAMERA", "WRITE_EXTERNAL_STORAGE"],
+      permissions: [
+        "android.permission.RECORD_AUDIO",
+        "CAMERA",
+        "WRITE_EXTERNAL_STORAGE",
+      ],
       package: "com.vocabwide",
     },
     ios: {
