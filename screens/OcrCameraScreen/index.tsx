@@ -155,6 +155,7 @@ export const OcrScreen = ({ navigation, route }) => {
                               selectedWords(
                                 result,
                                 index,
+                                mainFlag,
                                 targetFlag,
                                 setSelectedWord,
                                 setTranslatedWord,

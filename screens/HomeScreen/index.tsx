@@ -7,27 +7,22 @@ import {
   Text,
   Alert,
 } from "react-native";
-import { signOut } from "firebase/auth";
-import { auth, Colors, Flags, Images } from "../../config";
+import { Colors, Flags, Images } from "../../config";
 import { FadeInDown } from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   HomeLayout,
-  HomeHeaderSmallTextNumber,
   HomeHeaderTextNumber,
   HomeHeaderText,
   HomeHeaderLanguageView,
   HomeHeaderLanguageViewText,
   HomePracticeButton,
   HomePracticeButtonText,
-  BottomTextWhite,
   HomeBtmView,
   HomeBtmIcons,
   HomeBtmIconText,
   HomeVerticalView,
-  HomeLayoutHeader,
   HomeWordNumberView,
-  LogoutIcon,
   HomeLanguageWordsView,
   HomeTopView,
   HomeBottomView,
@@ -133,8 +128,6 @@ export const HomeScreen = ({ uid, navigation }) => {
     return () => clearInterval(interval);
   }, [wordNum]);
 
-  const handleLogout = () => signOut(auth).catch(console.error);
-
   const handlePracticePress = () => {
     if (wordNum >= 10) {
       navigation.navigate("Question", {
@@ -161,21 +154,6 @@ export const HomeScreen = ({ uid, navigation }) => {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <HomeLayout entering={FadeInDown.duration(2000).delay(500)}>
-          <HomeLayoutHeader>
-            <View style={{ justifyContent: "space-around", height: 100 }}>
-              <TouchableOpacity onPress={handleLogout}>
-                <LogoutIcon source={Images.log_out} />
-              </TouchableOpacity>
-            </View>
-            {showText && (
-              <HomeHeaderSmallTextNumber
-                entering={FadeInDown.duration(2000).delay(1000)}
-              >
-                Hello, {userInfo?.username}
-              </HomeHeaderSmallTextNumber>
-            )}
-          </HomeLayoutHeader>
-
           <HomeTopView>
             <HomeWordNumberView>
               <HomeHeaderTextNumber
@@ -210,7 +188,11 @@ export const HomeScreen = ({ uid, navigation }) => {
                   First, You need to start by adding words.
                 </EmptyWordText>
               ) : (
-                <LanguageView wordsList={wordsList} loading={loading} />
+                <LanguageView
+                  wordsList={wordsList}
+                  loading={loading}
+                  mainFlag={Flags[mainFlag].speechRecognitionLocale}
+                />
               )}
             </HomeLanguageWordsView>
           </HomeTopView>

@@ -1,6 +1,6 @@
 import { ref, get, set } from "firebase/database";
 import { auth, database } from "../config";
-import translate from "translate-google-api";
+import { fetchTransitions, handleGptResponse } from "../config/gpt";
 
 export const saveFlagsToFirebase = async (
   uid: string,
@@ -108,7 +108,7 @@ export const handleAddingWords = async (
   words: string,
   setText: (message: string) => void,
   setWordsList: (list: string[]) => void,
-  setLoading: (loading: boolean) => void
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   setLoading(true);
 
@@ -122,19 +122,22 @@ export const handleAddingWords = async (
   );
 
   try {
+    // Mevcut kelimeleri getir
     const originalSnapshot = await get(originalWordsRef);
+    const translatedSnapshot = await get(translatedWordsRef);
+
     let currentOriginalWords = originalSnapshot.exists()
       ? originalSnapshot.val()
       : [];
+    let currentTranslatedWords = translatedSnapshot.exists()
+      ? translatedSnapshot.val()
+      : [];
 
-    if (!Array.isArray(currentOriginalWords)) {
-      currentOriginalWords = [];
-    }
+    if (!Array.isArray(currentOriginalWords)) currentOriginalWords = [];
+    if (!Array.isArray(currentTranslatedWords)) currentTranslatedWords = [];
 
-    const newWords = words
-      .trim()
-      .split(/\s+/)
-      .map((word) => word.toLowerCase());
+    // Yeni kelimeleri filtrele
+    const newWords = words.split(/\s+/).map((word) => word.toLowerCase());
     const uniqueNewWords = newWords.filter(
       (word) => !currentOriginalWords.includes(word)
     );
@@ -145,54 +148,38 @@ export const handleAddingWords = async (
       return;
     }
 
-    try {
-      const translatedWords = await translate(uniqueNewWords, {
-        tld: "com",
-        to: targetFlag,
-      });
+    // Yeni kelimeler için çevirileri al
+    const translations = await fetchTransitions(
+      uniqueNewWords,
+      mainFlag,
+      targetFlag,
+      setLoading
+    );
 
-      if (
-        !translatedWords ||
-        translatedWords.some((translation: any) => !translation)
-      ) {
-        setText("Error translating words. Some translations are undefined.");
-        setLoading(false);
-        return;
-      }
+    const formattedWordsList = handleGptResponse(translations, uniqueNewWords);
 
-      const translatedSnapshot = await get(translatedWordsRef);
-      let currentTranslatedWords = translatedSnapshot.exists()
-        ? translatedSnapshot.val()
-        : [];
+    // Mevcut listelere yeni kelimeleri ekle
+    const updatedOriginalWords = [...currentOriginalWords, ...uniqueNewWords];
+    const updatedTranslatedWords = [
+      ...currentTranslatedWords,
+      ...formattedWordsList.map((item) => item.split(" -> ")[1]),
+    ];
 
-      if (!Array.isArray(currentTranslatedWords)) {
-        currentTranslatedWords = [];
-      }
+    // Yeni listeleri kaydet
+    await set(originalWordsRef, updatedOriginalWords);
+    await set(translatedWordsRef, updatedTranslatedWords);
 
-      const updatedOriginalWords = [...currentOriginalWords, ...uniqueNewWords];
-      const updatedTranslatedWords = [
-        ...currentTranslatedWords,
-        ...translatedWords,
-      ];
-
-      const formattedWordsList = updatedOriginalWords.map(
-        (word, index) => `${word} -> ${updatedTranslatedWords[index]}`
-      );
-
-      console.log("Final formatted list:", formattedWordsList);
-
-      await set(originalWordsRef, updatedOriginalWords);
-      await set(translatedWordsRef, updatedTranslatedWords);
-
-      setWordsList(formattedWordsList.reverse());
-      setText(`Words successfully added: ${uniqueNewWords.join(", ")}`);
-    } catch (translateError) {
-      setText("Error translating words.");
-    } finally {
-      setLoading(false);
-    }
+    // Güncellenmiş listeyi ve mesajı ayarla
+    setWordsList(
+      updatedOriginalWords
+        .map((word, index) => `${word} -> ${updatedTranslatedWords[index]}`)
+        .reverse()
+    );
+    setText(`Words successfully added: ${uniqueNewWords.join(", ")}`);
   } catch (error) {
+    console.error("Error adding words:", error);
     setText("Error adding words to the database.");
+  } finally {
     setLoading(false);
   }
 };
@@ -278,7 +265,13 @@ export const useSaveWord = () => {
   return { saveWordPair };
 };
 
-export const saveWordPairOcr = async (mainFlag: string, targetFlag: string, selectedWord: string | null, translatedWord: string | null, setModalVisible: Function) => {
+export const saveWordPairOcr = async (
+  mainFlag: string,
+  targetFlag: string,
+  selectedWord: string | null,
+  translatedWord: string | null,
+  setModalVisible: Function
+) => {
   if (!selectedWord || !translatedWord) {
     console.log("No word selected or translation is missing.");
     return;
@@ -291,15 +284,25 @@ export const saveWordPairOcr = async (mainFlag: string, targetFlag: string, sele
   }
 
   const userId = currentUser.uid;
-  const originalWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}originalWords`);
-  const translatedWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}translatedWords`);
+  const originalWordsRef = ref(
+    database,
+    `users/${userId}/${mainFlag}${targetFlag}originalWords`
+  );
+  const translatedWordsRef = ref(
+    database,
+    `users/${userId}/${mainFlag}${targetFlag}translatedWords`
+  );
 
   try {
     const originalSnapshot = await get(originalWordsRef);
     const translatedSnapshot = await get(translatedWordsRef);
 
-    let currentOriginalWords = originalSnapshot.exists() ? originalSnapshot.val() : [];
-    let currentTranslatedWords = translatedSnapshot.exists() ? translatedSnapshot.val() : [];
+    let currentOriginalWords = originalSnapshot.exists()
+      ? originalSnapshot.val()
+      : [];
+    let currentTranslatedWords = translatedSnapshot.exists()
+      ? translatedSnapshot.val()
+      : [];
 
     if (currentOriginalWords.includes(selectedWord)) {
       console.log("The word already exists.");

@@ -16,7 +16,7 @@ import { Card } from "../../components/Card";
 import { BackButton } from "../../components/BackButton";
 import { Images, Sounds } from "../../config";
 import { Audio } from "expo-av";
-import { fetchTranslations } from "../../config/gpt";
+import { createQuestion } from "../../config/gpt";
 import LottieView from "lottie-react-native";
 import { deleteCorrectWordsFromFirebase } from "../../firebase/database";
 
@@ -60,9 +60,10 @@ export const QuestionScreen = ({ navigation, route }) => {
     const getTranslations = async () => {
       try {
         setLoading(true);
-        await fetchTranslations(
+        await createQuestion(
           wordsList.map(([word]) => word),
           wordsList.map(([_, translation]) => translation),
+          main,
           target,
           setCards,
           setLoading

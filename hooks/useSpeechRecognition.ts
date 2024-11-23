@@ -4,8 +4,8 @@ import Voice, {
   SpeechResultsEvent,
   SpeechErrorEvent,
 } from "@react-native-voice/voice";
-import translate from "translate-google-api";
 import { Flags, auth, database } from "../config";
+import { fetchTransitions } from "../config/gpt";
 import { ref, get, set } from "firebase/database";
 import { Platform } from "react-native";
 
@@ -113,18 +113,26 @@ export const useSpeechRecognition = (params: {
 
     try {
       setLoading(true);
-      const translation = await translate(result, { to: target });
-      setSelectedWord(result);
-      setTranslatedWord(translation[0]);
+
+      // GPT tabanlı çeviri çağrısı
+      const translations = await fetchTransitions([result], main, target, setLoading);
+
+      if (translations.length > 0) {
+        const translationText = translations[0].translations.join(", ");
+        setSelectedWord(result);
+        setTranslatedWord(translationText);
+        setModalVisible(true);
+      } else {
+        console.error("No translations found");
+      }
+
       setLoading(false);
-      setModalVisible(true);
     } catch (error) {
       console.error("Translation Error:", error);
       setLoading(false);
     }
   };
 
-  // Implementing the `saveWordPair` function
   const saveWordPair = async (
     selectedWord: string | null,
     translatedWord: string | null,

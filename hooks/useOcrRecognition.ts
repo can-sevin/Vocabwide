@@ -1,26 +1,46 @@
-import translate from "translate-google-api";
 import { ref, get, set } from "firebase/database";
 import { database, Flags } from "../config";
 import * as ImageManipulator from "expo-image-manipulator";
-import textRecognition, { TextRecognitionScript } from "@react-native-ml-kit/text-recognition";
+import textRecognition, {
+  TextRecognitionScript,
+} from "@react-native-ml-kit/text-recognition";
+import { fetchTransitions } from "../config/gpt";
 import { SetStateAction } from "react";
 
 export const selectedWords = async (
   word: string,
   index: number,
+  mainFlag: any,
   targetFlag: any,
-  setSelectedWord: { (value: SetStateAction<string | null>): void; (arg0: any): void; },
-  setTranslatedWord: { (value: SetStateAction<string | null>): void; (arg0: any): void; },
-  setLoading: { (value: SetStateAction<boolean>): void; (arg0: boolean): void; },
-  setModalVisible: { (value: SetStateAction<boolean>): void; (arg0: boolean): void; }
+  setSelectedWord: {
+    (value: SetStateAction<string | null>): void;
+    (arg0: any): void;
+  },
+  setTranslatedWord: {
+    (value: SetStateAction<string | null>): void;
+    (arg0: any): void;
+  },
+  setLoading: { (value: SetStateAction<boolean>): void; (arg0: boolean): void },
+  setModalVisible: {
+    (value: SetStateAction<boolean>): void;
+    (arg0: boolean): void;
+  }
 ) => {
   try {
     setLoading(true);
-    const translation = await translate(word, { to: targetFlag });
-    setSelectedWord(word);
-    setTranslatedWord(translation[0]);
+
+    // GPT üzerinden çeviri al
+    const translations = await fetchTransitions([word], mainFlag, targetFlag, setLoading);
+
+    if (translations.length > 0) {
+      setSelectedWord(word);
+      setTranslatedWord(translations[0].translations.join(", "));
+      setModalVisible(true);
+    } else {
+      console.error("No translations found");
+    }
+
     setLoading(false);
-    setModalVisible(true);
   } catch (error) {
     console.error("Translation Error:", error);
     setLoading(false);
@@ -34,27 +54,52 @@ export const saveWordPair = async (
   targetFlag: any,
   userId: string | undefined,
   resultText: string | null,
-  setModalVisible: { (value: SetStateAction<boolean>): void; (arg0: boolean): void; },
-  setSelectedWord: { (value: SetStateAction<string | null>): void; (arg0: null): void; },
-  setTranslatedWord: { (value: SetStateAction<string | null>): void; (arg0: null): void; },
-  setSelectedIndices: { (value: SetStateAction<number[]>): void; (arg0: (prev: any) => any[]): void; }
+  setModalVisible: {
+    (value: SetStateAction<boolean>): void;
+    (arg0: boolean): void;
+  },
+  setSelectedWord: {
+    (value: SetStateAction<string | null>): void;
+    (arg0: null): void;
+  },
+  setTranslatedWord: {
+    (value: SetStateAction<string | null>): void;
+    (arg0: null): void;
+  },
+  setSelectedIndices: {
+    (value: SetStateAction<number[]>): void;
+    (arg0: (prev: any) => any[]): void;
+  }
 ) => {
-  const originalWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}originalWords`);
-  const translatedWordsRef = ref(database, `users/${userId}/${mainFlag}${targetFlag}translatedWords`);
+  const originalWordsRef = ref(
+    database,
+    `users/${userId}/${mainFlag}${targetFlag}originalWords`
+  );
+  const translatedWordsRef = ref(
+    database,
+    `users/${userId}/${mainFlag}${targetFlag}translatedWords`
+  );
 
   try {
     const originalSnapshot = await get(originalWordsRef);
     const translatedSnapshot = await get(translatedWordsRef);
 
-    let currentOriginalWords = originalSnapshot.exists() ? originalSnapshot.val() : [];
-    let currentTranslatedWords = translatedSnapshot.exists() ? translatedSnapshot.val() : [];
+    let currentOriginalWords = originalSnapshot.exists()
+      ? originalSnapshot.val()
+      : [];
+    let currentTranslatedWords = translatedSnapshot.exists()
+      ? translatedSnapshot.val()
+      : [];
 
     if (!Array.isArray(currentOriginalWords)) currentOriginalWords = [];
     if (!Array.isArray(currentTranslatedWords)) currentTranslatedWords = [];
 
     if (!currentOriginalWords.includes(selectedWord)) {
       const updatedOriginalWords = [...currentOriginalWords, selectedWord];
-      const updatedTranslatedWords = [...currentTranslatedWords, translatedWord];
+      const updatedTranslatedWords = [
+        ...currentTranslatedWords,
+        translatedWord,
+      ];
 
       await set(originalWordsRef, updatedOriginalWords);
       await set(translatedWordsRef, updatedTranslatedWords);
@@ -73,7 +118,12 @@ export const saveWordPair = async (
   }
 };
 
-export const processImage = async (uri: string, mainFlag: string | number, setLoading: (arg0: boolean) => void, setResultText: { (text: string): void; (arg0: string): void; }) => {
+export const processImage = async (
+  uri: string,
+  mainFlag: string | number,
+  setLoading: (arg0: boolean) => void,
+  setResultText: { (text: string): void; (arg0: string): void }
+) => {
   try {
     setLoading(true);
     const manipulatedImage = await ImageManipulator.manipulateAsync(
@@ -107,7 +157,10 @@ export const processImage = async (uri: string, mainFlag: string | number, setLo
         return;
     }
 
-    const result = await textRecognition.recognize(manipulatedImage.uri, script);
+    const result = await textRecognition.recognize(
+      manipulatedImage.uri,
+      script
+    );
     setResultText(result.text);
     setLoading(false);
   } catch (error) {
