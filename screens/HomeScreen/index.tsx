@@ -4,11 +4,16 @@ import {
   TouchableOpacity,
   ImageBackground,
   SafeAreaView,
-  Text,
   Alert,
+  Image,
 } from "react-native";
 import { Colors, Flags, Images } from "../../config";
-import { FadeInDown } from "react-native-reanimated";
+import Animated, {
+  FadeInDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   HomeLayout,
@@ -49,7 +54,39 @@ export const HomeScreen = ({ uid, navigation }) => {
   const [targetFlag, setTargetFlag] = useState<FlagKey>("tr");
   const [flag, setFlag] = useState("main");
 
+  const mainFlagPosition = useSharedValue(0);
+  const targetFlagPosition = useSharedValue(1);
+
   type FlagKey = keyof typeof Flags;
+
+  const handleExchangeFlags = () => {
+    // Swap flags
+    setMainFlag((prev) => {
+      const newMain = targetFlag;
+      setTargetFlag(prev);
+      saveFlagsToFirebase(uid, newMain, prev); // Update Firebase
+      return newMain;
+    });
+
+    // Animate positions
+    mainFlagPosition.value = withTiming(mainFlagPosition.value === 0 ? 1 : 0);
+    targetFlagPosition.value = withTiming(
+      targetFlagPosition.value === 1 ? 0 : 1
+    );
+  };
+
+  // Animated styles
+  const mainFlagStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: withTiming(mainFlagPosition.value) }],
+  }));
+
+  const targetFlagStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: withTiming(targetFlagPosition.value) }],
+  }));
+
+  const exchangeIconStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${mainFlagPosition.value * 180}deg` }],
+  }));
 
   const handleOpenModal = (flagType: string) => {
     setFlag(flagType);
@@ -59,6 +96,10 @@ export const HomeScreen = ({ uid, navigation }) => {
     setTimeout(() => {
       setLoading(false);
     }, 1500);
+  };
+
+  const onWordDeleted = () => {
+    setWordNum((prev) => prev - 1);
   };
 
   const saveFlagState = (flagName: FlagKey, isMain: boolean) => {
@@ -168,16 +209,21 @@ export const HomeScreen = ({ uid, navigation }) => {
                 onPress={() => handleOpenModal("main")}
                 style={{ width: "80%" }}
               >
-                <HomeHeaderLanguageViewText>
+                <HomeHeaderLanguageViewText style={mainFlagStyle}>
                   {Flags[mainFlag].flag} - {Flags[mainFlag].language}
                 </HomeHeaderLanguageViewText>
               </TouchableOpacity>
-              <Text style={{ color: "white", fontSize: 20 }}>TO</Text>
+              <TouchableOpacity onPress={handleExchangeFlags}>
+                <Animated.Image
+                  source={Images.exchange}
+                  style={[{ height: 32, width: 32 }, exchangeIconStyle]}
+                />
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => handleOpenModal("target")}
                 style={{ width: "80%" }}
               >
-                <HomeHeaderLanguageViewText>
+                <HomeHeaderLanguageViewText style={targetFlagStyle}>
                   {Flags[targetFlag].flag} - {Flags[targetFlag].language}
                 </HomeHeaderLanguageViewText>
               </TouchableOpacity>
@@ -189,9 +235,14 @@ export const HomeScreen = ({ uid, navigation }) => {
                 </EmptyWordText>
               ) : (
                 <LanguageView
+                  uid={uid}
                   wordsList={wordsList}
+                  setWordsList={setWordsList}
                   loading={loading}
-                  mainFlag={Flags[mainFlag].speechRecognitionLocale}
+                  mainFlag={mainFlag}
+                  targetFlag={targetFlag}
+                  setLoading={setLoading}
+                  onWordDeleted={onWordDeleted}
                 />
               )}
             </HomeLanguageWordsView>

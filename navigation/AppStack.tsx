@@ -7,6 +7,7 @@ import { ActivityIndicator } from "react-native";
 import { Colors } from "../config";
 import { LoadingContainer } from "./style";
 import QuestionScreen from "../screens/QuestionScreen";
+import SettingsScreen from "../screens/SettingsScreen";
 
 const Stack = createStackNavigator();
 
@@ -33,6 +34,7 @@ export const AppStack = ({ uid }) => {
       <Stack.Screen name="Ocr" component={OcrScreen} />
       <Stack.Screen name="Input" component={InputScreen} />
       <Stack.Screen name="Question" component={QuestionScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
     </Stack.Navigator>
   );
 };

@@ -20,6 +20,7 @@ export const LanguageInsideView = styled.View`
 export const LanguageInsiderView = styled.View`
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   flex: 1;
   margin-vertical: 2px;
   margin-horizontal: 12px;

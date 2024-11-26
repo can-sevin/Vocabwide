@@ -6,7 +6,7 @@ export default {
     slug: "expo-vocabwide",
     privacy: "public",
     platforms: ["ios", "android"],
-    version: "0.19.0",
+    version: "0.0.1",
     orientation: "portrait",
     icon: "./assets/icon.png",
     jsEngine: "hermes",
@@ -26,15 +26,17 @@ export default {
         "WRITE_EXTERNAL_STORAGE",
       ],
       package: "com.vocabwide",
+      versionCode: 1,
     },
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.anonymous.expo-vocabwide",
+      bundleIdentifier: "com.canblack.vocabwide",
+      buildNumber: "1",
       infoPlist: {
         NSMicrophoneUsageDescription:
-          "Vocabwide wants to microphone permission If you want to add word by voice you have to give voice permission",
+          "Vocabwide needs microphone access to add words by voice. Please grant permission.",
         NSSpeechRecognitionUsageDescription:
-          "Description of why you require the use of the speech recognition",
+          "Vocabwide uses speech recognition to convert your speech to text for word addition.",
       },
     },
     plugins: [
@@ -42,17 +44,17 @@ export default {
         "@react-native-voice/voice",
         {
           microphonePermission:
-            "CUSTOM: Allow $(PRODUCT_NAME) to access the microphone",
+            "Allow $(PRODUCT_NAME) to access the microphone for voice input.",
           speechRecognitionPermission:
-            "CUSTOM: Allow $(PRODUCT_NAME) to securely recognize user speech",
+            "Allow $(PRODUCT_NAME) to securely recognize user speech.",
         },
       ],
       [
         "expo-camera",
         {
-          cameraPermission: "Allow $(PRODUCT_NAME) to access your camera",
+          cameraPermission: "Allow $(PRODUCT_NAME) to access your camera.",
           microphonePermission:
-            "Allow $(PRODUCT_NAME) to access your microphone",
+            "Allow $(PRODUCT_NAME) to access your microphone for audio recording.",
           recordAudioAndroid: true,
         },
       ],
@@ -64,6 +66,9 @@ export default {
       storageBucket: process.env.STORAGE_BUCKET,
       messagingSenderId: process.env.MESSAGING_SENDER_ID,
       appId: process.env.APP_ID,
+      eas: {
+        projectId: "b3768cf0-e4fd-4f49-9c62-6c4a43e49e11",
+      },
     },
   },
 };

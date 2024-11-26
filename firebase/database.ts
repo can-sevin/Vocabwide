@@ -384,3 +384,52 @@ export const deleteCorrectWordsFromFirebase = async (
     if (shouldSetLoading) setLoading(false);
   }
 };
+
+export const deleteWordsFromFirebase = async (
+  uid: string,
+  originalWord: string,
+  translatedWord: string,
+  mainFlag: string,
+  targetFlag: string
+) => {
+  const originalWordsRef = ref(
+    database,
+    `users/${uid}/${mainFlag}${targetFlag}originalWords`
+  );
+  const translatedWordsRef = ref(
+    database,
+    `users/${uid}/${mainFlag}${targetFlag}translatedWords`
+  );
+
+  try {
+    const originalSnapshot = await get(originalWordsRef);
+    if (originalSnapshot.exists()) {
+      let currentOriginalWords = originalSnapshot.val();
+      currentOriginalWords = currentOriginalWords.filter(
+        (word: string) =>
+          word.trim().toLowerCase() !== originalWord.trim().toLowerCase()
+      );
+      await set(originalWordsRef, currentOriginalWords);
+      console.log(`Deleted "${originalWord}" from originalWords`);
+    } else {
+      console.log(`No original words found for UID: ${uid}`);
+    }
+
+    const translatedSnapshot = await get(translatedWordsRef);
+    if (translatedSnapshot.exists()) {
+      let currentTranslatedWords = translatedSnapshot.val();
+      currentTranslatedWords = currentTranslatedWords.filter(
+        (word: string) =>
+          word.trim().toLowerCase() !== translatedWord.trim().toLowerCase()
+      );
+      await set(translatedWordsRef, currentTranslatedWords);
+      console.log(`Deleted "${translatedWord}" from translatedWords`);
+    } else {
+      console.log(`No translated words found for UID: ${uid}`);
+    }
+
+    console.log("Specified words successfully deleted from Firebase.");
+  } catch (error) {
+    console.error("Error deleting specified words from Firebase:", error);
+  }
+};

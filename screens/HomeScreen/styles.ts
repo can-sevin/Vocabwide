@@ -3,7 +3,7 @@ import { Colors } from "../../config";
 import Animated from "react-native-reanimated";
 import { View } from "react-native";
 
-export const HomeLayout = styled(Animated.View)`
+export const HomeLayout = styled(View)`
   flex: 1;
   align-items: center;
   justify-content: space-between;
@@ -64,9 +64,10 @@ export const HomeHeaderLanguageView = styled.View`
   flex-direction: row;
   justify-content: center;
   width: 70%;
+  align-items: center;
 `;
 
-export const HomeHeaderLanguageViewText = styled.Text`
+export const HomeHeaderLanguageViewText = styled(Animated.Text)`
   font-family: Helvetica-Bold;
   font-size: 16px;
   color: ${Colors.white};
