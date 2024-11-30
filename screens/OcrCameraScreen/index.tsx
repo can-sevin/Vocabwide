@@ -7,9 +7,16 @@ import {
   Text,
   View,
   SafeAreaView,
+  Dimensions,
+  Platform,
 } from "react-native";
 import LottieView from "lottie-react-native";
-import { auth, Images, Flags } from "../../config";
+import {
+  RewardedAd,
+  RewardedAdEventType,
+  TestIds,
+} from "react-native-google-mobile-ads";
+import { auth, Images, Flags, Colors } from "../../config";
 import {
   Container,
   CameraContainer,
@@ -36,6 +43,7 @@ import { takePhotoHandler, pickImageHandler } from "../../hooks/ocrHandlers";
 export const OcrScreen = ({ navigation, route }) => {
   const mainFlag = route.params.main;
   const targetFlag = route.params.target;
+
   const [permission, requestPermission] = useCameraPermissions();
   const [camera, setCamera] = useState<null>(null);
   const [resultText, setResultText] = useState<string | null>(null);
@@ -47,9 +55,70 @@ export const OcrScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const userId = auth.currentUser?.uid;
+  const adUnitId =
+    Platform.OS === "android"
+      ? "ca-app-pub-2210071155853586/4793147397"
+      : "ca-app-pub-2210071155853586/1045474070";
 
-  // Step 1: Check the language family
+  const [adLoaded, setAdLoaded] = useState(false);
+  const rewardedAd = RewardedAd.createForAdRequest(adUnitId, {
+    requestNonPersonalizedAdsOnly: true,
+  });
+
+  const userId = auth.currentUser?.uid;
+  const screenHeight = Dimensions.get("screen").height;
+
+  // Load Rewarded Ad
+  useEffect(() => {
+    rewardedAd.load();
+
+    const onAdLoaded = () => setAdLoaded(true);
+    const onAdEarnedReward = () => {
+      console.log("User earned reward");
+
+      // Save the word pair after reward is earned
+      saveWordPair(
+        selectedWord,
+        translatedWord,
+        mainFlag,
+        targetFlag,
+        userId,
+        resultText,
+        setModalVisible,
+        setSelectedWord,
+        setTranslatedWord,
+        setSelectedIndices
+      );
+    };
+
+    const unsubscribeLoaded = rewardedAd.addAdEventListener(
+      RewardedAdEventType.LOADED,
+      onAdLoaded
+    );
+    const unsubscribeEarnedReward = rewardedAd.addAdEventListener(
+      RewardedAdEventType.EARNED_REWARD,
+      onAdEarnedReward
+    );
+
+    return () => {
+      unsubscribeLoaded();
+      unsubscribeEarnedReward();
+    };
+  }, [selectedWord, translatedWord]);
+
+  const showRewardedAd = () => {
+    if (adLoaded) {
+      rewardedAd.show();
+    } else {
+      Alert.alert(
+        "Ad not ready",
+        "The ad is still loading. Please try again in a few seconds."
+      );
+      rewardedAd.load(); // Load the ad again
+    }
+  };
+
+  // Check language family
   useEffect(() => {
     const family = Flags[mainFlag]?.family;
     const supportedFamilies = [
@@ -70,11 +139,36 @@ export const OcrScreen = ({ navigation, route }) => {
 
   if (!permission.granted) {
     return (
-      <Container>
-        <Text style={{ textAlign: "center", paddingBottom: 10 }}>
-          We need your permission to show the camera
-        </Text>
-        <Button onPress={requestPermission} title="grant permission" />
+      <Container
+        style={{
+          flex: 1,
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingHorizontal: 20,
+          maxHeight: screenHeight / 2,
+        }}
+      >
+        <BackButtonContainer onPress={() => navigation.goBack()}>
+          <BackButtonIcon source={Images.back_icon} />
+        </BackButtonContainer>
+        <View>
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 18,
+              fontWeight: "600",
+              marginBottom: 20,
+              color: "#333",
+            }}
+          >
+            We need your permission to access the camera
+          </Text>
+          <Button
+            onPress={requestPermission}
+            title="Grant Permission"
+            color={Colors.main_yellow}
+          />
+        </View>
       </Container>
     );
   }
@@ -180,20 +274,7 @@ export const OcrScreen = ({ navigation, route }) => {
           visible={modalVisible}
           selectedWord={selectedWord}
           translatedWord={translatedWord}
-          onSave={() =>
-            saveWordPair(
-              selectedWord,
-              translatedWord,
-              mainFlag,
-              targetFlag,
-              userId,
-              resultText,
-              setModalVisible,
-              setSelectedWord,
-              setTranslatedWord,
-              setSelectedIndices
-            )
-          }
+          onSave={showRewardedAd} // Show ad before saving
           onCancel={() => setModalVisible(false)}
         />
       </SafeAreaView>

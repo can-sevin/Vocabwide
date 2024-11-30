@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   TouchableOpacity,
   ImageBackground,
   Pressable,
   View,
   SafeAreaView,
+  Alert,
+  Platform,
 } from "react-native";
 import { FadeInDown } from "react-native-reanimated";
 import { Images } from "../../config";
@@ -27,6 +29,11 @@ import {
 import { LoadingIndicator } from "../../components";
 import ModalOcr from "../../components/ModalOcr";
 import { useSpeechRecognition } from "../../hooks/useSpeechRecognition";
+import {
+  RewardedAd,
+  RewardedAdEventType,
+  TestIds,
+} from "react-native-google-mobile-ads";
 
 export const SpeechTextScreen = ({ navigation, route }) => {
   const { main, target } = route.params;
@@ -46,6 +53,57 @@ export const SpeechTextScreen = ({ navigation, route }) => {
     saveWordPair,
     setModalVisible,
   } = useSpeechRecognition({ main, target });
+
+  const adUnitId =
+    Platform.OS === "android"
+      ? "ca-app-pub-2210071155853586/4793147397"
+      : "ca-app-pub-2210071155853586/1045474070";
+
+  const [adLoaded, setAdLoaded] = useState(false);
+  const rewardedAd = RewardedAd.createForAdRequest(adUnitId, {
+    requestNonPersonalizedAdsOnly: true,
+  });
+
+  useEffect(() => {
+    // Load the rewarded ad
+    rewardedAd.load();
+
+    const onAdLoaded = () => {
+      setAdLoaded(true);
+      console.log("Rewarded Ad Loaded");
+    };
+
+    const onAdEarnedReward = () => {
+      console.log("User earned the reward");
+      // Handle the reward logic here (e.g., save word pair)
+      saveWordPair(selectedWord, translatedWord, main, target);
+      setModalVisible(false);
+    };
+
+    // Ad Event Listeners
+    const unsubscribeLoaded = rewardedAd.addAdEventListener(
+      RewardedAdEventType.LOADED,
+      onAdLoaded
+    );
+    const unsubscribeEarnedReward = rewardedAd.addAdEventListener(
+      RewardedAdEventType.EARNED_REWARD,
+      onAdEarnedReward
+    );
+
+    return () => {
+      unsubscribeLoaded();
+      unsubscribeEarnedReward();
+    };
+  }, [selectedWord, translatedWord, saveWordPair]);
+
+  const showRewardedAd = () => {
+    if (adLoaded) {
+      rewardedAd.show();
+    } else {
+      Alert.alert("Ad not ready", "The ad is still loading. Please try again.");
+      rewardedAd.load(); // Reload the ad
+    }
+  };
 
   const LoadingComponent = () => (
     <LoadingOverlay>
@@ -70,9 +128,7 @@ export const SpeechTextScreen = ({ navigation, route }) => {
               visible={modalVisible}
               selectedWord={selectedWord}
               translatedWord={translatedWord}
-              onSave={() =>
-                saveWordPair(selectedWord, translatedWord, main, target)
-              }
+              onSave={showRewardedAd} // Show ad before saving
               onCancel={() => setModalVisible(false)}
             />
           )}

@@ -58,6 +58,21 @@ export default {
           recordAudioAndroid: true,
         },
       ],
+      [
+        "expo-build-properties",
+        {
+          ios: {
+            useFrameworks: "static",
+          },
+        },
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          androidAppId: "ca-app-pub-2210071155853586~2017503339",
+          iosAppId: "ca-app-pub-2210071155853586~3079405195",
+        },
+      ],
     ],
     extra: {
       apiKey: process.env.API_KEY,

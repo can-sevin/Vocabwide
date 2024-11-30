@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Modal,
   ScrollView,
   TouchableOpacity,
   Text,
   StyleSheet,
+  TextInput,
 } from "react-native";
 import {
   ButtonContainer,
@@ -34,6 +35,15 @@ export const ModalFlag: React.FC<ModalFlagProps> = ({
   excludeFlag,
   loading,
 }) => {
+  const [searchText, setSearchText] = useState("");
+
+  const filteredFlags = Object.entries(Flags).filter(
+    ([languageKey, flagObject]) =>
+      languageKey !== excludeFlag &&
+      (flagObject.language.toLowerCase().includes(searchText.toLowerCase()) ||
+        flagObject.flag.toLowerCase().includes(searchText.toLowerCase()))
+  );
+
   return (
     <Modal
       visible={modalVisible}
@@ -48,20 +58,24 @@ export const ModalFlag: React.FC<ModalFlagProps> = ({
           ) : (
             <>
               <ModalText>Select a Flag</ModalText>
+              <TextInput
+                style={styles.searchBar}
+                placeholder="Search for a flag..."
+                value={searchText}
+                onChangeText={setSearchText}
+              />
               <ScrollView style={{ maxHeight: 200 }}>
-                {Object.entries(Flags)
-                  .filter(([languageKey]) => languageKey !== excludeFlag)
-                  .map(([languageKey, flagObject]) => (
-                    <TouchableOpacity
-                      key={languageKey}
-                      style={styles.flagItem}
-                      onPress={() => onSave(languageKey as FlagKey)}
-                    >
-                      <Text style={styles.flagText}>
-                        {flagObject.flag} - {flagObject.language}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                {filteredFlags.map(([languageKey, flagObject]) => (
+                  <TouchableOpacity
+                    key={languageKey}
+                    style={styles.flagItem}
+                    onPress={() => onSave(languageKey as FlagKey)}
+                  >
+                    <Text style={styles.flagText}>
+                      {flagObject.flag} - {flagObject.language}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
               </ScrollView>
               <ButtonContainer>
                 <CancelButton onPress={onCancel}>
@@ -77,6 +91,17 @@ export const ModalFlag: React.FC<ModalFlagProps> = ({
 };
 
 const styles = StyleSheet.create({
+  searchBar: {
+    height: 40,
+    width: "100%",
+    borderColor: "#ddd",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    fontSize: 16,
+    color: "#333",
+  },
   flagItem: {
     padding: 10,
     borderBottomWidth: 1,

@@ -103,7 +103,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
   ) => {
     const translateX = useSharedValue(0);
     const opacity = useSharedValue(1);
-    const height = useSharedValue(60);
+    const height = useSharedValue(24);
 
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ translateX: translateX.value }],
@@ -210,8 +210,12 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
     words: [string, string][],
     index: number
   ) => {
+    const baseHeight = 60; // Minimum height
+    const additionalHeight = 25 * (words.length - 1); // Her ek kelime için 25
+    const totalHeight = baseHeight + additionalHeight;
+
     const opacity = useSharedValue(1);
-    const height = useSharedValue(60);
+    const height = useSharedValue(totalHeight); // Dinamik yüksekliği ayarla
 
     const animatedStyle = useAnimatedStyle(() => ({
       opacity: opacity.value,
@@ -220,9 +224,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
 
     const onEmptyGroup = () => {
       opacity.value = withTiming(0, { duration: 300 });
-      height.value = withTiming(0, { duration: 300 }, () => {
-        runOnJS(handleDeleteGroup)(letter);
-      });
+      height.value = withTiming(0, { duration: 300 });
     };
 
     return (
@@ -235,19 +237,28 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
             <Text>{letter}</Text>
           </LanguageInsideAlphabetText>
         </LanguageInsideAlphabetView>
-        {words.map(([originalWord, translatedWord], idx) =>
-          renderWordItem(
-            originalWord,
-            translatedWord,
-            letter,
-            idx,
-            onEmptyGroup
-          )
-        )}
+        {words.map(([originalWord, translatedWord], idx) => (
+          <LanguageInsideView key={`${originalWord}-${idx}`}>
+            <LanguageInsiderView>
+              <LanguageInsiderText
+                style={{ fontSize: getFontSize(originalWord) }}
+              >
+                <Text>{originalWord}</Text>
+                <TouchableOpacity onPress={() => handleSpeak(originalWord)}>
+                  <Text> 🔊</Text>
+                </TouchableOpacity>
+              </LanguageInsiderText>
+              <LanguageInsiderText
+                style={{ fontSize: getFontSize(translatedWord) }}
+              >
+                <Text>{translatedWord}</Text>
+              </LanguageInsiderText>
+            </LanguageInsiderView>
+          </LanguageInsideView>
+        ))}
       </Animated.View>
     );
   };
-
   return (
     <>
       {loading ? (

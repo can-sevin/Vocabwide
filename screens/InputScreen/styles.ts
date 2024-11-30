@@ -49,7 +49,7 @@ export const GeneralButton = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   margin-top: 40px;
-  background-color: ${Colors.LighterGray2};
+  background-color: ${Colors.main_yellow};
   padding: 10px;
   border-radius: 8px;
 `;
