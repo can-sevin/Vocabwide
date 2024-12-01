@@ -433,3 +433,107 @@ export const deleteWordsFromFirebase = async (
     console.error("Error deleting specified words from Firebase:", error);
   }
 };
+
+export const addWordToPastWords = async (
+  uid: string,
+  originalWord: string,
+  translatedWord: string,
+  mainFlag: string,
+  targetFlag: string
+) => {
+  const pastOriginalWordsRef = ref(
+    database,
+    `users/${uid}/past${mainFlag}${targetFlag}originalWords`
+  );
+  const pastTranslatedWordsRef = ref(
+    database,
+    `users/${uid}/past${mainFlag}${targetFlag}translatedWords`
+  );
+
+  try {
+    const [originalSnapshot, translatedSnapshot] = await Promise.all([
+      get(pastOriginalWordsRef),
+      get(pastTranslatedWordsRef),
+    ]);
+
+    let currentPastOriginalWords = originalSnapshot.exists()
+      ? originalSnapshot.val()
+      : [];
+    let currentPastTranslatedWords = translatedSnapshot.exists()
+      ? translatedSnapshot.val()
+      : [];
+
+    if (!Array.isArray(currentPastOriginalWords)) currentPastOriginalWords = [];
+    if (!Array.isArray(currentPastTranslatedWords))
+      currentPastTranslatedWords = [];
+
+    currentPastOriginalWords.push(originalWord);
+    currentPastTranslatedWords.push(translatedWord);
+
+    await Promise.all([
+      set(pastOriginalWordsRef, currentPastOriginalWords),
+      set(pastTranslatedWordsRef, currentPastTranslatedWords),
+    ]);
+
+    console.log(
+      `Added "${originalWord}" and "${translatedWord}" to past words.`
+    );
+  } catch (error) {
+    console.error("Error adding words to pastWords:", error);
+  }
+};
+
+export const fetchPastWords = async (
+  uid: string,
+  mainFlag: string,
+  targetFlag: string,
+  setPastWordsList: (words: [string, string][]) => void,
+  setLoading: (loading: boolean) => void
+) => {
+  setLoading(true);
+
+  const pastOriginalWordsRef = ref(
+    database,
+    `users/${uid}/past${mainFlag}${targetFlag}originalWords`
+  );
+  const pastTranslatedWordsRef = ref(
+    database,
+    `users/${uid}/past${mainFlag}${targetFlag}translatedWords`
+  );
+
+  try {
+    const [originalSnapshot, translatedSnapshot] = await Promise.all([
+      get(pastOriginalWordsRef),
+      get(pastTranslatedWordsRef),
+    ]);
+
+    const originalWords = originalSnapshot.exists()
+      ? originalSnapshot.val()
+      : [];
+    const translatedWords = translatedSnapshot.exists()
+      ? translatedSnapshot.val()
+      : [];
+
+    if (!originalWords.length && !translatedWords.length) {
+      console.log("No past words found!");
+      setPastWordsList([]);
+      setLoading(false);
+      return;
+    }
+
+    const combinedWords = originalWords.map(
+      (originalWord: string, index: number) => [
+        originalWord,
+        translatedWords[index] || "",
+      ]
+    );
+
+    console.log("Fetched Combined Words:", combinedWords);
+    setPastWordsList(combinedWords);
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching past words:", error);
+    setPastWordsList([]); // Hata durumunda boş liste döndür
+    setLoading(false);
+  }
+};

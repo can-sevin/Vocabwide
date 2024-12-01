@@ -12,9 +12,8 @@ import {
 } from "react-native";
 import LottieView from "lottie-react-native";
 import {
-  RewardedAd,
   RewardedAdEventType,
-  TestIds,
+  RewardedInterstitialAd
 } from "react-native-google-mobile-ads";
 import { auth, Images, Flags, Colors } from "../../config";
 import {
@@ -57,11 +56,11 @@ export const OcrScreen = ({ navigation, route }) => {
 
   const adUnitId =
     Platform.OS === "android"
-      ? "ca-app-pub-2210071155853586/4793147397"
-      : "ca-app-pub-2210071155853586/1045474070";
+      ? "ca-app-pub-2210071155853586/6090922789"
+      : "ca-app-pub-2210071155853586/4072659334";
 
   const [adLoaded, setAdLoaded] = useState(false);
-  const rewardedAd = RewardedAd.createForAdRequest(adUnitId, {
+  const rewardedAd = RewardedInterstitialAd.createForAdRequest(adUnitId, {
     requestNonPersonalizedAdsOnly: true,
   });
 

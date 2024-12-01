@@ -5,6 +5,7 @@ import { ForgotPasswordScreen } from "./ForgotPasswordScreen";
 import { SpeechTextScreen } from "./VoiceTextScreen";
 import { OcrScreen } from "./OcrCameraScreen";
 import { InputScreen } from "./InputScreen";
+import { PastScreen } from "./PastScreen";
 
 export {
   LoginScreen,
@@ -14,4 +15,5 @@ export {
   SpeechTextScreen,
   OcrScreen,
   InputScreen,
+  PastScreen,
 };

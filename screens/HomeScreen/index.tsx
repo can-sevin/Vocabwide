@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   Alert,
   Image,
+  Platform,
 } from "react-native";
 import { Colors, Flags, Images } from "../../config";
 import Animated, {
@@ -41,6 +42,11 @@ import {
   handleListingWords,
   fetchUserInfo,
 } from "../../firebase/index";
+import TutorialModal from "../../components/TutorialModal/TutorialModal";
+import {
+  RewardedAd,
+  RewardedAdEventType,
+} from "react-native-google-mobile-ads";
 
 export const HomeScreen = ({ uid, navigation }) => {
   const [wordsList, setWordsList] = useState<[string, string][]>([]);
@@ -53,22 +59,78 @@ export const HomeScreen = ({ uid, navigation }) => {
   const [mainFlag, setMainFlag] = useState<FlagKey>("en");
   const [targetFlag, setTargetFlag] = useState<FlagKey>("tr");
   const [flag, setFlag] = useState("main");
+  const [tutorialVisible, setTutorialVisible] = useState(false);
+  const [adLoaded, setAdLoaded] = useState(false);
+  const [navigationPath, setNavigationPath] = useState("");
 
   const mainFlagPosition = useSharedValue(0);
   const targetFlagPosition = useSharedValue(1);
 
+  const adUnitId =
+    Platform.OS === "android"
+      ? "ca-app-pub-2210071155853586/4793147397"
+      : "ca-app-pub-2210071155853586/1045474070";
+
+  const rewardedAd = RewardedAd.createForAdRequest(adUnitId, {
+    requestNonPersonalizedAdsOnly: true,
+  });
+
   type FlagKey = keyof typeof Flags;
 
+  // Ad listeners and initialization
+  useEffect(() => {
+    const onAdLoaded = () => {
+      setAdLoaded(true);
+      console.log("Rewarded Ad Loaded");
+    };
+
+    const onAdEarnedReward = async () => {
+      console.log("User earned the reward");
+      if (navigationPath) {
+        navigation.navigate(navigationPath, {
+          main: mainFlag,
+          target: targetFlag,
+        });
+      }
+      await rewardedAd.load(); // Reload ad for next use
+    };
+
+    rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, onAdLoaded);
+    rewardedAd.addAdEventListener(
+      RewardedAdEventType.EARNED_REWARD,
+      onAdEarnedReward
+    );
+
+    rewardedAd.load();
+
+    return () => {
+      rewardedAd.removeAllListeners();
+    };
+  }, [navigationPath, mainFlag, targetFlag]);
+
+  const showRewardedAd = async (path: string) => {
+    setNavigationPath(path);
+
+    if (adLoaded) {
+      await rewardedAd.show().catch(async (error) => {
+        console.error("Ad failed to show: ", error);
+        Alert.alert("Ad Error", "The ad could not be shown. Please try again.");
+        await rewardedAd.load();
+      });
+    } else {
+      Alert.alert("Ad not ready", "The ad is still loading. Please try again.");
+    }
+  };
+
+  // Swap flags logic
   const handleExchangeFlags = () => {
-    // Swap flags
     setMainFlag((prev) => {
       const newMain = targetFlag;
       setTargetFlag(prev);
-      saveFlagsToFirebase(uid, newMain, prev); // Update Firebase
+      saveFlagsToFirebase(uid, newMain, prev);
       return newMain;
     });
 
-    // Animate positions
     mainFlagPosition.value = withTiming(mainFlagPosition.value === 0 ? 1 : 0);
     targetFlagPosition.value = withTiming(
       targetFlagPosition.value === 1 ? 0 : 1
@@ -92,35 +154,29 @@ export const HomeScreen = ({ uid, navigation }) => {
     setFlag(flagType);
     setModalVisible(true);
     setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-  };
-
-  const onWordDeleted = () => {
-    setWordNum((prev) => prev - 1);
+    setTimeout(() => setLoading(false), 1500);
   };
 
   const saveFlagState = (flagName: FlagKey, isMain: boolean) => {
-    const newMainFlag = isMain ? flagName : mainFlag;
-    const newTargetFlag = isMain ? targetFlag : flagName;
-
     if (isMain) {
       setMainFlag(flagName);
     } else {
       setTargetFlag(flagName);
     }
-
-    saveFlagsToFirebase(uid, newMainFlag, newTargetFlag);
+    saveFlagsToFirebase(
+      uid,
+      isMain ? flagName : mainFlag,
+      isMain ? targetFlag : flagName
+    );
     setModalVisible(false);
   };
 
+  // Fetch initial flags and words
   useEffect(() => {
     if (uid) {
-      fetchFlagsFromFirebase(uid, (mainFlag, targetFlag) => {
-        saveFlagState(mainFlag as FlagKey, true);
-        saveFlagState(targetFlag as FlagKey, false);
+      fetchFlagsFromFirebase(uid, (main, target) => {
+        saveFlagState(main as FlagKey, true);
+        saveFlagState(target as FlagKey, false);
       });
       handleListingWords(
         uid,
@@ -149,6 +205,7 @@ export const HomeScreen = ({ uid, navigation }) => {
     }, [uid, mainFlag, targetFlag])
   );
 
+  // Animate word count
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
     if (wordNum > 0) {
@@ -162,29 +219,11 @@ export const HomeScreen = ({ uid, navigation }) => {
         }
       }, 200);
     } else {
-      let currentNumber = 0;
-      setDisplayedNumber(currentNumber);
+      setDisplayedNumber(0);
     }
 
     return () => clearInterval(interval);
   }, [wordNum]);
-
-  const handlePracticePress = () => {
-    if (wordNum >= 10) {
-      navigation.navigate("Question", {
-        main: mainFlag,
-        target: targetFlag,
-        uid: uid,
-        wordsList,
-      });
-    } else {
-      Alert.alert(
-        "Insufficient words",
-        "You want to practice with words, you should add 10 or more words.",
-        [{ text: "OK" }]
-      );
-    }
-  };
 
   return (
     <ImageBackground
@@ -231,7 +270,7 @@ export const HomeScreen = ({ uid, navigation }) => {
             <HomeLanguageWordsView>
               {wordsList.length === 0 ? (
                 <EmptyWordText>
-                  First, You need to start by adding words.
+                  First, you need to start by adding words.
                 </EmptyWordText>
               ) : (
                 <LanguageView
@@ -242,36 +281,74 @@ export const HomeScreen = ({ uid, navigation }) => {
                   mainFlag={mainFlag}
                   targetFlag={targetFlag}
                   setLoading={setLoading}
-                  onWordDeleted={onWordDeleted}
                 />
               )}
             </HomeLanguageWordsView>
           </HomeTopView>
           <HomeBottomView>
-            <View style={{ marginBottom: 16 }}>
+            <View
+              style={{
+                marginBottom: 16,
+                paddingHorizontal: 32,
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <TouchableOpacity
+                style={{ alignSelf: "center" }}
+                onPress={() => setTutorialVisible(true)}
+              >
+                <Image
+                  source={Images.question_btn}
+                  style={{ width: 32, height: 32 }}
+                />
+              </TouchableOpacity>
               <HomePracticeButton
-                onPress={handlePracticePress}
+                onPress={() =>
+                  wordNum >= 10
+                    ? navigation.navigate("Question", {
+                        main: mainFlag,
+                        target: targetFlag,
+                        uid: uid,
+                        wordsList,
+                      })
+                    : Alert.alert(
+                        "Insufficient words",
+                        "You need at least 10 words to practice.",
+                        [{ text: "OK" }]
+                      )
+                }
                 style={{
                   backgroundColor:
                     wordNum >= 10 ? Colors.main_yellow : Colors.LighterGray2,
                 }}
               >
                 <HomePracticeButtonText
-                  style={{ color: wordNum >= 10 ? Colors.white : Colors.black }}
+                  style={{
+                    color: wordNum >= 10 ? Colors.white : Colors.black,
+                  }}
                 >
                   Practice
                 </HomePracticeButtonText>
               </HomePracticeButton>
-            </View>
-            <HomeBtmView>
               <TouchableOpacity
+                style={{ alignSelf: "center" }}
                 onPress={() =>
-                  navigation.navigate("Speech", {
-                    main: mainFlag,
-                    target: targetFlag,
+                  navigation.navigate("Past", {
+                    uid: uid,
+                    mainFlag: mainFlag,
+                    targetFlag: targetFlag,
                   })
                 }
               >
+                <Image
+                  source={Images.past_btn}
+                  style={{ width: 48, height: 48 }}
+                />
+              </TouchableOpacity>
+            </View>
+            <HomeBtmView>
+              <TouchableOpacity onPress={() => showRewardedAd("Speech")}>
                 <HomeBtmIcons source={Images.mic_icon} />
                 <HomeBtmIconText>Voice</HomeBtmIconText>
               </TouchableOpacity>
@@ -288,20 +365,17 @@ export const HomeScreen = ({ uid, navigation }) => {
                 <HomeBtmIconText>Input</HomeBtmIconText>
               </TouchableOpacity>
               <HomeVerticalView />
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("Ocr", {
-                    main: mainFlag,
-                    target: targetFlag,
-                  })
-                }
-              >
+              <TouchableOpacity onPress={() => showRewardedAd("Ocr")}>
                 <HomeBtmIcons source={Images.cam_icon} />
                 <HomeBtmIconText>Camera</HomeBtmIconText>
               </TouchableOpacity>
             </HomeBtmView>
           </HomeBottomView>
         </HomeLayout>
+        <TutorialModal
+          visible={tutorialVisible}
+          onClose={() => setTutorialVisible(false)}
+        />
         <ModalFlag
           modalVisible={modalVisible}
           onSave={

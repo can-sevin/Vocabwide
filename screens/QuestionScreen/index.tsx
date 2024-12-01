@@ -18,7 +18,7 @@ import { Images, Sounds } from "../../config";
 import { Audio } from "expo-av";
 import { createQuestion } from "../../config/gpt";
 import LottieView from "lottie-react-native";
-import { deleteCorrectWordsFromFirebase } from "../../firebase/database";
+import { addWordToPastWords, deleteCorrectWordsFromFirebase } from "../../firebase/database";
 
 export const QuestionScreen = ({ navigation, route }) => {
   const { target, main, wordsList, uid } = route.params;
@@ -97,6 +97,8 @@ export const QuestionScreen = ({ navigation, route }) => {
   }, [cards, loading, currentIndex]);
 
   const handleDeleteWords = async (word: string, correctWord: string) => {
+    await addWordToPastWords(uid, word, correctWord, main, target);
+    
     await deleteCorrectWordsFromFirebase(
       uid,
       word,

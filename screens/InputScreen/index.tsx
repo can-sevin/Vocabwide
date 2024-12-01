@@ -17,9 +17,8 @@ import { Formik } from "formik";
 import { handleAddingWords } from "../../firebase/database";
 import { wordValidationSchema } from "../../utils/index";
 import {
-  RewardedAd,
   RewardedAdEventType,
-  TestIds,
+  RewardedInterstitialAd,
 } from "react-native-google-mobile-ads";
 import { LoadingIndicator, TextInput } from "../../components";
 
@@ -28,8 +27,8 @@ export const InputScreen = ({ navigation, route }) => {
   const targetFlag = route.params.target;
   const adUnitId =
     Platform.OS === "android"
-      ? "ca-app-pub-2210071155853586/4793147397"
-      : "ca-app-pub-2210071155853586/1045474070";
+      ? "ca-app-pub-2210071155853586/6090922789"
+      : "ca-app-pub-2210071155853586/4072659334";
 
   const [text, setText] = useState<string>(
     "If you want to add multiple words, please separate each word with a comma."
@@ -40,7 +39,7 @@ export const InputScreen = ({ navigation, route }) => {
   const [adLoaded, setAdLoaded] = useState(false);
 
   // Rewarded Ad tanımı
-  const rewardedAd = RewardedAd.createForAdRequest(adUnitId, {
+  const rewardedAd = RewardedInterstitialAd.createForAdRequest(adUnitId, {
     requestNonPersonalizedAdsOnly: true,
   });
 

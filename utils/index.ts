@@ -123,7 +123,7 @@ export const openApplicationSettings = () => {
 export const wordValidationSchema = Yup.object().shape({
   words: Yup.string()
     .matches(
-      /^[a-zA-Z]+(,\s*[a-zA-Z]+)*$/,
+      /^[\p{L}]+(,\s*[\p{L}]+)*$/u,
       "Please enter valid words separated by commas (e.g., apple, orange, grape)"
     )
     .required("Words input is required"),

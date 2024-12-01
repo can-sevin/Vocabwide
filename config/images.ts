@@ -9,6 +9,7 @@ export const Images = {
   log_out: require("../assets/icons/shutdown.png"),
   gallery_btn: require("../assets/icons/photo-gallery.png"),
   question_btn: require("../assets/icons/question.png"),
+  past_btn: require("../assets/icons/past.png"),
   succeed_icon: require("../assets/icons/succeed.png"),
   lottie_recognition: require("../assets/lotties/recognition_new.json"),
   lottie_capture: require("../assets/lotties/capture.json"),

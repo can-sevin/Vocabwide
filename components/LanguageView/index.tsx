@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -50,6 +50,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
     }
     groupedWords[firstLetter].push([originalWord, translatedWord]);
   });
+  const screenHeight = Dimensions.get("screen").height;
 
   const getFontSize = (text: string): number => {
     return text.length > 25 ? 12 : 16;
@@ -103,7 +104,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
   ) => {
     const translateX = useSharedValue(0);
     const opacity = useSharedValue(1);
-    const height = useSharedValue(24);
+    const height = useSharedValue(screenHeight / 30);
 
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ translateX: translateX.value }],
@@ -210,12 +211,12 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
     words: [string, string][],
     index: number
   ) => {
-    const baseHeight = 60; // Minimum height
-    const additionalHeight = 25 * (words.length - 1); // Her ek kelime için 25
+    const baseHeight = screenHeight / 14;
+    const additionalHeight = (screenHeight / 28) * (words.length - 1);
     const totalHeight = baseHeight + additionalHeight;
 
     const opacity = useSharedValue(1);
-    const height = useSharedValue(totalHeight); // Dinamik yüksekliği ayarla
+    const height = useSharedValue(totalHeight);
 
     const animatedStyle = useAnimatedStyle(() => ({
       opacity: opacity.value,
