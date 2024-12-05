@@ -11,10 +11,10 @@ import {
   Platform,
 } from "react-native";
 import LottieView from "lottie-react-native";
-import {
-  RewardedAdEventType,
-  RewardedInterstitialAd
-} from "react-native-google-mobile-ads";
+// import {
+//   RewardedAdEventType,
+//   RewardedInterstitialAd,
+// } from "react-native-google-mobile-ads";
 import { auth, Images, Flags, Colors } from "../../config";
 import {
   Container,
@@ -54,68 +54,68 @@ export const OcrScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const adUnitId =
-    Platform.OS === "android"
-      ? "ca-app-pub-2210071155853586/6090922789"
-      : "ca-app-pub-2210071155853586/4072659334";
+  // const adUnitId =
+  //   Platform.OS === "android"
+  //     ? "ca-app-pub-2210071155853586/6090922789"
+  //     : "ca-app-pub-2210071155853586/4072659334";
 
-  const [adLoaded, setAdLoaded] = useState(false);
-  const rewardedAd = RewardedInterstitialAd.createForAdRequest(adUnitId, {
-    requestNonPersonalizedAdsOnly: true,
-  });
+  // const [adLoaded, setAdLoaded] = useState(false);
+  // const rewardedAd = RewardedInterstitialAd.createForAdRequest(adUnitId, {
+  //   requestNonPersonalizedAdsOnly: true,
+  // });
 
   const userId = auth.currentUser?.uid;
   const screenHeight = Dimensions.get("screen").height;
 
-  // Load Rewarded Ad
-  useEffect(() => {
-    rewardedAd.load();
+  // // Load Rewarded Ad
+  // useEffect(() => {
+  //   rewardedAd.load();
 
-    const onAdLoaded = () => setAdLoaded(true);
-    const onAdEarnedReward = () => {
-      console.log("User earned reward");
+  //   const onAdLoaded = () => setAdLoaded(true);
+  //   const onAdEarnedReward = () => {
+  //     console.log("User earned reward");
 
-      // Save the word pair after reward is earned
-      saveWordPair(
-        selectedWord,
-        translatedWord,
-        mainFlag,
-        targetFlag,
-        userId,
-        resultText,
-        setModalVisible,
-        setSelectedWord,
-        setTranslatedWord,
-        setSelectedIndices
-      );
-    };
+  //     // Save the word pair after reward is earned
+  //     saveWordPair(
+  //       selectedWord,
+  //       translatedWord,
+  //       mainFlag,
+  //       targetFlag,
+  //       userId,
+  //       resultText,
+  //       setModalVisible,
+  //       setSelectedWord,
+  //       setTranslatedWord,
+  //       setSelectedIndices
+  //     );
+  //   };
 
-    const unsubscribeLoaded = rewardedAd.addAdEventListener(
-      RewardedAdEventType.LOADED,
-      onAdLoaded
-    );
-    const unsubscribeEarnedReward = rewardedAd.addAdEventListener(
-      RewardedAdEventType.EARNED_REWARD,
-      onAdEarnedReward
-    );
+  //   const unsubscribeLoaded = rewardedAd.addAdEventListener(
+  //     RewardedAdEventType.LOADED,
+  //     onAdLoaded
+  //   );
+  //   const unsubscribeEarnedReward = rewardedAd.addAdEventListener(
+  //     RewardedAdEventType.EARNED_REWARD,
+  //     onAdEarnedReward
+  //   );
 
-    return () => {
-      unsubscribeLoaded();
-      unsubscribeEarnedReward();
-    };
-  }, [selectedWord, translatedWord]);
+  //   return () => {
+  //     unsubscribeLoaded();
+  //     unsubscribeEarnedReward();
+  //   };
+  // }, [selectedWord, translatedWord]);
 
-  const showRewardedAd = () => {
-    if (adLoaded) {
-      rewardedAd.show();
-    } else {
-      Alert.alert(
-        "Ad not ready",
-        "The ad is still loading. Please try again in a few seconds."
-      );
-      rewardedAd.load(); // Load the ad again
-    }
-  };
+  // const showRewardedAd = () => {
+  //   if (adLoaded) {
+  //     rewardedAd.show();
+  //   } else {
+  //     Alert.alert(
+  //       "Ad not ready",
+  //       "The ad is still loading. Please try again in a few seconds."
+  //     );
+  //     rewardedAd.load(); // Load the ad again
+  //   }
+  // };
 
   // Check language family
   useEffect(() => {
@@ -185,7 +185,10 @@ export const OcrScreen = ({ navigation, route }) => {
           <BlurryView>
             <ErrorMessageView>
               <Text>{error}</Text>
-              <Button title="Back" onPress={() => navigation.goBack()} />
+              <Button title="Back" onPress={() => {
+                setCamera(null)
+                navigation.goBack()
+              }} />
             </ErrorMessageView>
           </BlurryView>
         )}
@@ -273,7 +276,21 @@ export const OcrScreen = ({ navigation, route }) => {
           visible={modalVisible}
           selectedWord={selectedWord}
           translatedWord={translatedWord}
-          onSave={showRewardedAd} // Show ad before saving
+          onSave={() => {
+            // Save without showing ads
+            saveWordPair(
+              selectedWord,
+              translatedWord,
+              mainFlag,
+              targetFlag,
+              userId,
+              resultText,
+              setModalVisible,
+              setSelectedWord,
+              setTranslatedWord,
+              setSelectedIndices
+            );
+          }}
           onCancel={() => setModalVisible(false)}
         />
       </SafeAreaView>

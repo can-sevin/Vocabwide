@@ -67,16 +67,19 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
 
     if (Platform.OS === "ios") {
       if (aspectRatio > 2) {
-        if (screenHeight <= 852) {
+        if (screenHeight <= 850) {
           screenHeightDiv16 *= 1.1;
-          screenHeightDiv35 *= 1.5;
-        } else if (screenHeight > 1600) {
-          screenHeightDiv16 *= 0.9;
-          screenHeightDiv35 *= 1.2;
+          screenHeightDiv35 *= 1.0;
+        } else if (900 >= screenHeight) {
+          screenHeightDiv16 *= 1.1;
+          screenHeightDiv35 *= 1.0;
+        } else if (1000 >= screenHeight) {
+          screenHeightDiv16 *= 1.0;
+          screenHeightDiv35 *= 1.0;
         }
       } else {
-        screenHeightDiv16 *= 1.05;
-        screenHeightDiv35 *= 1.1;
+        screenHeightDiv16 *= 1.45;
+        screenHeightDiv35 *= 1.0;
       }
     } else if (Platform.OS === "android") {
       if (aspectRatio > 2) {
