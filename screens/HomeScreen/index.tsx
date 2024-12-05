@@ -43,10 +43,7 @@ import {
   fetchUserInfo,
 } from "../../firebase/index";
 import TutorialModal from "../../components/TutorialModal/TutorialModal";
-import {
-  RewardedAd,
-  RewardedAdEventType,
-} from "react-native-google-mobile-ads";
+import { AppOpenAd } from "react-native-google-mobile-ads";
 
 export const HomeScreen = ({ uid, navigation }) => {
   const [wordsList, setWordsList] = useState<[string, string][]>([]);
@@ -60,65 +57,43 @@ export const HomeScreen = ({ uid, navigation }) => {
   const [targetFlag, setTargetFlag] = useState<FlagKey>("tr");
   const [flag, setFlag] = useState("main");
   const [tutorialVisible, setTutorialVisible] = useState(false);
-  const [adLoaded, setAdLoaded] = useState(false);
-  const [navigationPath, setNavigationPath] = useState("");
 
   const mainFlagPosition = useSharedValue(0);
   const targetFlagPosition = useSharedValue(1);
 
   const adUnitId =
     Platform.OS === "android"
-      ? "ca-app-pub-2210071155853586/4793147397"
-      : "ca-app-pub-2210071155853586/1045474070";
+      ? "ca-app-pub-2210071155853586/3496647097"
+      : "ca-app-pub-2210071155853586/3182059546";
 
-  const rewardedAd = RewardedAd.createForAdRequest(adUnitId, {
-    requestNonPersonalizedAdsOnly: true,
-  });
+  const rewardedAd = AppOpenAd.createForAdRequest(adUnitId);
 
   type FlagKey = keyof typeof Flags;
 
-  // Ad listeners and initialization
-  useEffect(() => {
-    const onAdLoaded = () => {
-      setAdLoaded(true);
-      console.log("Rewarded Ad Loaded");
-    };
-
-    const onAdEarnedReward = async () => {
-      console.log("User earned the reward");
-      if (navigationPath) {
-        navigation.navigate(navigationPath, {
-          main: mainFlag,
-          target: targetFlag,
-        });
-      }
-      await rewardedAd.load(); // Reload ad for next use
-    };
-
-    rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, onAdLoaded);
-    rewardedAd.addAdEventListener(
-      RewardedAdEventType.EARNED_REWARD,
-      onAdEarnedReward
-    );
-
+  const initAds = () => {
     rewardedAd.load();
+  };
 
-    return () => {
-      rewardedAd.removeAllListeners();
-    };
-  }, [navigationPath, mainFlag, targetFlag]);
+  useEffect(() => {
+    initAds();
+
+    setTimeout(() => {
+      if (rewardedAd.loaded) {
+        rewardedAd.show();
+      } else {
+        console.log("Reklam henüz yüklenmedi.");
+      }
+    }, 4000);
+  }, []);
 
   const showRewardedAd = async (path: string) => {
-    setNavigationPath(path);
-
-    if (adLoaded) {
-      await rewardedAd.show().catch(async (error) => {
-        console.error("Ad failed to show: ", error);
-        Alert.alert("Ad Error", "The ad could not be shown. Please try again.");
-        await rewardedAd.load();
+    if (path) {
+      navigation.navigate(path, {
+        main: mainFlag,
+        target: targetFlag,
       });
     } else {
-      Alert.alert("Ad not ready", "The ad is still loading. Please try again.");
+      console.error("No valid navigation path provided!");
     }
   };
 
@@ -281,6 +256,15 @@ export const HomeScreen = ({ uid, navigation }) => {
                   mainFlag={mainFlag}
                   targetFlag={targetFlag}
                   setLoading={setLoading}
+                  onWordDeleted={(deletedWord) => {
+                    setWordsList((prevWords) =>
+                      prevWords.filter(([word]) => word !== deletedWord)
+                    );
+                    Alert.alert(
+                      "Word Deleted",
+                      `${deletedWord} has been removed.`
+                    );
+                  }}
                 />
               )}
             </HomeLanguageWordsView>
@@ -343,7 +327,7 @@ export const HomeScreen = ({ uid, navigation }) => {
               >
                 <Image
                   source={Images.past_btn}
-                  style={{ width: 48, height: 48 }}
+                  style={{ width: 32, height: 32 }}
                 />
               </TouchableOpacity>
             </View>
@@ -353,14 +337,7 @@ export const HomeScreen = ({ uid, navigation }) => {
                 <HomeBtmIconText>Voice</HomeBtmIconText>
               </TouchableOpacity>
               <HomeVerticalView />
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("Input", {
-                    main: mainFlag,
-                    target: targetFlag,
-                  })
-                }
-              >
+              <TouchableOpacity onPress={() => showRewardedAd("Input")}>
                 <HomeBtmIcons source={Images.keyboard} />
                 <HomeBtmIconText>Input</HomeBtmIconText>
               </TouchableOpacity>

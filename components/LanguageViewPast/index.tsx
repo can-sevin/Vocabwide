@@ -48,10 +48,9 @@ export const LanguageViewPast: React.FC<LanguageViewPastProps> = ({
   const [isEmpty, setIsEmpty] = useState(false);
 
   useEffect(() => {
-    // Past kelimeleri yükle
     setLoading(true);
     fetchPastWords(uid, mainFlag, targetFlag, setPastWords, (fetchedWords) => {
-      console.log("ne var", fetchedWords);
+      setIsEmpty(fetchedWords.length === 0);
       setLoading(false);
     }).catch((error) => {
       console.error("Error fetching past words:", error);
@@ -71,6 +70,10 @@ export const LanguageViewPast: React.FC<LanguageViewPastProps> = ({
 
   const screenHeight = Dimensions.get("screen").height;
 
+  // Dinamik boyutları hesapla
+  const baseHeight = screenHeight / 16; // Başlık yüksekliği
+  const itemHeight = screenHeight / 30; // Her kelime için yükseklik
+
   const getFontSize = (text: string): number => {
     return text.length > 25 ? 12 : 16;
   };
@@ -84,14 +87,13 @@ export const LanguageViewPast: React.FC<LanguageViewPastProps> = ({
   };
 
   const handleDeleteWord = (originalWord: string, translatedWord: string) => {
-    // Sadece görünümden kaldır
     setPastWords((prev) =>
       prev.filter(
         ([word, translation]) =>
           word !== originalWord || translation !== translatedWord
       )
     );
-    console.log(`Removed from view: ${originalWord}`);
+    onWordDeleted();
   };
 
   const renderWordItem = (
@@ -102,7 +104,7 @@ export const LanguageViewPast: React.FC<LanguageViewPastProps> = ({
   ) => {
     const translateX = useSharedValue(0);
     const opacity = useSharedValue(1);
-    const height = useSharedValue(screenHeight / 30);
+    const height = useSharedValue(itemHeight);
 
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ translateX: translateX.value }],
@@ -162,9 +164,7 @@ export const LanguageViewPast: React.FC<LanguageViewPastProps> = ({
     words: [string, string][],
     index: number
   ) => {
-    const baseHeight = screenHeight / 14;
-    const additionalHeight = (screenHeight / 30) * (words.length - 1);
-    const totalHeight = baseHeight + additionalHeight;
+    const totalHeight = baseHeight + itemHeight * words.length;
 
     return (
       <Animated.View

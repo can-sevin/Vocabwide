@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { ImageBackground, Keyboard, SafeAreaView, Alert, Platform } from "react-native";
+import React, { useState } from "react";
+import { ImageBackground, Keyboard, SafeAreaView } from "react-native";
 import {
   BottomTextWhite,
   GeneralButton,
@@ -13,97 +13,22 @@ import {
   FormView,
 } from "./styles";
 import { auth, Images } from "../../config";
-import { Formik } from "formik";
+import { Formik, FormikState } from "formik";
 import { handleAddingWords } from "../../firebase/database";
 import { wordValidationSchema } from "../../utils/index";
-import {
-  RewardedAdEventType,
-  RewardedInterstitialAd,
-} from "react-native-google-mobile-ads";
 import { LoadingIndicator, TextInput } from "../../components";
 
 export const InputScreen = ({ navigation, route }) => {
   const mainFlag = route.params.main;
   const targetFlag = route.params.target;
-  const adUnitId =
-    Platform.OS === "android"
-      ? "ca-app-pub-2210071155853586/6090922789"
-      : "ca-app-pub-2210071155853586/4072659334";
 
-  const [text, setText] = useState<string>(
+  const [text, setText] = useState(
     "If you want to add multiple words, please separate each word with a comma."
   );
-  const [wordsList, setWordsList] = useState<string[]>([""]);
+  const [wordsList, setWordsList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [pendingWords, setPendingWords] = useState<string | null>(null); // Reklam sonrası işlenecek kelimeler
-  const [adLoaded, setAdLoaded] = useState(false);
 
-  // Rewarded Ad tanımı
-  const rewardedAd = RewardedInterstitialAd.createForAdRequest(adUnitId, {
-    requestNonPersonalizedAdsOnly: true,
-  });
-
-  useEffect(() => {
-    // Reklamı yükle
-    rewardedAd.load();
-
-    const onAdLoaded = () => {
-      console.log("Rewarded Ad loaded.");
-      setAdLoaded(true);
-    };
-
-    const onEarnedReward = async () => {
-      console.log("User earned reward.");
-
-      if (pendingWords) {
-        const currentUser = auth.currentUser;
-        if (currentUser) {
-          const userId = currentUser.uid;
-
-          console.log("Adding pending words:", pendingWords);
-
-          // Veritabanına kelimeleri ekle
-          await handleAddingWords(
-            userId,
-            mainFlag,
-            targetFlag,
-            pendingWords,
-            setText,
-            setWordsList,
-            setLoading
-          );
-
-          // Kelime ekleme işlemi tamamlandı
-          setPendingWords(null);
-        }
-      } else {
-        console.log("No pending words to process.");
-      }
-
-      rewardedAd.load(); // Reklamı yeniden yükle
-      setAdLoaded(false);
-    };
-
-    const unsubscribeLoaded = rewardedAd.addAdEventListener(
-      RewardedAdEventType.LOADED,
-      onAdLoaded
-    );
-
-    const unsubscribeEarnedReward = rewardedAd.addAdEventListener(
-      RewardedAdEventType.EARNED_REWARD,
-      onEarnedReward
-    );
-
-    return () => {
-      unsubscribeLoaded();
-      unsubscribeEarnedReward();
-    };
-  }, [pendingWords]);
-
-  const handleFormSubmit = async (
-    values: { words: string },
-    resetForm: () => void
-  ) => {
+  const handleFormSubmit = async (values: { words: any; }, resetForm: { (nextState?: Partial<FormikState<{ words: string; }>> | undefined): void; (): void; }) => {
     const { words } = values;
 
     const currentUser = auth.currentUser;
@@ -114,34 +39,36 @@ export const InputScreen = ({ navigation, route }) => {
 
     Keyboard.dismiss();
 
-    // Girilen kelimeleri temizle
     const formattedWords = words
       .split(",")
-      .map((word) => word.trim())
-      .filter((word) => word !== "");
+      .map((word: string) => word.trim())
+      .filter((word: string) => word !== "");
 
     if (formattedWords.length === 0) {
       setText("Please enter valid words separated by commas.");
       return;
     }
 
-    if (!adLoaded) {
-      Alert.alert(
-        "Ad Loading",
-        "The ad is still loading. Please try again in a few seconds."
+    const userId = currentUser.uid;
+    setLoading(true);
+
+    try {
+      await handleAddingWords(
+        userId,
+        mainFlag,
+        targetFlag,
+        formattedWords.join(" "),
+        setText,
+        setWordsList,
+        setLoading
       );
-      rewardedAd.load();
-      return;
+      resetForm();
+    } catch (error) {
+      console.error("Error adding words:", error);
+      setText("An error occurred while adding words. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    // Reklam sonrası işlenecek kelimeleri ata
-    setPendingWords(formattedWords.join(" "));
-
-    // Reklamı göster
-    rewardedAd.show();
-
-    // Formu sıfırla
-    resetForm();
   };
 
   return (
@@ -174,7 +101,7 @@ export const InputScreen = ({ navigation, route }) => {
                     keyboardType="default"
                     autoFocus={true}
                     value={values.words}
-                    onChangeText={(text) =>
+                    onChangeText={(text: string) =>
                       handleChange("words")(text.replace(/\s/g, ""))
                     }
                     onBlur={handleBlur("words")}

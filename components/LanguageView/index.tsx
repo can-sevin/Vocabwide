@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+  Platform,
+} from "react-native";
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -50,7 +56,55 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
     }
     groupedWords[firstLetter].push([originalWord, translatedWord]);
   });
-  const screenHeight = Dimensions.get("screen").height;
+
+  const getDynamicHeight = () => {
+    const { height: screenHeight, width: screenWidth } =
+      Dimensions.get("screen");
+    const aspectRatio = screenHeight / screenWidth;
+
+    let screenHeightDiv16 = screenHeight / 16;
+    let screenHeightDiv35 = screenHeight / 35;
+
+    if (Platform.OS === "ios") {
+      if (aspectRatio > 2) {
+        if (screenHeight <= 852) {
+          screenHeightDiv16 *= 1.1;
+          screenHeightDiv35 *= 1.5;
+        } else if (screenHeight > 1600) {
+          screenHeightDiv16 *= 0.9;
+          screenHeightDiv35 *= 1.2;
+        }
+      } else {
+        screenHeightDiv16 *= 1.05;
+        screenHeightDiv35 *= 1.1;
+      }
+    } else if (Platform.OS === "android") {
+      if (aspectRatio > 2) {
+        if (screenHeight <= 420) {
+          screenHeightDiv16 *= 1.2;
+          screenHeightDiv35 *= 1.1;
+        } else if (screenHeight > 800) {
+          screenHeightDiv16 *= 1.19;
+          screenHeightDiv35 *= 1.01;
+        }
+      } else {
+        if (screenHeight < 640) {
+          screenHeightDiv16 *= 1.2;
+          screenHeightDiv35 *= 1.1;
+        } else {
+          screenHeightDiv16 *= 1.2;
+          screenHeightDiv35 *= 1.1;
+        }
+      }
+    }
+
+    return {
+      screenHeightDiv16,
+      screenHeightDiv35,
+    };
+  };
+
+  const dynamicHeight = getDynamicHeight();
 
   const getFontSize = (text: string): number => {
     return text.length > 25 ? 12 : 16;
@@ -78,21 +132,9 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
         targetFlag
       );
       console.log(`Successfully deleted: ${originalWord}`);
-
-      // setWordsList((prevList) =>
-      //   prevList.filter(
-      //     ([word]) => word.toLowerCase() !== originalWord.toLowerCase()
-      //   )
-      // );
     } catch (error) {
       console.error(`Error deleting word: ${originalWord}`, error);
     }
-  };
-
-  const handleDeleteGroup = (letter: string, translatedWord: string) => {
-    // setWordsList((prevList) =>
-    //   prevList.filter(([word]) => word[0].toUpperCase() !== letter)
-    // );
   };
 
   const renderWordItem = (
@@ -104,7 +146,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
   ) => {
     const translateX = useSharedValue(0);
     const opacity = useSharedValue(1);
-    const height = useSharedValue(screenHeight / 30);
+    const height = useSharedValue(dynamicHeight.screenHeightDiv35);
 
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ translateX: translateX.value }],
@@ -211,8 +253,9 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
     words: [string, string][],
     index: number
   ) => {
-    const baseHeight = screenHeight / 14;
-    const additionalHeight = (screenHeight / 28) * (words.length - 1);
+    const baseHeight = dynamicHeight.screenHeightDiv16;
+    const additionalHeight =
+      dynamicHeight.screenHeightDiv35 * (words.length - 1);
     const totalHeight = baseHeight + additionalHeight;
 
     const opacity = useSharedValue(1);

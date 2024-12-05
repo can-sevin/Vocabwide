@@ -108,6 +108,16 @@ export const fetchTransitions = async (
 Translate the following words from ${main} to ${target} language. Provide distinct and accurate translations only if the word has multiple distinct meanings. Do not include variations of the same meaning (e.g., "apple" should only return "elma" for Turkish, not "kuru elma"). 
 
 If the word has multiple distinct meanings, list them (e.g., "orange" -> ["turuncu", "portakal"]). If the word has only one meaning, return only that meaning.
+If the word maybe is slang like;
+{
+  "lol": "laugh out loud",
+  "brb": "be right back",
+  "omg": "oh my god",
+  "rofl": "rolling on the floor laughing",
+  "idk": "I don't know"
+}
+
+Please translate slang meaning to ${target} language.
 
 Use the format:
 [

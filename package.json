@@ -41,7 +41,7 @@
     "react-native": "0.74.5",
     "react-native-device-info": "^11.1.0",
     "react-native-gesture-handler": "~2.16.1",
-    "react-native-google-mobile-ads": "^14.4.2",
+    "react-native-google-mobile-ads": "^14.5.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.4",
     "react-native-openai": "^0.6.1",
     "react-native-reanimated": "3.15.4",
