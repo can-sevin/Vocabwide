@@ -47,6 +47,7 @@ import { AppOpenAd } from "react-native-google-mobile-ads";
 
 export const HomeScreen = ({ uid, navigation }) => {
   const [wordsList, setWordsList] = useState<[string, string][]>([]);
+  const [isPast, setIsPast] = useState<boolean>(false);
   const [wordNum, setWordNum] = useState(0);
   const [displayedNumber, setDisplayedNumber] = useState(0);
   const [userInfo, setUserInfo] = useState(null);
@@ -67,6 +68,10 @@ export const HomeScreen = ({ uid, navigation }) => {
       : "ca-app-pub-2210071155853586/3182059546";
 
   const rewardedAd = AppOpenAd.createForAdRequest(adUnitId);
+
+  const togglePastWords = useCallback(() => {
+    setIsPast((prev) => !prev);
+  }, []);
 
   type FlagKey = keyof typeof Flags;
 
@@ -146,24 +151,24 @@ export const HomeScreen = ({ uid, navigation }) => {
     setModalVisible(false);
   };
 
-  // Fetch initial flags and words
   useEffect(() => {
     if (uid) {
       fetchFlagsFromFirebase(uid, (main, target) => {
         saveFlagState(main as FlagKey, true);
         saveFlagState(target as FlagKey, false);
       });
-      handleListingWords(
-        uid,
-        mainFlag,
-        targetFlag,
-        setWordsList,
-        setLoading,
-        setWordNum
-      );
+        handleListingWords(
+          uid,
+          mainFlag,
+          targetFlag,
+          setWordsList,
+          setLoading,
+          setWordNum,
+          isPast
+        );
     }
-  }, [uid, mainFlag, targetFlag]);
-
+  }, [uid, mainFlag, targetFlag, isPast]);
+  
   useFocusEffect(
     useCallback(() => {
       if (uid) {
@@ -174,10 +179,11 @@ export const HomeScreen = ({ uid, navigation }) => {
           targetFlag,
           setWordsList,
           setLoading,
-          setWordNum
+          setWordNum,
+          isPast
         );
       }
-    }, [uid, mainFlag, targetFlag])
+    }, [uid, mainFlag, targetFlag, isPast])
   );
 
   // Animate word count
@@ -214,7 +220,7 @@ export const HomeScreen = ({ uid, navigation }) => {
               <HomeHeaderTextNumber
                 entering={FadeInDown.duration(2000).delay(500)}
               >
-                {displayedNumber}
+                {isPast ? 'Past' : displayedNumber}
               </HomeHeaderTextNumber>
               <HomeHeaderText>Words</HomeHeaderText>
             </HomeWordNumberView>
@@ -256,15 +262,6 @@ export const HomeScreen = ({ uid, navigation }) => {
                   mainFlag={mainFlag}
                   targetFlag={targetFlag}
                   setLoading={setLoading}
-                  onWordDeleted={(deletedWord) => {
-                    setWordsList((prevWords) =>
-                      prevWords.filter(([word]) => word !== deletedWord)
-                    );
-                    Alert.alert(
-                      "Word Deleted",
-                      `${deletedWord} has been removed.`
-                    );
-                  }}
                 />
               )}
             </HomeLanguageWordsView>
@@ -317,13 +314,7 @@ export const HomeScreen = ({ uid, navigation }) => {
               </HomePracticeButton>
               <TouchableOpacity
                 style={{ alignSelf: "center" }}
-                onPress={() =>
-                  navigation.navigate("Past", {
-                    uid: uid,
-                    mainFlag: mainFlag,
-                    targetFlag: targetFlag,
-                  })
-                }
+                onPress={togglePastWords}
               >
                 <Image
                   source={Images.past_btn}

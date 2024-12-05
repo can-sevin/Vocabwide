@@ -31,57 +31,6 @@ export const fetchFlagsFromFirebase = async (
   }
 };
 
-export const handleListingWords = async (
-  uid: string,
-  mainFlag: string,
-  targetFlag: string,
-  setWordsList: (words: [string, string][]) => void,
-  setLoading: (loading: boolean) => void,
-  setWordNum: (num: number) => void
-) => {
-  setLoading(true);
-
-  const originalWordsRef = ref(
-    database,
-    `users/${uid}/${mainFlag}${targetFlag}originalWords`
-  );
-  const translatedWordsRef = ref(
-    database,
-    `users/${uid}/${mainFlag}${targetFlag}translatedWords`
-  );
-
-  try {
-    const [originalSnapshot, translatedSnapshot] = await Promise.all([
-      get(originalWordsRef),
-      get(translatedWordsRef),
-    ]);
-
-    const originalWords = originalSnapshot.exists()
-      ? originalSnapshot.val()
-      : [];
-    const translatedWords = translatedSnapshot.exists()
-      ? translatedSnapshot.val()
-      : [];
-
-    const combinedWords = originalWords.map(
-      (originalWord: any, index: number) => {
-        const translatedWord = translatedWords[index] || "";
-        return [originalWord, translatedWord];
-      }
-    );
-    setWordNum(originalWords.length);
-    setWordsList(
-      combinedWords.sort((a: string[], b: string[]) =>
-        a[0].toLowerCase().localeCompare(b[0].toLowerCase())
-      )
-    );
-    setLoading(false);
-  } catch (error) {
-    console.error("Error fetching the word service. Please try again", error);
-    setLoading(false);
-  }
-};
-
 export const fetchUserInfo = async (
   uid: string,
   setUserInfo: (userInfo: any) => void,
@@ -483,28 +432,31 @@ export const addWordToPastWords = async (
   }
 };
 
-export const fetchPastWords = async (
+export const handleListingWords = async (
   uid: string,
   mainFlag: string,
   targetFlag: string,
-  setPastWordsList: (words: [string, string][]) => void,
-  setLoading: (loading: boolean) => void
+  setWordsList: (words: [string, string][]) => void,
+  setLoading: (loading: boolean) => void,
+  setWordNum?: (num: number) => void,
+  isPast: boolean = false
 ) => {
   setLoading(true);
 
-  const pastOriginalWordsRef = ref(
+  const prefix = isPast ? "past" : "";
+  const originalWordsRef = ref(
     database,
-    `users/${uid}/past${mainFlag}${targetFlag}originalWords`
+    `users/${uid}/${prefix}${mainFlag}${targetFlag}originalWords`
   );
-  const pastTranslatedWordsRef = ref(
+  const translatedWordsRef = ref(
     database,
-    `users/${uid}/past${mainFlag}${targetFlag}translatedWords`
+    `users/${uid}/${prefix}${mainFlag}${targetFlag}translatedWords`
   );
 
   try {
     const [originalSnapshot, translatedSnapshot] = await Promise.all([
-      get(pastOriginalWordsRef),
-      get(pastTranslatedWordsRef),
+      get(originalWordsRef),
+      get(translatedWordsRef),
     ]);
 
     const originalWords = originalSnapshot.exists()
@@ -515,8 +467,8 @@ export const fetchPastWords = async (
       : [];
 
     if (!originalWords.length && !translatedWords.length) {
-      console.log("No past words found!");
-      setPastWordsList([]);
+      console.log(`No ${isPast ? "past" : "current"} words found!`);
+      setWordsList([]);
       setLoading(false);
       return;
     }
@@ -528,12 +480,19 @@ export const fetchPastWords = async (
       ]
     );
 
-    console.log("Fetched Combined Words:", combinedWords);
-    setPastWordsList(combinedWords);
+    if (setWordNum) setWordNum(originalWords.length);
+    setWordsList(
+      combinedWords.sort((a, b) =>
+        a[0].toLowerCase().localeCompare(b[0].toLowerCase())
+      )
+    );
     setLoading(false);
   } catch (error) {
-    console.error("Error fetching past words:", error);
-    setPastWordsList([]); // Hata durumunda boş liste döndür
+    console.error(
+      `Error fetching ${isPast ? "past" : "current"} words:`,
+      error
+    );
+    setWordsList([]);
     setLoading(false);
   }
 };

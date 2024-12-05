@@ -35,7 +35,7 @@ type LanguageViewProps = {
   setLoading: any;
   uid: string;
   setWordsList: React.Dispatch<React.SetStateAction<[string, string][]>>;
-  onWordDeleted: () => void;
+  // onWordDeleted: () => void;
 };
 
 export const LanguageView: React.FC<LanguageViewProps> = ({
@@ -46,7 +46,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
   setLoading,
   uid,
   setWordsList,
-  onWordDeleted,
+  // onWordDeleted,
 }) => {
   const groupedWords: Record<string, [string, string][]> = {};
   wordsList.forEach(([originalWord, translatedWord]) => {
@@ -68,7 +68,7 @@ export const LanguageView: React.FC<LanguageViewProps> = ({
     if (Platform.OS === "ios") {
       if (aspectRatio > 2) {
         if (screenHeight <= 850) {
-          screenHeightDiv16 *= 1.1;
+          screenHeightDiv16 *= 1.22;
           screenHeightDiv35 *= 1.0;
         } else if (900 >= screenHeight) {
           screenHeightDiv16 *= 1.1;
