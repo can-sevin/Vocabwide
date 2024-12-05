@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import { HomeScreen, SpeechTextScreen, OcrScreen, InputScreen, PastScreen} from "../screens";
+import { HomeScreen, SpeechTextScreen, OcrScreen, InputScreen} from "../screens";
 import { useCustomFonts } from "../providers/Fonts";
 import { ActivityIndicator } from "react-native";
 import { Colors } from "../config";
@@ -35,12 +35,6 @@ export const AppStack = ({ uid }) => {
       <Stack.Screen name="Input" component={InputScreen} />
       <Stack.Screen name="Question" component={QuestionScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
-      <Stack.Screen
-        name="Past"
-        component={(props: any) => (
-          <PastScreen {...props} route={props.route} uid={uid} />
-        )}
-      />
     </Stack.Navigator>
   );
 };
