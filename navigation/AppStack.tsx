@@ -8,6 +8,7 @@ import { Colors } from "../config";
 import { LoadingContainer } from "./style";
 import QuestionScreen from "../screens/QuestionScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import Onboarding from "../screens/OnboardingScreen";
 
 const Stack = createStackNavigator();
 
@@ -25,10 +26,13 @@ export const AppStack = ({ uid }) => {
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false }}
-      initialRouteName="Home"
+      initialRouteName="Onboarding"
     >
       <Stack.Screen name="Home">
         {(props) => <HomeScreen {...props} uid={uid} />}
+      </Stack.Screen>
+      <Stack.Screen name="Onboarding">
+        {(props) => <Onboarding {...props} uid={uid} />}
       </Stack.Screen>
       <Stack.Screen name="Speech" component={SpeechTextScreen} />
       <Stack.Screen name="Ocr" component={OcrScreen} />

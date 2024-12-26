@@ -1,267 +1,159 @@
-import React, { useEffect, useState, useRef } from "react";
-import { SafeAreaView, View, Text, Animated } from "react-native";
+import React from "react";
 import {
-  Container,
-  CardContainer,
-  QuestionContainer,
-  ModalText,
-  FinishText,
-  TopView,
-  BottomView,
-  LeftView,
-  RightView,
-  TextStyled,
-} from "./style";
-import { Card } from "../../components/Card";
-import { BackButton } from "../../components/BackButton";
-import { Images, Sounds } from "../../config";
-import { Audio } from "expo-av";
-import { createQuestion } from "../../config/gpt";
-import LottieView from "lottie-react-native";
-import { addWordToPastWords, deleteCorrectWordsFromFirebase } from "../../firebase/database";
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Image,
+  TouchableOpacity,
+} from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+} from "react-native-reanimated";
 
-export const QuestionScreen = ({ navigation, route }) => {
-  const { target, main, wordsList, uid } = route.params;
-  const originalTexts = useRef(wordsList.map(([word]) => word));
+const { width } = Dimensions.get("window");
 
-  const [cards, setCards] = useState(
-    wordsList.map(([word]) => ({
-      originalText: word,
-      text: word,
-      removing: false,
-      top: "TopWord",
-      bottom: "BottomWord",
-      left: "LeftWord",
-      right: "RightWord",
-    }))
-  );
+const slides = [
+  {
+    id: 1,
+    title: "🎯 Kişiselleştirilmiş Kelime Önerileri",
+    description:
+      "Öğrenme hedeflerinize göre özelleştirilmiş kelime önerileri alın.",
+    image: require("../../assets/slides/slide1.jpg"),
+  },
+  {
+    id: 2,
+    title: "🗣️ Ses ve Kamera Entegrasyonu",
+    description: "Konuşarak veya kameranızı kullanarak yeni kelimeler ekleyin.",
+    image: require("../../assets/slides/slide2.jpg"),
+  },
+  {
+    id: 3,
+    title: "🎮 İnteraktif Öğrenme Modları",
+    description:
+      "Oyunlar, testler ve bilgi kartları ile öğrenmeyi eğlenceli hale getirin.",
+    image: require("../../assets/slides/slide3.jpg"),
+  },
+  {
+    id: 4,
+    title: "🎮 İnteraktif Öğrenme Modları",
+    description:
+      "Oyunlar, testler ve bilgi kartları ile öğrenmeyi eğlenceli hale getirin.",
+    image: require("../../assets/slides/slide4.jpg"),
+  },
+  {
+    id: 5,
+    title: "🎮 İnteraktif Öğrenme Modları",
+    description:
+      "Oyunlar, testler ve bilgi kartları ile öğrenmeyi eğlenceli hale getirin.",
+    image: require("../../assets/slides/slide5.jpg"),
+  },
+];
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [timer, setTimer] = useState(5);
-  const [loading, setLoading] = useState(true);
-  const [showFinish, setShowFinish] = useState(false);
-  const [timerColor, setTimerColor] = useState("black");
-  const [correctCount, setCorrectCount] = useState(0);
+export default function Onboarding({ navigation }) {
+  const scrollX = useSharedValue(0);
 
-  const timerScale = useRef(new Animated.Value(1)).current;
+  const scrollHandler = useAnimatedScrollHandler((event) => {
+    scrollX.value = event.contentOffset.x;
+  });
 
-  const playSound = async (soundKey: string) => {
-    const soundSource = Sounds[soundKey];
-    if (!soundSource) {
-      console.warn(`Ses kaynağı bulunamadı: ${soundKey}`);
-      return;
-    }
-
-    const { sound } = await Audio.Sound.createAsync(soundSource);
-    await sound.playAsync();
-  };
-
-  useEffect(() => {
-    const getTranslations = async () => {
-      try {
-        setLoading(true);
-        await createQuestion(
-          wordsList.map(([word]) => word),
-          wordsList.map(([_, translation]) => translation),
-          main,
-          target,
-          setCards,
-          setLoading
-        );
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching translations: ", error);
-        setLoading(false);
-      }
+  // FlexDirection Animasyonu
+  const animatedStyle = useAnimatedStyle(() => {
+    const currentIndex = Math.round(scrollX.value / width);
+    const flexDirection = currentIndex % 2 === 0 ? "row" : "column"; // Örnek flexDirection mantığı
+    return {
+      flexDirection,
     };
-
-    getTranslations();
-  }, []);
-
-  useEffect(() => {
-    if (!loading && cards.length > 0) {
-      const interval = setInterval(() => {
-        setTimer((prevTime) => {
-          if (prevTime === 1) {
-            handleNextCard();
-            return 5;
-          } else {
-            animateTimer();
-            return prevTime - 1;
-          }
-        });
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [cards, loading, currentIndex]);
-
-  const handleDeleteWords = async (word: string, correctWord: string) => {
-    await addWordToPastWords(uid, word, correctWord, main, target);
-    
-    await deleteCorrectWordsFromFirebase(
-      uid,
-      word,
-      correctWord,
-      main,
-      target,
-      setLoading,
-      false
-    );
-  };
-
-  const animateTimer = () => {
-    timerScale.setValue(1);
-    Animated.spring(timerScale, {
-      toValue: 1.2,
-      friction: 2,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handleNextCard = () => {
-    setTimerColor("black");
-    if (currentIndex < cards.length - 1) {
-      setCurrentIndex((prevIndex) => prevIndex + 1);
-      setTimer(5);
-    } else {
-      setShowFinish(true);
-    }
-  };
-
-  const checkAnswer = (direction: string | number, original: string) => {
-    const card = cards[currentIndex];
-    const selectedWord = String(card[direction]).trim().toLowerCase();
-    const correctWord = String(card.correct).trim().toLowerCase();
-
-    console.log("selectedWord", selectedWord);
-    console.log("correctWord", correctWord);
-
-    if (selectedWord === correctWord && correctWord) {
-      playSound("correct");
-      setTimerColor("green");
-      handleDeleteWords(original, correctWord);
-      setCorrectCount((prev) => prev + 1);
-      setTimeout(() => {
-        setTimerColor("black");
-        handleNextCard();
-      }, 1000);
-      return true;
-    } else {
-      playSound("error");
-      setTimerColor("red");
-      setTimeout(() => {
-        setTimerColor("black");
-        handleNextCard();
-      }, 1000);
-      return false;
-    }
-  };
-
-  const updateCardText = (index: any, direction: any) => {
-    setCards((prevCards: any[]) =>
-      prevCards.map((card: any, i: any) =>
-        i === index ? { ...card, text: direction } : card
-      )
-    );
-  };
-
-  const resetCardText = (index: any) => {
-    const originalText = originalTexts.current[index];
-    setCards((prevCards: any[]) =>
-      prevCards.map((card: any, i: any) =>
-        i === index ? { ...card, text: originalText } : card
-      )
-    );
-  };
+  });
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Container>
-        <BackButton navigation={navigation} />
-        {loading ? (
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              flex: 1,
-              marginHorizontal: 64,
-            }}
-          >
-            <LottieView
-              style={{ width: 150, height: 150 }}
-              source={Images.lottie_recognition}
-              loop={true}
-              autoPlay
+    <Animated.View style={[styles.container, animatedStyle]}>
+      <Animated.ScrollView
+        horizontal
+        pagingEnabled
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
+        showsHorizontalScrollIndicator={false}
+      >
+        {slides.map((slide) => (
+          <View key={slide.id} style={[styles.slide, { width }]}>
+            <Image
+              source={slide.image}
+              style={styles.image}
+              resizeMode="contain"
             />
-            <ModalText>
-              Test preparing, please wait approximately 10 sec...
-            </ModalText>
+            <Text style={styles.title}>{slide.title}</Text>
+            <Text style={styles.description}>{slide.description}</Text>
           </View>
-        ) : showFinish ? (
-          <FinishText>
-            {`Correct: ${correctCount}/${originalTexts.current.length} words`}
-          </FinishText>
-        ) : (
-          <>
-            <QuestionContainer>
-              <ModalText>
-                Match the words with their correct meanings 🧩
-              </ModalText>
-              <ModalText>
-                {currentIndex + 1} / {originalTexts.current.length} questions
-                completed
-              </ModalText>
-            </QuestionContainer>
-            <View style={{ alignItems: "center", marginVertical: 10 }}>
-              <Animated.Text
-                style={{
-                  fontSize: 24,
-                  color: timerColor,
-                  transform: [{ scale: timerScale }],
-                }}
-              >
-                {timer}
-              </Animated.Text>
-            </View>
-            <CardContainer source={Images.background}>
-              {cards.length > 0 && (
-                <Card
-                  key={currentIndex}
-                  card={cards[currentIndex].text}
-                  index={currentIndex}
-                  removing={cards[currentIndex].removing}
-                  originalText={originalTexts.current[currentIndex]}
-                  updateCardText={updateCardText}
-                  resetCardText={resetCardText}
-                  playSound={playSound}
-                  top={cards[currentIndex].top}
-                  right={cards[currentIndex].right}
-                  left={cards[currentIndex].left}
-                  bottom={cards[currentIndex].bottom}
-                  isCorrect={(direction: any) =>
-                    checkAnswer(direction, originalTexts.current[currentIndex])
-                  }
-                />
-              )}
-              <TopView>
-                <TextStyled>{cards[currentIndex].top}</TextStyled>
-              </TopView>
-              <BottomView>
-                <TextStyled>{cards[currentIndex].bottom}</TextStyled>
-              </BottomView>
-              <LeftView>
-                <TextStyled>{cards[currentIndex].left}</TextStyled>
-              </LeftView>
-              <RightView>
-                <TextStyled>{cards[currentIndex].right}</TextStyled>
-              </RightView>
-            </CardContainer>
-          </>
-        )}
-      </Container>
-    </SafeAreaView>
+        ))}
+      </Animated.ScrollView>
+    </Animated.View>
   );
-};
+}
 
-export default QuestionScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  slide: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  image: {
+    width: "80%",
+    height: 200,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
+    textAlign: "center",
+    marginTop: 20,
+  },
+  description: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
+    marginTop: 10,
+    paddingHorizontal: 20,
+  },
+  footer: {
+    position: "absolute",
+    bottom: 30,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+  },
+  indicatorContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "center",
+    maxWidth: "80%",
+    marginBottom: 20,
+    marginTop: 10,
+  },
+  indicator: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#333",
+    margin: 5,
+  },
+  button: {
+    marginTop: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    backgroundColor: "#007BFF",
+    borderRadius: 30,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});
