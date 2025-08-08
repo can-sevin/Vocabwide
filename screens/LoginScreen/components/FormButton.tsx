@@ -21,7 +21,7 @@ export const FormButton: React.FC<FormButtonProps> = ({
 }) => {
   const getButtonColor = () => {
     if (theme === themes.dark) {
-      return title.toLowerCase().includes("login") ? "#00A3E0" : "#4A4A67";
+      return title.toLowerCase() ? "#00A3E0" : "#4A4A67";
     }
     return "#1B9AF5";
   };
@@ -30,10 +30,11 @@ export const FormButton: React.FC<FormButtonProps> = ({
     <TouchableOpacity
       style={[
         {
-          height: 60,
-          borderRadius: 16,
+          height: 45,
+          borderRadius: 8,
           alignItems: "center",
           justifyContent: "center",
+          alignSelf: "center",
           marginBottom: 20,
           backgroundColor: getButtonColor(),
           width,

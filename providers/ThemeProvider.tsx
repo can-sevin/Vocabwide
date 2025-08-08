@@ -1,8 +1,13 @@
 import React, { createContext, useState, useContext } from "react";
 import { themes } from "../assets/themes";
 
+interface ThemeContextType {
+  theme: any;
+  toggleTheme: () => void;
+}
+
 // Context oluşturma
-const ThemeContext = createContext();
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 // ThemeProvider bileşeni
 export const ThemeProvider = ({ children }) => {
