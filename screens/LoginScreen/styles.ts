@@ -1,64 +1,247 @@
-import styled from "styled-components/native";
-import { Dimensions } from "react-native";
-import { Colors } from "../../config";
+import { StyleSheet } from "react-native";
 
-const windowHeight = Dimensions.get("window").height;
-
-export const LoginLayout = styled.View`
-  flex: 1;
-  justify-content: space-between;
-`;
-
-export const HeaderTextLoginLayout = styled.View`
-  flex: 1;
-  justify-content: center;
-`;
-
-export const LoginHeaderText = styled.Text`
-  font-size: 28px;
-  color: ${Colors.white};
-  font-family: Helvetica-Bold;
-  align-self: center;
-`;
-
-export const LoginLayoutInside = styled.View`
-  background-color: ${Colors.whiteLight};
-  border-radius: 16px;
-  align-self: center;
-  justify-content: center;
-  align-content: center;
-  width: 100%;
-  height: ${windowHeight * 0.5};
-  padding: 32px;
-`;
-
-export const GeneralButton = styled.TouchableOpacity`
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  align-self: flex-end;
-  margin-top: 40px;
-  padding: 10px;
-  border-radius: 8px;
-`;
-
-export const GeneralButtonText = styled.Text`
-  font-size: 20px;
-  color: ${Colors.white};
-  fontweight: 700;
-`;
-
-export const LoginBtmText = styled.Text`
-  font-family: Helvetica-Medium;
-  font-size: 16px;
-  align-self: center;
-  margin-top: 12px;
-`;
-
-export const ErrorText = styled.Text`
-  font-family: Helvetica-Bold;
-  font-size: 14px;
-  align-self: center;
-  margin-top: 8px;
-  color: red;
-`;
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingTop: 50,
+    paddingBottom: 30,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 16,
+  },
+  logoContainer: {
+    flex: 1,
+  },
+  headerImage: {
+    width: 120,
+    height: 40,
+    marginBottom: 8,
+    resizeMode: "contain",
+  },
+  logo: {
+    fontSize: 14,
+    fontWeight: "bold",
+    fontFamily: "Helvetica-Bold",
+    marginBottom: 6,
+  },
+  tagline: {
+    fontSize: 14,
+    fontFamily: "Helvetica-Regular",
+  },
+  languageSelector: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  languageText: {
+    fontSize: 14,
+    fontFamily: "Helvetica-Medium",
+    marginRight: 4,
+  },
+  chevron: {
+    fontSize: 12,
+  },
+  toggleContainer: {
+    flexDirection: "row",
+    borderRadius: 8,
+    padding: 4,
+    marginBottom: 32,
+    height: 45,
+    justifyContent: "space-between",
+  },
+  toggleButton: {
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    height: 45,
+    width: 160,
+  },
+  toggleText: {
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Helvetica-Medium",
+  },
+  socialContainer: {
+    marginBottom: 32,
+  },
+  socialButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginBottom: 16,
+    borderWidth: 0,
+    height: 45,
+  },
+  socialIcon: {
+    width: 14,
+    height: 14,
+    marginRight: 16,
+  },
+  googleIcon: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginRight: 16,
+    color: "#EA4335",
+  },
+  appleIcon: {
+    fontSize: 24,
+    marginRight: 16,
+  },
+  facebookIcon: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginRight: 16,
+    color: "#1877F2",
+  },
+  socialText: {
+    fontSize: 14,
+    fontFamily: "Helvetica-Medium",
+    alignSelf: "center",
+    alignContent: "center",
+    justifyContent: "center",
+    textAlign: "center",
+  },
+  divider: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#6B7280",
+  },
+  dividerText: {
+    fontSize: 14,
+    fontFamily: "Helvetica-Regular",
+    marginHorizontal: 16,
+  },
+  input: {
+    height: 44,
+    borderWidth: 0,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    fontSize: 14,
+    fontFamily: "Helvetica-Regular",
+    marginBottom: 16,
+  },
+  formOptions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  rememberMe: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderRadius: 4,
+    marginRight: 8,
+  },
+  rememberText: {
+    fontSize: 14,
+    fontFamily: "Helvetica-Regular",
+  },
+  forgotText: {
+    fontSize: 14,
+    fontFamily: "Helvetica-Medium",
+  },
+  loginButton: {
+    height: 45,
+    width: "90%",
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    marginVertical: 28,
+    backgroundColor: "#dedede",
+  },
+  loginButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#FFFFFF",
+    fontFamily: "Helvetica-Bold",
+  },
+  errorText: {
+    fontSize: 14,
+    color: "#EF4444",
+    fontFamily: "Helvetica-Regular",
+    marginBottom: 8,
+  },
+  aiCard: {
+    borderRadius: 12,
+    padding: 20,
+    alignItems: "center",
+    marginBottom: 16,
+    borderWidth: 0,
+    borderColor: "#E5E7EB",
+    width: 327,
+    height: 229,
+    alignSelf: "center",
+  },
+  aiImage: {
+    width: 80,
+    height: 80,
+    marginBottom: 16,
+    borderRadius: 8,
+  },
+  aiTitle: {
+    fontSize: 14,
+    fontWeight: "bold",
+    fontFamily: "Helvetica-Bold",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  aiDescription: {
+    fontSize: 14,
+    fontFamily: "Helvetica-Regular",
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  footer: {
+    alignItems: "center",
+  },
+  footerText: {
+    fontSize: 14,
+    fontFamily: "Helvetica-Regular",
+    textAlign: "center",
+    marginBottom: 4,
+  },
+  footerLinks: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  footerLink: {
+    fontSize: 14,
+    fontFamily: "Helvetica-Medium",
+  },
+  themeToggle: {
+    position: "absolute",
+    top: 60,
+    right: 24,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.1)",
+  },
+  themeToggleText: {
+    fontSize: 18,
+  },
+});

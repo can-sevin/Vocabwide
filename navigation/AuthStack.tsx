@@ -2,6 +2,7 @@ import * as React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { LoginScreen, SignupScreen, ForgotPasswordScreen } from "../screens";
 import { PermissionScreen } from "../screens/PermissionScreen";
+import Onboarding from "../screens/OnboardingScreen";
 import { Camera } from "expo-camera";
 import { Audio } from "expo-av";
 import { useEffect, useState } from "react";
@@ -12,7 +13,7 @@ import { LoadingContainer } from "./style";
 
 const Stack = createStackNavigator();
 
-export const AuthStack = ({navigation}) => {
+export const AuthStack = ({ navigation }) => {
   const [route, setRoute] = useState<string | null>(null);
   const fontsLoaded = useCustomFonts();
 
@@ -21,7 +22,7 @@ export const AuthStack = ({navigation}) => {
       const cam = await Camera.requestCameraPermissionsAsync();
       const mic = await Audio.requestPermissionsAsync();
       const result = cam.granted && mic.granted;
-      setRoute(result ? "Login" : "Permission");
+      setRoute(result ? "Onboarding" : "Permission");
     };
     checkPermissions();
   }, []);
@@ -40,6 +41,7 @@ export const AuthStack = ({navigation}) => {
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Onboarding" component={Onboarding} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />

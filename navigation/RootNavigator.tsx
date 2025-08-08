@@ -3,10 +3,14 @@ import { NavigationContainer } from "@react-navigation/native";
 import { onAuthStateChanged } from "firebase/auth";
 
 import { AppStack } from "./AppStack";
+import { AuthStack } from "./AuthStack";
 import { LoadingIndicator } from "../components";
 import { auth } from "../config";
 import { AuthenticatedUserContext } from "../providers";
-import { createUserIfNotExists, signInAnonymouslyWithFirebase } from "../firebase";
+import {
+  createUserIfNotExists,
+  signInAnonymouslyWithFirebase,
+} from "../firebase";
 
 export const RootNavigator = () => {
   const { user, setUser } = useContext(AuthenticatedUserContext);
@@ -46,7 +50,7 @@ export const RootNavigator = () => {
 
   return (
     <NavigationContainer>
-      <AppStack uid={user.uid} />
+      <AuthStack />
     </NavigationContainer>
   );
 };

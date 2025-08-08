@@ -18,37 +18,31 @@ const { width } = Dimensions.get("window");
 const slides = [
   {
     id: 1,
-    title: "🎯 Kişiselleştirilmiş Kelime Önerileri",
+    title: "Add & Translate Words Easily",
     description:
-      "Öğrenme hedeflerinize göre özelleştirilmiş kelime önerileri alın.",
-    image: require("../../assets/slides/slide1.jpg"),
+      "Use text, voice, or camera to quickly add and translate unknown words!",
+    image: require("../../assets/slides/slide1.png"),
   },
   {
     id: 2,
-    title: "🗣️ Ses ve Kamera Entegrasyonu",
-    description: "Konuşarak veya kameranızı kullanarak yeni kelimeler ekleyin.",
-    image: require("../../assets/slides/slide2.jpg"),
+    title: "Learn with AI-Powered Assistance",
+    description:
+      "Personalized word recommendations and smart translations tailored for you.",
+    image: require("../../assets/slides/slide2.png"),
   },
   {
     id: 3,
-    title: "🎮 İnteraktif Öğrenme Modları",
+    title: "Interactive Learning & Progress Tracking",
     description:
-      "Oyunlar, testler ve bilgi kartları ile öğrenmeyi eğlenceli hale getirin.",
-    image: require("../../assets/slides/slide3.jpg"),
+      "Improve your vocabulary with fun quizzes and track your learning journey!",
+    image: require("../../assets/slides/slide3.png"),
   },
   {
     id: 4,
-    title: "🎮 İnteraktif Öğrenme Modları",
+    title: "Learn Anytime, Anywhere",
     description:
-      "Oyunlar, testler ve bilgi kartları ile öğrenmeyi eğlenceli hale getirin.",
-    image: require("../../assets/slides/slide4.jpg"),
-  },
-  {
-    id: 5,
-    title: "🎮 İnteraktif Öğrenme Modları",
-    description:
-      "Oyunlar, testler ve bilgi kartları ile öğrenmeyi eğlenceli hale getirin.",
-    image: require("../../assets/slides/slide5.jpg"),
+      "Access your words from any device. Sync your progress and never lose your learning history!",
+    image: require("../../assets/slides/slide4.png"),
   },
 ];
 

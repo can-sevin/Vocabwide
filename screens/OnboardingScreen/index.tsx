@@ -15,29 +15,38 @@ import Animated, {
   Extrapolate,
 } from "react-native-reanimated";
 import { useTheme } from "../../providers/ThemeProvider";
+import { themes } from "../../assets/themes";
 
 const { width, height } = Dimensions.get("window");
 
 const slides = [
   {
     id: 1,
-    title: "🎯 Kişiselleştirilmiş Kelime Önerileri",
+    title: "Interactive Learning & Progress Tracking",
     description:
-      "Öğrenme hedeflerinize göre özelleştirilmiş kelime önerileri alın.",
-    image: require("../../assets/slides/slide1.jpg"),
+      "Improve your vocabulary with fun quizzes and track your learning journey!",
+    image: require("../../assets/slides/slide1.png"),
   },
   {
     id: 2,
-    title: "🗣️ Ses ve Kamera Entegrasyonu",
-    description: "Konuşarak veya kameranızı kullanarak yeni kelimeler ekleyin.",
-    image: require("../../assets/slides/slide2.jpg"),
+    title: "Learn with AI-Powered Assistance",
+    description:
+      "Personalized word recommendations and smart translations tailored for you.",
+    image: require("../../assets/slides/slide2.png"),
   },
   {
     id: 3,
-    title: "🎮 İnteraktif Öğrenme Modları",
+    title: "Add & Translate Words Easily",
     description:
-      "Oyunlar, testler ve bilgi kartları ile öğrenmeyi eğlenceli hale getirin.",
-    image: require("../../assets/slides/slide3.jpg"),
+      "Use text, voice, or camera to quickly add and translate unknown words!",
+    image: require("../../assets/slides/slide3.png"),
+  },
+  {
+    id: 4,
+    title: "Learn Anytime, Anywhere",
+    description:
+      "Access your words from any device. Sync your progress and never lose your learning history!",
+    image: require("../../assets/slides/slide4.png"),
   },
 ];
 
@@ -57,9 +66,13 @@ export default function Onboarding({ navigation }) {
         animated: true,
       });
     } else {
-      navigation.navigate("Home");
+      navigation.navigate("Login");
     }
   };
+
+  // 3. slide'dan sonra scroll'u devre dışı bırak
+  const currentSlideIndex = Math.round(scrollX.value / width);
+  const isOnLastSlide = currentSlideIndex >= 2;
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -76,38 +89,29 @@ export default function Onboarding({ navigation }) {
         onScroll={scrollHandler}
         scrollEventThrottle={16}
         showsHorizontalScrollIndicator={false}
+        scrollEnabled={!isOnLastSlide}
       >
         {slides.map((slide, index) => (
           <View key={slide.id} style={[styles.slide, { width }]}>
             <ImageBackground
               source={slide.image}
               style={styles.backgroundImage}
+              resizeMode="cover"
             >
-              <View
-                style={[
-                  styles.content,
-                  { backgroundColor: theme.contentBackground },
-                ]}
-              >
-                <Text style={[styles.title, { color: theme.text }]}>
-                  {slide.title}
-                </Text>
-                <Text style={[styles.description, { color: theme.text }]}>
-                  {slide.description}
-                </Text>
-                <TouchableOpacity
-                  style={[
-                    styles.button,
-                    { backgroundColor: theme.buttonBackground },
-                  ]}
-                  onPress={() => handleNext(index)}
-                >
-                  <Text
-                    style={[styles.buttonText, { color: theme.buttonText }]}
+              <View style={styles.overlay}>
+                <View style={styles.textContainer}>
+                  <Text style={styles.title}>{slide.title}</Text>
+                  <Text style={styles.description}>{slide.description}</Text>
+                </View>
+
+                {index === slides.length - 1 && (
+                  <TouchableOpacity
+                    style={styles.continueButton}
+                    onPress={() => handleNext(index)}
                   >
-                    {index === slides.length - 1 ? "Başlayın" : "Next"}
-                  </Text>
-                </TouchableOpacity>
+                    <Text style={styles.continueButtonText}>Continue</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </ImageBackground>
           </View>
@@ -137,16 +141,22 @@ export default function Onboarding({ navigation }) {
             };
           });
 
-          return (
+          // 4. slide'da Continue butonu çıkınca indicator'ları gizle
+          const currentSlideIndex = Math.round(scrollX.value / width);
+          const isLastSlide = currentSlideIndex >= 3;
+          return !isLastSlide ? (
             <Animated.View
               key={index}
               style={[
                 styles.indicator,
                 animatedStyle,
-                { backgroundColor: theme.indicator },
+                {
+                  backgroundColor:
+                    index === 0 ? "#FFFFFF" : "rgba(255,255,255,0.5)",
+                },
               ]}
             />
-          );
+          ) : null;
         })}
       </View>
     </View>
@@ -162,57 +172,74 @@ const styles = StyleSheet.create({
     top: 50,
     right: 20,
     zIndex: 10,
+    padding: 10,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    borderRadius: 20,
   },
   slide: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-start",
   },
   backgroundImage: {
     flex: 1,
     width: "100%",
-    height: height * 0.6,
+    height: "100%",
   },
-  content: {
+  overlay: {
     flex: 1,
-    padding: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: height * 0.6,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    justifyContent: "flex-end",
+    paddingBottom: 100,
+  },
+  textContainer: {
+    paddingHorizontal: 30,
+    marginBottom: 40,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 10,
+    color: "#FFFFFF",
+    textAlign: "left",
+    marginBottom: 15,
+    lineHeight: 36,
   },
   description: {
-    fontSize: 16,
-    textAlign: "center",
-    marginBottom: 20,
-    paddingHorizontal: 20,
+    fontSize: 18,
+    color: "#FFFFFF",
+    textAlign: "left",
+    lineHeight: 24,
+    opacity: 0.9,
   },
-  button: {
-    paddingVertical: 15,
+  continueButton: {
+    backgroundColor: "#111827",
     paddingHorizontal: 40,
-    borderRadius: 30,
+    height: 40,
+    borderRadius: 8,
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
   },
-  buttonText: {
-    fontSize: 16,
+  continueButtonText: {
+    fontSize: 14,
     fontWeight: "bold",
+    color: "#FFFFFF",
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
   },
   indicatorContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
-    bottom: 30,
+    bottom: 40,
     width: "100%",
   },
   indicator: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
   },
 });

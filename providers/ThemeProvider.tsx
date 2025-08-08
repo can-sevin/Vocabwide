@@ -6,13 +6,14 @@ const ThemeContext = createContext();
 
 // ThemeProvider bileşeni
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(themes.light);
+  const [theme, setTheme] = useState(themes.dark);
 
   // Tema değiştirme fonksiyonu
   const toggleTheme = () => {
-    setTheme((prevTheme) =>
-      prevTheme === themes.light ? themes.dark : themes.light
-    );
+    setTheme((prevTheme) => {
+      const newTheme = prevTheme === themes.light ? themes.dark : themes.light;
+      return newTheme;
+    });
   };
 
   // Sağlanan değerler
